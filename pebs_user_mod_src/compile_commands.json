@@ -1,0 +1,72 @@
+[
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/async_analyze_code_tool.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/async_analyze_code_tool.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/async_analyze_code_tool.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/conf.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/conf.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/conf.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/diasm_code_tool.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/diasm_code_tool.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/diasm_code_tool.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/full_diasm_info.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/full_diasm_info.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/full_diasm_info.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/get_info_by_ptrace.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/get_info_by_ptrace.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/get_info_by_ptrace.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/netlink_tool.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/netlink_tool.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/netlink_tool.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/pebs_user_mod.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/pebs_user_mod.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/pebs_user_mod.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/share_mem_tool.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/share_mem_tool.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/share_mem_tool.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/test.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/test.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/test.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/static_analyze/abstract_addr.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/abstract_addr.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/abstract_addr.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/static_analyze/instruction_analyze_tool.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/instruction_analyze_tool.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/instruction_analyze_tool.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/static_analyze/state_machine.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/state_machine.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/state_machine.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/static_analyze/state_symbol.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/state_symbol.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/state_symbol.cpp"
+},
+{
+  "directory": "/home/corvus/code/pebs_all/pebs_user_mod_src/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_ATOMIC_DYN_LINK -DBOOST_BIND_GLOBAL_PLACEHOLDERS -DBOOST_CHRONO_DYN_LINK -DBOOST_CONTEXT_DYN_LINK -DBOOST_COROUTINE_DYN_LINK -DBOOST_REGEX_DYN_LINK -DBOOST_SERIALIZATION_DYN_LINK -DBOOST_SYSTEM_DYN_LINK -DBOOST_THREAD_DYN_LINK -I/home/corvus/code/pebs_all/pebs_user_mod_src/include -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze -I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine -I/usr/local/lib/cmake/symengine/../../../include/symengine/utilities/cereal/include -g -std=gnu++20 -o CMakeFiles/pebs_user_mod.dir/src/static_analyze/static_analyze_tools.cpp.o -c /home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/static_analyze_tools.cpp",
+  "file": "/home/corvus/code/pebs_all/pebs_user_mod_src/src/static_analyze/static_analyze_tools.cpp"
+}
+]

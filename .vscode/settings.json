@@ -1,0 +1,82 @@
+{
+    "files.associations": {
+        "mm.h": "c",
+        "init.h": "c",
+        "compiler.h": "c",
+        "compiler_types.h": "c",
+        "kernel.h": "c",
+        "linkage.h": "c",
+        "signal.h": "c",
+        "sched.h": "c",
+        "pid.h": "c",
+        "wait.h": "c",
+        "spinlock.h": "c",
+        "pebs_taine.h": "c",
+        "fs.h": "c",
+        "pebs_pub.h": "c",
+        "pebs_buffer.h": "c",
+        "pebs_taine_tool.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "beaengine.h": "c",
+        "slab.h": "c",
+        "*.tcc": "c",
+        "optional": "c",
+        "istream": "c",
+        "ostream": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "memory": "c"
+    },
+    "makefile.makefilePath": "/home/corvus/code/pebs/src/Makefile",
+    "C_Cpp.intelliSenseEngine": "disabled",
+    // "C_Cpp.default.compilerArgs": [
+    //     "-std=c++20"
+    // ],
+    // "C_Cpp.default.cppStandard": "c++11",
+    "[cpp]": {
+        "editor.formatOnType": true,
+        "editor.formatOnPaste": true,
+        
+    },
+    "clang-format.style": "file",
+    "clang-format.fallbackStyle": "Google",
+    "clang-format.language.c.fallbackStyle": "Google",
+    "clang-format.language.cpp.fallbackStyle": "Google",
+    "clangd.fallbackFlags": [
+        "-I/home/corvus/code/pebs_all/pebs_user_mod_src/include",
+        "-I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze",
+        "-I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine",
+        "-std=c++20"
+    ],
+    "clangd.detectExtensionConflicts": true,
+    "clangd.arguments": [
+        // 在后台自动分析文件（基于complie_commands)
+        "--background-index",
+        // 标记compelie_commands.json文件的目录位置
+        "--compile-commands-dir=build",
+        // 同时开启的任务数量
+        // "-j=12",
+        // 告诉clangd用那个clang进行编译，路径参考which clang++的路径
+        // "--query-driver=/usr/bin/clang++",
+        // clang-tidy功能
+        "--clang-tidy",
+        "--clang-tidy-checks=performance-*,bugprone-*",
+        // 全局补全（会自动补充头文件）
+        "--all-scopes-completion",
+        // 更详细的补全内容
+        "--completion-style=detailed",
+        // 补充头文件的形式
+        "--header-insertion=iwyu",
+        // pch优化的位置
+        "--pch-storage=disk",
+        //设置c++标准
+        // "--std=c++20"
+    ]
+
+}
