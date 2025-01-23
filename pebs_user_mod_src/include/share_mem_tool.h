@@ -13,13 +13,13 @@ class share_mem_tool {
  public:
   typedef std::shared_ptr<share_mem_tool> ptr;
   /**
-   * @brief 初始化工具
+   * @brief init tool
    *
-   * @return true 成功
-   * @return false 失败
+   * @return true 
+   * @return false 
    */
   bool init();
-  // 销毁
+  // 
   void destory();
   std::string read_data();
 

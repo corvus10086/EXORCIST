@@ -2,7 +2,7 @@
 #define ABSTRACT_ADDR
 
 /**
- * @brief 一个代表抽象地址的类
+ * @brief 
  */
 #include <capstone/x86.h>
 #include <sys/types.h>
@@ -42,12 +42,12 @@ class abstract_addr {
         _addr_string(other->_addr_string),
         _size(other->_size) {}
   /**
-   * @brief 标识此地址中的符号大小
+   * @brief 
    *
    */
   short _size;
   /**
-   * @brief 标记这是一个未知地址
+   * @brief 
    *
    */
   taine_enum _taine = taine_enum::not_a_tine;
@@ -59,7 +59,7 @@ class abstract_addr {
   std::string get_addr_string() { return _addr_string; }
   uint64_t _get_addr_num(){return _addr_num;}
 
-  // 获取字符串地址中的符号来源
+  // 
   std::vector<std::string> get_symbol_str_vector() {
     if (_addr_string == "") {
       return {""};
@@ -70,7 +70,7 @@ class abstract_addr {
     std::string::const_iterator iterStart = _addr_string.begin();
     std::string::const_iterator iterEnd = _addr_string.end();
     while (std::regex_search(iterStart, iterEnd, match_result, pattern)) {
-      // 记录从符号中找到的符号
+      // 
       res.push_back(match_result[0]);
       iterStart = match_result[0].second;
     }

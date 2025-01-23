@@ -22,15 +22,15 @@
 #include "conf.h"
 
 /**
- * @brief 符号机中的抽象符号类
+ * @brief 
  *
  */
 class state_symbol {
  public:
-  // 智能指针
+  // 
   typedef std::shared_ptr<state_symbol> ptr;
   state_symbol() {}
-  // 从无符号整数构建
+  // 
   state_symbol(uint64_t value)
       : _single_symbol(SymEngine::integer(value)),
         _symbol_size(8),
@@ -40,7 +40,7 @@ class state_symbol {
         _symbol_size(size),
         _str(std::to_string(value)) {}
 
-  // 从字符串构建一个符号
+  // 
   state_symbol(std::string symbol)
       : _single_symbol(SymEngine::symbol(symbol)),
         _symbol_size(8),
@@ -60,7 +60,7 @@ class state_symbol {
     {
       char taine3 = 0, taine2 = 0, taine1 = 0;
       for (auto taine_str : _taine_effect_symbol_map.at(symbol)) {
-        // 记录从记录中找到的污点字符串
+        // 
         if (taine_str[12] == '1') {
           ++taine1;
         } else if (taine_str[12] == '2') {
@@ -90,7 +90,7 @@ class state_symbol {
     init_symbol_taine();
   }
 
-  // 从原始符号构建抽象符号类
+  // 
   state_symbol(SymEngine::RCP<const SymEngine::Basic> single_symbol)
       : _single_symbol(single_symbol), _symbol_size(8) {
     std::stringstream stream;
@@ -113,7 +113,7 @@ class state_symbol {
     _str = stream.str();
   }
 
-  // 拷贝构造函数
+  // 
   state_symbol(const state_symbol &other)
       : _symbol_size(other._symbol_size),
         _mem_effect(other._mem_effect),
@@ -132,7 +132,7 @@ class state_symbol {
         _size_xh_symbol(other._size_xh_symbol),
         _size_xl_symbol(other._size_xl_symbol) {}
 
-  // 不同大小的拷贝时仅复制映射，字符串，基本符号表示
+  // 
   state_symbol(const state_symbol &other, short size)
       : _symbol_size(size),
         _mem_effect(other._mem_effect),
@@ -214,11 +214,11 @@ class state_symbol {
     }
   }
 
-  // 设置
+  // 
 
-  // 初始化抽象符号所包含的符号
+  // 
   void init_symbol_str() {
-    // 记录符号的字符串表示
+    // 
     this->to_string();
     std::regex pattern("#symbol[0-9]{6}#");
     std::smatch match_result;
@@ -226,18 +226,18 @@ class state_symbol {
     std::string::const_iterator iterEnd = _str.end();
 
     while (std::regex_search(iterStart, iterEnd, match_result, pattern)) {
-      // 记录从符号中找到的符号
+      // 
       _contain_symbol.insert(match_result[0]);
       iterStart = match_result[0].second;
     }
   }
-  // 在设置符号的taine_symbol_map后设置符号的污点等级
+  // 
   void init_symbol_taine() {
     char taine3 = 0, taine2 = 0, taine1 = 0;
     for (auto symbol : _contain_symbol) {
       if (_taine_effect_symbol_map.count(symbol)) {
         for (auto taine_str : _taine_effect_symbol_map.at(symbol)) {
-          // 记录从记录中找到的污点字符串
+          // 
           _taine_effect_vector.push_back(taine_str);
           if (taine_str[12] == '1') {
             ++taine1;
@@ -251,7 +251,7 @@ class state_symbol {
       if (_size_64_symbol != nullptr) {
         if (_size_64_symbol->_taine_effect_symbol_map.count(symbol)) {
           for (auto taine_str : _taine_effect_symbol_map.at(symbol)) {
-            // 记录从记录中找到的污点字符串
+            // 
             _taine_effect_vector.push_back(taine_str);
             if (taine_str[12] == '1') {
               ++taine1;
@@ -266,7 +266,7 @@ class state_symbol {
       if (_size_32_symbol != nullptr) {
         if (_size_32_symbol->_taine_effect_symbol_map.count(symbol)) {
           for (auto taine_str : _taine_effect_symbol_map.at(symbol)) {
-            // 记录从记录中找到的污点字符串
+            // 
             _taine_effect_vector.push_back(taine_str);
             if (taine_str[12] == '1') {
               ++taine1;
@@ -281,7 +281,7 @@ class state_symbol {
       if (_size_16_symbol != nullptr) {
         if (_size_16_symbol->_taine_effect_symbol_map.count(symbol)) {
           for (auto taine_str : _taine_effect_symbol_map.at(symbol)) {
-            // 记录从记录中找到的污点字符串
+            // 
             _taine_effect_vector.push_back(taine_str);
             if (taine_str[12] == '1') {
               ++taine1;
@@ -296,7 +296,7 @@ class state_symbol {
       if (_size_xh_symbol != nullptr) {
         if (_size_xh_symbol->_taine_effect_symbol_map.count(symbol)) {
           for (auto taine_str : _taine_effect_symbol_map.at(symbol)) {
-            // 记录从记录中找到的污点字符串
+            // 
             _taine_effect_vector.push_back(taine_str);
             if (taine_str[12] == '1') {
               ++taine1;
@@ -311,7 +311,7 @@ class state_symbol {
       if (_size_xl_symbol != nullptr) {
         if (_size_xl_symbol->_taine_effect_symbol_map.count(symbol)) {
           for (auto taine_str : _taine_effect_symbol_map.at(symbol)) {
-            // 记录从记录中找到的污点字符串
+            // 
             _taine_effect_vector.push_back(taine_str);
             if (taine_str[12] == '1') {
               ++taine1;
@@ -334,12 +334,9 @@ class state_symbol {
       _taine = taine_enum::not_a_tine;
     }
   }
-  // 判断两个抽象符号包含的符号所关联的最大污点是否相同
+  // 
   bool judge_taine_same(const state_symbol &other) {
-    // if (_taine == taine_enum::not_a_tine ||
-    //     other._taine == taine_enum::not_a_tine) {
-    //   return false;
-    // }
+
     if (this->_taine != other._taine) {
       return false;
     } else {
@@ -361,7 +358,7 @@ class state_symbol {
     }
     return false;
   }
-  // 判断是否受到影响
+  // 
   bool judge_taine_effect(const state_symbol &other) {
     if (this->_taine != other._taine) {
       return false;
@@ -399,12 +396,9 @@ class state_symbol {
     return false;
   }
 
-  // 判断两个抽象符号包含的符号所关联的最大污点是否相同
+  // 
   bool judge_taine_same(state_symbol::ptr other) {
-    // if (_taine == taine_enum::not_a_tine ||
-    //     other->_taine == taine_enum::not_a_tine) {
-    //   return false;
-    // }
+
     if (this->_taine != other->_taine) {
       return false;
     } else {
@@ -492,10 +486,10 @@ class state_symbol {
     return true;
   }
 
-  //返回全部影响该符号的污点字符串
+  //
   std::vector<std::string> &get_taine_str() { return _taine_effect_vector; }
 
-  //返回污点字符串
+  //
   std::vector<std::string> get_taine_str(
       std::vector<std::string> symbol_vector) const {
     std::vector<std::string> taine_vector;
@@ -537,7 +531,7 @@ class state_symbol {
     return taine_vector;
   }
 
-  // 将符号转化为字符串
+  // 
   const std::string to_string() const {
     if (_str == "") {
       std::stringstream stream;
@@ -546,7 +540,7 @@ class state_symbol {
     }
     return _str;
   }
-  // 将具体值的符号转换为数字
+  // 
   uint64_t to_int() const {
     std::stringstream strIn;
     strIn << this->to_string();
@@ -554,14 +548,14 @@ class state_symbol {
     strIn >> q1;
     return q1;
   }
-  //判断符号是否是数字
+  //
   bool is_num() const {
-    std::regex reg("^[+-]?\\d+");  // 匹配一个或多个数字
+    std::regex reg("^[+-]?\\d+");  // 
     std::string tmp = this->to_string();
     return regex_match(tmp, reg);
   }
 
-  //符号的运算
+  //
   state_symbol operator+(const state_symbol &right);
   state_symbol op_add(state_symbol::ptr right);
   state_symbol op_add(const state_symbol &right);
@@ -643,41 +637,41 @@ class state_symbol {
       }
     }
   }
-  // 当前符号和内存有关系
+  // 
   bool _mem_effect = false;
-  // 标志符号污点是否能够晋升的标识
+  // 
   bool _can_up_taine_level = false;
-  // taine2经过乘法或者左移操作进行放大
+  // 
   bool _taine2_with_mul_or_left_shift = false;
 
   std::vector<std::string> _taine_effect_vector;
-  // 一个存放污点字符串与符号关联的映射
-  // 这个属性用于污点的追踪，将符号与影响其的污点绑定
+  // 
+  // 
   std::map<std::string, std::vector<std::string>> _taine_effect_symbol_map;
-  // 这个属性用于存放抽象符号中包含的符号（由于抽象符号一经确定不会更改，所以这个也不会更改
+  // 
   std::unordered_set<std::string> _contain_symbol;
-  // 被覆盖时原本的64位寄存器所代表的符号
+  // 
   state_symbol::ptr _size_64_symbol = nullptr;
-  // eax所代表的符号
+  // 
   state_symbol::ptr _size_32_symbol = nullptr;
-  // ax所代表的符号
+  // 
   state_symbol::ptr _size_16_symbol = nullptr;
-  // ah所代表的符号
+  // 
   state_symbol::ptr _size_xh_symbol = nullptr;
-  // al所代表的符号
+  // 
   state_symbol::ptr _size_xl_symbol = nullptr;
-  // 该符号的最大污点等级
+  // 
   taine_enum _taine = taine_enum::not_a_tine;
-  // 是否是一个标志位
+  // 
   bool _is_flag = false;
 
  private:
-  // 符号的位数
+  //
   short _symbol_size;
-  // 具体符号 可拆分寄存器时这个表示64位寄存器的符号
+  // 
   SymEngine::RCP<const SymEngine::Basic> _single_symbol = SymEngine::null;
 
-  // 符号的字符串表示
+  // 
   std::string _str = "";
 };
 

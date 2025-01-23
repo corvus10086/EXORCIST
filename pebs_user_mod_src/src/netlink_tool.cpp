@@ -17,24 +17,24 @@
 #include <string>
 #include <type_traits>
 /**
- * @brief 对socket进行初始化
+ * @brief socket
  *
  */
 void netlink_tool::init_netlink() {
   std::cout << "init\n";
-  //初始化用于接受数据的缓存区
+  //
   _nlh_recv = (struct nlmsghdr *)malloc(NLMSG_SPACE(MAX_PAYLOAD));
   if (_nlh_recv == nullptr) {
     std::cout << "con't alloc mem\n";
     return;
   }
-  //初始化套接字
+  //
   _sock_fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_TEST);
   if (_sock_fd < 0) {
     std::cout << "con't open socket\n";
     return;
   }
-  // // 查看套接字模式
+  // // 
   // int flags = fcntl(_sock_fd, F_GETFL, 0);
   // if (flags < 0) {
   //   std::cout << "Failed to get socket flags\n";
@@ -43,21 +43,21 @@ void netlink_tool::init_netlink() {
   //   return;
   // } else {
   //   if (flags & O_NONBLOCK) {
-  //     // 套接字处于非阻塞模式
+  //     // 
   //     printf("Socket is in non-blocking mode.\n");
   //   } else {
-  //     // 套接字处于阻塞模式
+  //     // 
   //     printf("Socket is in blocking mode.\n");
   //   }
   // }
-  // // 设置非阻塞模式
+  // // 
   // if (fcntl(_sock_fd, F_SETFL, flags | O_NONBLOCK) < 0) {
   //   std::cout << "Failed to set non-blocking mode\n";
   //   close(_sock_fd);
   //   _sock_fd = -1;
   //   return;
   // }
-  // // 查看套接字模式
+  // // 
   // flags = fcntl(_sock_fd, F_GETFL, 0);
   // if (flags == -1) {
   //   std::cout << "Failed to get socket flags\n";
@@ -66,15 +66,15 @@ void netlink_tool::init_netlink() {
   //   return;
   // } else {
   //   if (flags & O_NONBLOCK) {
-  //     // 套接字处于非阻塞模式
+  //     // 
   //     printf("Socket is in non-blocking mode.\n");
   //   } else {
-  //     // 套接字处于阻塞模式
+  //     // 
   //     printf("Socket is in blocking mode.\n");
   //   }
   // }
 
-  // 将套接字与pid绑定
+  // pid
   memset(&_src_addr, 0, sizeof(struct sockaddr_nl));
   _src_addr.nl_family = AF_NETLINK;
   _src_addr.nl_pid = _pid;
@@ -105,12 +105,12 @@ void netlink_tool::destory() {
 }
 
 /**
- * @brief 析构函数
+ * @brief 
  *
  */
 netlink_tool::~netlink_tool() { destory(); }
 /**
- * @brief 向内核发送消息
+ * @brief 
  *
  * @param message
  */
@@ -138,7 +138,7 @@ void netlink_tool::send_message(std::string message) {
   free(nlh);
 }
 
-/**接受内核传递的消息*/
+/***/
 std::string netlink_tool::recieve_message() {
   if (_sock_fd < 0) {
     throw std::runtime_error("_sock_fd init fail");
@@ -150,11 +150,11 @@ std::string netlink_tool::recieve_message() {
   if (recvfrom(_sock_fd, _nlh_recv, NLMSG_SPACE(MAX_PAYLOAD), 0,
                (struct sockaddr *)&src_addr, (socklen_t *)&addrlen) < 0) {
     throw std::runtime_error("recv message fail");
-    // //非阻塞模式下没有数据返回空字符串
+    // //
     // if (errno == EAGAIN || errno == EWOULDBLOCK) {
     //   return std::string("");
     // }
-    // //接受数据出现了错误
+    // //
     // else {
     //   throw std::runtime_error("recv message fail");
     // }

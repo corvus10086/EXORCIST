@@ -18,26 +18,18 @@
 #define DEVICE_NAME "/dev/pebs_test_device"
 #define MEMDEV_SIZE (1024 * 1024 * 4 * 6)
 
-// 向后读取的字节数
+// 
 #define OVER_FOOT_SIZE 200
-// 向前读取的字节数
+// 
 #define OVER_HEAD_SIZE 20
-// 传递消息的前缀大小
-// 第0个字节描述消息类型
-// 第1个字节表示branch miss addr与cache miss_addr的插值
-// 2表示是否是一个ret类型
-// 3保留
-// 4-7个字节表示pid
-// 8-15个字节表示cache miss addr
-// 16-23表示ret的addr
-// 24-39表示进程的可执行文件名称
-// 40-43表示指令可能开始地址相对与start_addr的偏移
+// 
+
 #define MEAASGE_INFO (8 * 3 + 16 + 4)
 #define OVER_HEAD_SIZE 20
 #define PREFIX_SIZE (MEAASGE_INFO + sizeof(register_info_t))
-// cache_miss与branch_miss插值的最大值
+// 
 #define CACHE_BRANCHE_ADDR_ADDR_SUB_ADDR_MAX 16
-// 通过mmap传递消息的总大小
+// 
 #define SINGLE_MESSAGE_BY_MMAP_SIZE                                          \
   (PREFIX_SIZE + CACHE_BRANCHE_ADDR_ADDR_SUB_ADDR_MAX + 6 + OVER_FOOT_SIZE + \
    OVER_HEAD_SIZE)
@@ -45,7 +37,7 @@
 
 extern std::map<x86_reg, short> reg_size_map;
 /**
- * @brief 污点类型种类
+ * @brief 
  *
  */
 enum class taine_enum {
@@ -55,7 +47,7 @@ enum class taine_enum {
   not_a_tine,
 };
 /**
- * @brief 使用到的rflag类型
+ * @brief 
  *
  */
 enum class rflags {
@@ -69,32 +61,32 @@ enum class rflags {
 };
 
 /**
- * @brief 单步指令分析后可能产生的结果
+ * @brief 
  *
  */
 enum class analyze_result {
-  INVALID_INSTRUCTION,            // 无效的指令
-  FIND_ATTACK,                    // 发现一个攻击
-  UNSURE_CONTROL_FOLW_JMP_BELOW,  // 未确定的控制流跳转目的向下
-  UNSURE_CONTROL_FOLW_JMP_UP,     // 未确定的控制流跳转目的向上
-  UNSUPPORT_INSTRUCTION,          // 未支持的指令
-  NO_ATTACT,  // 发现一些内存屏障指令，直接报没有攻击
-  CANNOT_FIND_NEXT_INSTRUCTION,  // 跳转地址是一个未知的地址
-  CONTINUE_ANALYZE,              // 继续分析
-  RET_INSTRUCTION,               // ret指令的情况下判断
-  MAY_LEAK_FROM_CONTROL,         // 可能通过控制流泄露
-  ALREADY_FIND_INIT_TAINE,       // 已经找到初始污点
-  CALL_INSTRUCTION_WITH_TAINE,  // call指令并且能够是直接call一个地址
+  INVALID_INSTRUCTION,            //
+  FIND_ATTACK,                    // 
+  UNSURE_CONTROL_FOLW_JMP_BELOW,  // 
+  UNSURE_CONTROL_FOLW_JMP_UP,     // 
+  UNSUPPORT_INSTRUCTION,          // 
+  NO_ATTACT,  // 
+  CANNOT_FIND_NEXT_INSTRUCTION,  // 
+  CONTINUE_ANALYZE,              // 
+  RET_INSTRUCTION,               // 
+  MAY_LEAK_FROM_CONTROL,         // 
+  ALREADY_FIND_INIT_TAINE,       // 
+  CALL_INSTRUCTION_WITH_TAINE,  // 
 };
 /**
- * @brief 将污点等级提高一级
+ * @brief 
  *
  * @return taine_enum
  */
 taine_enum add_taine_level(taine_enum);
 
 /**
- * @brief 获取传入参数中最大的taine
+ * @brief 
  *
  * @param taine1
  * @param taine2

@@ -3,7 +3,7 @@
 
 char *map = "\x00\x01\x03\x07\x0F\x1F\x3F\x7F\xFF";
 
-// offset为0时会出问题
+// offset0
 void set_stack_bit(unsigned long int offset, short length,
                    char *stack_map_addr) {
   unsigned long int new_offset = (offset - length) >> 3;
@@ -72,7 +72,7 @@ void get_stack_value(unsigned long int offset, short length,
 
 void set_register_taine(char *register_name,
                         register_taines_map_t *register_map) {
-  //仅需要关注通用寄存器？
+  //？
   if (register_name[0] == 'r') {
     // rax,rcx,rdx,rbx
     if (register_name[1] == 'a') {
@@ -145,7 +145,7 @@ void set_register_taine(char *register_name,
 
 void unset_register_taine(char *register_name,
                           register_taines_map_t *register_map) {
-  //仅需要关注通用寄存器？
+  //？
   if (register_name[0] == 'r') {
     // rax,rcx,rdx,rbx
     if (register_name[1] == 'a') {
@@ -218,7 +218,7 @@ void unset_register_taine(char *register_name,
 
 short get_register_taine(char *register_name,
                          register_taines_map_t *register_map) {
-  //仅需要关注通用寄存器？
+  //？
   if (register_name[0] == 'r') {
     // rax,rcx,rdx,rbx
     if (register_name[1] == 'a') {
@@ -296,9 +296,9 @@ short get_register_taine(char *register_name,
 
 int analyze_branch_instruction(int branch_type,
                                register_simulation_t *register_info) {
-  // return 1 跳转
-  // return 0 不确定
-  // return -1 不跳转
+  // return 1 
+  // return 0 
+  // return -1 
   // return 2 call
   // return 3 ret
   switch (branch_type) {
@@ -331,7 +331,7 @@ int analyze_branch_instruction(int branch_type,
     }
     case 4: {
       // JA  CF=0&&ZF=0
-      //确定
+      //
       if (GET_CF(register_info->rflags_unsure) == 0 &&
           GET_CF(register_info->register_info.RFLAGS)) {
         return -1;
@@ -376,7 +376,7 @@ int analyze_branch_instruction(int branch_type,
     }
     case 8: {
       // JG  ZF=0&&SF=OF
-      //确定
+      //
       if (GET_ZF(register_info->rflags_unsure) == 0 &&
           GET_ZF(register_info->register_info.RFLAGS)) {
         return -1;
@@ -521,7 +521,7 @@ int analyze_branch_instruction(int branch_type,
 }
 
 void set_register_taine_by_num(int num, register_taines_map_t *register_map) {
-  //仅需要关注通用寄存器？
+  //？
   switch (num) {
     case 0x1: {
       SET_RAX_1(register_map->registers_can_break);
@@ -591,7 +591,7 @@ void set_register_taine_by_num(int num, register_taines_map_t *register_map) {
 }
 
 void unset_register_taine_by_num(int num, register_taines_map_t *register_map) {
-  //仅需要关注通用寄存器？
+  //？
   switch (num) {
     case 0x1: {
       SET_RAX_0(register_map->registers_can_break);
@@ -661,7 +661,7 @@ void unset_register_taine_by_num(int num, register_taines_map_t *register_map) {
 }
 
 short get_register_taine_by_num(int num, register_taines_map_t *register_map) {
-  //仅需要关注通用寄存器？
+  //？
   switch (num) {
     case 0x0: {
       return 0;
@@ -1197,7 +1197,7 @@ char judge_attack(int branch_type, register_taines_map_t *register_map,
     }
     case 4: {
       // JA  CF=0&&ZF=0
-      //确定
+      //
       if (GET_CF(register_map->rflags) || GET_ZF(register_map->rflags)) {
         return 1;
       } else {
@@ -1230,7 +1230,7 @@ char judge_attack(int branch_type, register_taines_map_t *register_map,
     }
     case 8: {
       // JG  ZF=0&&SF=OF
-      //确定
+      //
       if (GET_ZF(register_map->rflags) || GET_SF(register_map->rflags) ||
           GET_OF(register_map->rflags)) {
         return 1;
@@ -1272,7 +1272,7 @@ char judge_attack(int branch_type, register_taines_map_t *register_map,
     }
     case 13: {
       // ret
-      //先返回0
+      //0
       return 0;
     }
 
@@ -1364,82 +1364,82 @@ char analyze_memory_operator(operator_analyze_result_t *operator_analyze_result,
                              register_taines_map_t *register_map,
                              stack_simulation_t *stack_simulation_info,
                              heap_simulation_t *heap_simulation_info) {
-  //初始化
+  //
   operator_analyze_result->taine_flag = 0;
   operator_analyze_result->unsure_flag = 0;
 
   if (get_register_taine_by_num(base_register_num, register_map) ||
       (get_register_taine_by_num(index_register_num, register_map) &&
        scale != 0)) {
-    //基址寄存器或偏移寄存器被污染
+    //
     operator_analyze_result->taine_flag = 1;
   }
   if (get_register_unsure_by_num(base_register_num, register_info) ||
       (get_register_unsure_by_num(index_register_num, register_info) &&
        scale != 0)) {
-    //基址寄存器是未知地址
+    //
     operator_analyze_result->unsure_flag = 1;
     return 0;
   } else {
-    //地址是确定的
+    //
     unsigned long long int addr = base_register_num =
         get_register_value_by_num(base_register_num, register_info, 64) +
         get_register_value_by_num(index_register_num, register_info, 64) *
             scale +
         displacement;
-    //获取addr相对rbp的偏移
+    //addrrbp
     long long int offset = base_register_num =
         get_register_value_by_num(0x20, register_info, 64) - addr;
     if (offset < -504 || offset > 512) {
-      //超出模拟栈的范围
-      //放在模拟堆上
+      //
+      //
       int index = 0;
       for (; index < heap_simulation_info->heap_size; ++index) {
         if (heap_simulation_info->address[index] == addr) {
-          //存在相关记录
+          //
           if (heap_simulation_info->taine[index] > 0) {
-            //存在污点
+            //
             operator_analyze_result->taine_flag = 1;
           }
           if (heap_simulation_info->unsure[index] > 0) {
-            //未确定的情况下
+            //
             operator_analyze_result->unsure_flag = 1;
             return 0;
           } else {
-            //确定值的情况下
+            //
             operator_analyze_result->value = heap_simulation_info->value[index];
           }
         }
       }
       if (index >= heap_simulation_info->heap_size) {
-        //不存在相关记录
+        //
         operator_analyze_result->unsure_flag = 1;
         return 0;
       }
     } else {
-      //在栈上
+      //
       if (get_stack_bit(stack_simulation_info->rbp_offset + offset, size / 8,
                         stack_simulation_info->simulation_stack_set_info)) {
-        //栈上这个地址存在值
+        //
         if (get_stack_bit(
                 stack_simulation_info->rbp_offset + offset, size / 8,
                 stack_simulation_info->simulation_stack_taines_info)) {
-          //存在污点
+          //
           operator_analyze_result->taine_flag = 1;
         }
         if (get_stack_bit(
                 stack_simulation_info->rbp_offset + offset, size / 8,
                 stack_simulation_info->simulation_stack_unsure_info)) {
-          //值未确定的情况下
+          //
           operator_analyze_result->unsure_flag = 1;
         } else {
-          //值确定的情况下
+          //
           get_stack_value(stack_simulation_info->rbp_offset + offset, size / 8,
                           stack_simulation_info->simulation_stack_info,
                           &(operator_analyze_result->value));
         }
       } else {
-        //栈上不存在这个值
+        //
         operator_analyze_result->unsure_flag = 1;
         operator_analyze_result->taine_flag = 0;
       }
@@ -1461,49 +1461,49 @@ char set_memory_operator(operator_analyze_result_t *operator_analyze_result,
   if (get_register_taine_by_num(base_register_num, register_map) ||
       (get_register_taine_by_num(index_register_num, register_map) &&
        scale != 0)) {
-    //地址被污染
+    //
     taine_flag = 1;
   }
   if (get_register_unsure_by_num(base_register_num, register_info) ||
       (get_register_unsure_by_num(index_register_num, register_info) &&
        scale != 0)) {
-    //未知地址
+    //
     return 0;
   } else {
-    //地址是确定的
+    //
     unsigned long long int addr =
         get_register_value_by_num(base_register_num, register_info, 64) +
         get_register_value_by_num(index_register_num, register_info, 64) *
             scale +
         displacement;
-    //获取addr相对rbp的偏移
+    //addrrbp
     long long int offset = base_register_num =
         get_register_value_by_num(0x20, register_info, 64) - addr;
     if (offset < -504 || offset > 512) {
-      //超出模拟栈的范围
-      //放在模拟堆上
+      //
+      //
       heap_simulation_info->address[heap_simulation_info->heap_size] = addr;
       if (operator_analyze_result->taine_flag || taine_flag) {
-        //存在污点
+        //
         heap_simulation_info->taine[heap_simulation_info->heap_size] = 1;
       }
       if (operator_analyze_result->unsure_flag) {
-        //值未知
+        //
         heap_simulation_info->unsure[heap_simulation_info->heap_size] = 1;
       } else {
-        //值已知
+        //
         heap_simulation_info->value[heap_simulation_info->heap_size] =
             operator_analyze_result->value;
       }
       ++heap_simulation_info->heap_size;
     } else {
-      //在栈上
-      //设置已存在
+      //
+      //
       set_stack_bit(stack_simulation_info->rbp_offset + offset, size / 8,
                     stack_simulation_info->simulation_stack_set_info);
 
       if (operator_analyze_result->taine_flag || taine_flag) {
-        //存在污点
+        //
         set_stack_bit(stack_simulation_info->rbp_offset + offset, size / 8,
                       stack_simulation_info->simulation_stack_taines_info);
       } else {
@@ -1511,14 +1511,14 @@ char set_memory_operator(operator_analyze_result_t *operator_analyze_result,
                         stack_simulation_info->simulation_stack_taines_info);
       }
       if (operator_analyze_result->unsure_flag) {
-        //值未知
+        //
         set_stack_bit(stack_simulation_info->rbp_offset + offset, size / 8,
                       stack_simulation_info->simulation_stack_unsure_info);
       } else {
-        //取消未知标记
+        //
         unset_stack_bit(stack_simulation_info->rbp_offset + offset, size / 8,
                         stack_simulation_info->simulation_stack_unsure_info);
-        //设置具体值
+        //
         set_stack_value(stack_simulation_info->rbp_offset + offset, size / 8,
                         operator_analyze_result->value,
                         stack_simulation_info->simulation_stack_info);
@@ -1528,23 +1528,23 @@ char set_memory_operator(operator_analyze_result_t *operator_analyze_result,
   return 1;
 }
 
-// CWD: AX符号位拓展到DX
-// CDQ: EAX符号位拓展到EDX
-// CQO: RAX符号位拓展到RDX
+// CWD: AXDX
+// CDQ: EAXEDX
+// CQO: RAXRDX
 
-// CBW: AL符号位拓展到DX
-// CWDE: AX符号位拓展到EAX
-// CDQE: EAX符号位拓展到RAX
+// CBW: ALDX
+// CWDE: AXEAX
+// CDQE: EAXRAX
 char exec_cwd_and(char *disass_str, register_simulation_t *register_info,
                   register_taines_map_t *register_map) {
   if (disass_str[1] == 'd' && disass_str[2] == 'q' && disass_str[3] == 'e') {
     // cdqe
-    //复制EAX寄存器双字的符号位(bit 31)到RAX的高32位
-    //设置污点
+    //EAX(bit 31)RAX32
+    //
     if (GET_EAX(register_map->registers_can_break)) {
       SET_RAX_1(register_map->registers_can_break);
     }
-    // eax不确定的情况下
+    // eax
     if (GET_EAX(register_info->registers_unsure)) {
       SET_RAX_1(register_info->registers_unsure);
     } else if (register_info->register_info.RAX & (1 << 31)) {
@@ -1554,7 +1554,7 @@ char exec_cwd_and(char *disass_str, register_simulation_t *register_info,
     }
   } else if (disass_str[1] == 'd' && disass_str[2] == 'q') {
     // cdq
-    //复制EAX寄存器的符号位(bit 31)到EDX的每一位
+    //EAX(bit 31)EDX
     if (GET_EAX(register_map->registers_can_break)) {
       SET_EDX_1(register_map->registers_can_break);
     }
@@ -1568,7 +1568,7 @@ char exec_cwd_and(char *disass_str, register_simulation_t *register_info,
   } else if (disass_str[1] == 'w' && disass_str[2] == 'd' &&
              disass_str[3] == 'e') {
     // cwde
-    // AX符号位拓展到EAX
+    // AXEAX
     if (GET_AX(register_map->registers_can_break)) {
       SET_EAX_1(register_map->registers_can_break);
     }
@@ -1581,7 +1581,7 @@ char exec_cwd_and(char *disass_str, register_simulation_t *register_info,
     }
   } else if (disass_str[1] == 'w' && disass_str[2] == 'd') {
     // cwd
-    //复制AX寄存器的符号位(bit 15)到DX的每一位
+    //AX(bit 15)DX
     if (GET_AX(register_map->registers_can_break)) {
       SET_DX_1(register_map->registers_can_break);
     }
@@ -1594,7 +1594,7 @@ char exec_cwd_and(char *disass_str, register_simulation_t *register_info,
     }
   } else if (disass_str[1] == 'q' && disass_str[2] == 'o') {
     // cqo
-    //复制RAX寄存器的符号位(bit 63)到RDX的每一位
+    //RAX(bit 63)RDX
     if (GET_RAX(register_map->registers_can_break)) {
       SET_RDX_1(register_map->registers_can_break);
     }
@@ -1607,7 +1607,7 @@ char exec_cwd_and(char *disass_str, register_simulation_t *register_info,
     }
   } else if (disass_str[1] == 'b' && disass_str[2] == 'w') {
     // cbw
-    // AL符号位拓展到DX
+    // ALDX
     if (GET_AX(register_map->registers_can_break)) {
       SET_DX_1(register_map->registers_can_break);
     }
@@ -1633,7 +1633,7 @@ void operator_expend(operator_analyze_result_t *operator_analyze_result,
   }
 
   if (sign) {
-    //有符号扩展
+    //
     expend_bit = (operator_analyze_result->value &
                   (((unsigned long long int)1) << (source_size - 1))) >>
                  (source_size - 1);
@@ -1656,26 +1656,26 @@ void operator_expend(operator_analyze_result_t *operator_analyze_result,
   return;
 }
 
-//会将传进来的数据进行符号扩展
+//
 void sub_set_flag(operator_analyze_result_t *operator_analyze_dest,
                   operator_analyze_result_t *operator_analyze_source,
                   register_simulation_t *register_info,
                   register_taines_map_t *register_map, int length) {
-  // sub和cmp使用
-  //设置或取消污点
+  // subcmp
+  //
   // if(operator_analyze_dest->taine_flag||operator_analyze_source->taine_flag){
   //   rflag_set_taine(register_map);
   // }else{
   //   rflag_unset_taine(register_map);
   // }
-  // //设置或取消未知标记
+  // //
   // if(operator_analyze_dest->unsure_flag||operator_analyze_source->unsure_flag){
   //   rflag_set_unsure(register_info);
   //   return;
   // }else{
   //   rflag_unset_unsure(register_info);
   // }
-  //无符号数 dest-source op1-op2
+  // dest-source op1-op2
   // dest=src zf=1 cf=0
   // dest<src zf=0 cf=1
   // dest>src zf=0 cf=0
@@ -1706,23 +1706,23 @@ void sub_set_flag(operator_analyze_result_t *operator_analyze_dest,
     SET_ZF_0(register_info->register_info.RFLAGS);
     SET_CF_0(register_info->register_info.RFLAGS);
   }
-  //有符号数
-  //先进行有符号扩展
+  //
+  //
   operator_expend(operator_analyze_dest, length, 64, 1);
   operator_expend(operator_analyze_source, length, 64, 1);
 
   if ((long long int)operator_analyze_dest->value ==
       (long long int)operator_analyze_source->value) {
-    //相等的情况下
+    //
     SET_OF_0(register_info->register_info.RFLAGS);
     SET_SF_0(register_info->register_info.RFLAGS);
   } else {
-    //不相等的情况下
+    //
     if (((long long int)operator_analyze_dest->value < 0 &&
          (long long int)operator_analyze_source->value < 0) ||
         ((long long int)operator_analyze_dest->value > 0 &&
          (long long int)operator_analyze_source->value > 0)) {
-      //同号的情况下
+      //
       SET_OF_0(register_info->register_info.RFLAGS);
       if ((long long int)operator_analyze_dest->value <
           (long long int)operator_analyze_source->value) {
@@ -1731,23 +1731,23 @@ void sub_set_flag(operator_analyze_result_t *operator_analyze_dest,
         SET_SF_0(register_info->register_info.RFLAGS);
       }
     } else {
-      //异号的情况下
+      //
       if ((long long int)operator_analyze_dest->value < 0) {
         // dest<0 source>0
         if ((long long int)operator_analyze_dest->value -
                 (long long int)operator_analyze_source->value >
             0) {
-          //负数减正数大于0
-          //发生溢出
+          //0
+          //
           SET_OF_1(register_info->register_info.RFLAGS);
           SET_SF_0(register_info->register_info.RFLAGS);
         } else {
-          // 64位长度的情况下没有溢出
+          // 64
           long long int tmp = -(long long int)operator_analyze_dest->value +
                               (long long int)operator_analyze_source->value;
           if ((tmp >= 2147483647 && length <= 32) ||
               (tmp >= 32767 && length <= 16) || (tmp >= 127 && length <= 8)) {
-            //有溢出
+            //
             SET_OF_1(register_info->register_info.RFLAGS);
             SET_SF_0(register_info->register_info.RFLAGS);
           } else {
@@ -1760,17 +1760,17 @@ void sub_set_flag(operator_analyze_result_t *operator_analyze_dest,
         if ((long long int)operator_analyze_dest->value -
                 (long long int)operator_analyze_source->value <
             0) {
-          //正数减负数小于0
-          //发生溢出
+          //0
+          //
           SET_OF_1(register_info->register_info.RFLAGS);
           SET_SF_1(register_info->register_info.RFLAGS);
         } else {
-          // 64位长度的情况下没有溢出
+          // 64
           long long int tmp = (long long int)operator_analyze_dest->value -
                               (long long int)operator_analyze_source->value;
           if ((tmp >= 2147483647 && length <= 32) ||
               (tmp >= 32767 && length <= 16) || (tmp >= 127 && length <= 8)) {
-            //有溢出
+            //
             SET_OF_1(register_info->register_info.RFLAGS);
             SET_SF_1(register_info->register_info.RFLAGS);
           } else {
@@ -1783,7 +1783,7 @@ void sub_set_flag(operator_analyze_result_t *operator_analyze_dest,
   }
 }
 
-//会将传进来的数据进行符号扩展
+//
 void add_set_flag(operator_analyze_result_t *operator_analyze_dest,
                   operator_analyze_result_t *operator_analyze_source,
                   register_simulation_t *register_info,
@@ -1793,20 +1793,20 @@ void add_set_flag(operator_analyze_result_t *operator_analyze_dest,
   // }else{
   //   rflag_unset_taine(register_map);
   // }
-  // //设置或取消未知标记
+  // //
   // if(operator_analyze_dest->unsure_flag||operator_analyze_source->unsure_flag){
   //   rflag_set_unsure(register_info);
   //   return;
   // }else{
   //   rflag_unset_unsure(register_info);
   // }
-  //无符号数 dest+source op1+op2
+  // dest+source op1+op2
   unsigned long long int tmp;
   if (length > 64 || length < 0) {
     length = 64;
   }
-  //设置无符号数标志位时需要先进行无符号扩展
-  //获取时高位全为0，因此不需要无符号扩展
+  //
+  //0，
   operator_expend(operator_analyze_dest, length, 64, 0);
   operator_expend(operator_analyze_source, length, 64, 0);
   if ((unsigned long long int)operator_analyze_dest->value == 0 &&
@@ -1825,7 +1825,7 @@ void add_set_flag(operator_analyze_result_t *operator_analyze_dest,
     }
 
     if (length < 64) {
-      //操作数长度不足64位
+      //64
       if ((tmp > 4294967295 && length <= 32) || (tmp > 65535 && length <= 16) ||
           (tmp > 255 && length <= 8)) {
         SET_CF_1(register_info->register_info.RFLAGS);
@@ -1841,23 +1841,23 @@ void add_set_flag(operator_analyze_result_t *operator_analyze_dest,
       }
     }
   }
-  //有符号数
-  //需要进行有符号数扩展
+  //
+  //
   operator_expend(operator_analyze_dest, length, 64, 1);
   operator_expend(operator_analyze_source, length, 64, 1);
 
   if ((long long int)operator_analyze_dest->value == 0 &&
       (long long int)operator_analyze_source->value == 0) {
-    //相等的情况下
+    //
     SET_OF_0(register_info->register_info.RFLAGS);
     SET_SF_0(register_info->register_info.RFLAGS);
   } else {
-    //不相等的情况下
+    //
     if (((long long int)operator_analyze_dest->value < 0 &&
          (long long int)operator_analyze_source->value > 0) ||
         ((long long int)operator_analyze_dest->value > 0 &&
          (long long int)operator_analyze_source->value < 0)) {
-      //异号的情况下
+      //
       SET_OF_0(register_info->register_info.RFLAGS);
       if ((long long int)operator_analyze_dest->value +
               (long long int)operator_analyze_source->value <
@@ -1867,23 +1867,23 @@ void add_set_flag(operator_analyze_result_t *operator_analyze_dest,
         SET_SF_0(register_info->register_info.RFLAGS);
       }
     } else {
-      //同号的情况下
+      //
       if ((long long int)operator_analyze_dest->value < 0) {
         // dest<0 source<0
         if ((long long int)operator_analyze_dest->value +
                 (long long int)operator_analyze_source->value >
             0) {
-          //负数+负数大于0
-          //发生溢出
+          //+0
+          //
           SET_OF_1(register_info->register_info.RFLAGS);
           SET_SF_0(register_info->register_info.RFLAGS);
         } else {
-          // 64位长度的情况下没有溢出
+          // 64
           long long int tmp = -(long long int)operator_analyze_dest->value -
                               (long long int)operator_analyze_source->value;
           if ((tmp >= 2147483647 && length <= 32) ||
               (tmp >= 32767 && length <= 16) || (tmp >= 127 && length <= 8)) {
-            //有溢出
+            //
             SET_OF_1(register_info->register_info.RFLAGS);
             SET_SF_0(register_info->register_info.RFLAGS);
           } else {
@@ -1896,17 +1896,17 @@ void add_set_flag(operator_analyze_result_t *operator_analyze_dest,
         if ((long long int)operator_analyze_dest->value +
                 (long long int)operator_analyze_source->value <
             0) {
-          //正数+正数小于0
-          //发生溢出
+          //+0
+          //
           SET_OF_1(register_info->register_info.RFLAGS);
           SET_SF_1(register_info->register_info.RFLAGS);
         } else {
-          // 64位长度的情况下没有溢出
+          // 64
           long long int tmp = (long long int)operator_analyze_dest->value +
                               (long long int)operator_analyze_source->value;
           if ((tmp > 2147483647 && length <= 32) ||
               (tmp > 32767 && length <= 16) || (tmp > 127 && length <= 8)) {
-            //有溢出
+            //
             SET_OF_1(register_info->register_info.RFLAGS);
             SET_SF_1(register_info->register_info.RFLAGS);
           } else {
@@ -1961,7 +1961,7 @@ unsigned long long int low64(unsigned long long int x,
   return lower64;
 }
 
-//将操作数符号扩展到64位
+//64
 void op_sign_expend(operator_analyze_result_t *operator_analyze_res1,
                     int op_size) {
   if (op_size > 64 || op_size < 0 || op_size == 64) {
@@ -2000,7 +2000,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
   if (op_size > 64 || op_size < 0) {
     op_size = 64;
   }
-  //先判断污点
+  //
   if (operator_analyze_res1->taine_flag || operator_analyze_res2->taine_flag) {
     operator_analyze_res3->taine_flag = 1;
     operator_analyze_res4->taine_flag = 1;
@@ -2013,7 +2013,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
     unsure_flag = 1;
   }
 
-  //具体值的计算
+  //
   switch (compute_type) {
     // add
     case 0: {
@@ -2235,7 +2235,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
     }
     // mul
     case 7: {
-      //两个操作数
+      //
       // if (taine_flag) {
       //   SET_CF_1(register_map->rflags);
       //   SET_OF_1(register_map->rflags);
@@ -2322,7 +2322,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
     }
     // imul
     case 9: {
-      //乘积的高一半是低一半的符号位的扩展则OF=CF=0，否则OF=CF=1
+      //OF=CF=0，OF=CF=1
       // if (taine_flag) {
       //   SET_CF_1(register_map->rflags);
       //   SET_OF_1(register_map->rflags);
@@ -2342,16 +2342,16 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
       op_sign_expend(operator_analyze_res1, op_size);
       op_sign_expend(operator_analyze_res2, op_size);
       if (imul_op_num == 1) {
-        //和mul类似
+        //mul
         char sign = 0;
         if (((long long int)operator_analyze_res1->value > 0 &&
              (long long int)operator_analyze_res2->value > 0) ||
             ((long long int)operator_analyze_res1->value < 0 &&
              (long long int)operator_analyze_res2->value < 0)) {
-          //同号结果为正
+          //
           sign = 0;
         } else {
-          //异号结果为负
+          //
           sign = 1;
         }
 
@@ -2364,7 +2364,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
 
           // if ((operator_analyze_res3->value & (0xff00)) == 0 ||
           //     (operator_analyze_res3->value & (0xff00)) == (0xff00)) {
-          //   //如果乘积的高半部分不是其低半部分的符号扩展，则进位标志位和溢出标志位置
+          //   //，
           //   //1
           //   SET_CF_0(register_info->register_info.RFLAGS);
           //   SET_OF_0(register_info->register_info.RFLAGS);
@@ -2383,7 +2383,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
           // if ((operator_analyze_res3->value & (0xffff0000)) == 0 ||
           //     (operator_analyze_res3->value & (0xffff0000)) == (0xffff0000))
           //     {
-          //   //如果乘积的高半部分不是其低半部分的符号扩展，则进位标志位和溢出标志位置
+          //   //，
           //   //1
           //   SET_CF_0(register_info->register_info.RFLAGS);
           //   SET_OF_0(register_info->register_info.RFLAGS);
@@ -2401,7 +2401,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
           operator_analyze_res4->value = res & 0xffffffff;
           // if (operator_analyze_res3->value == 0 ||
           //     operator_analyze_res3->value == 0xffffffff) {
-          //   //如果乘积的高半部分不是其低半部分的符号扩展，则进位标志位和溢出标志位置
+          //   //，
           //   //1
           //   SET_CF_0(register_info->register_info.RFLAGS);
           //   SET_OF_0(register_info->register_info.RFLAGS);
@@ -2411,8 +2411,8 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
           // }
           return;
         } else {
-          //这里没有考虑一种情况
-          //暂时不知道怎么写，不过几乎不会出现这种情况就先跳过
+          //
+          //，
           if ((long long int)operator_analyze_res1->value < 0) {
             operator_analyze_res1->value =
                 -(long long int)operator_analyze_res1->value;
@@ -2472,7 +2472,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
         // if (op_size == 16) {
         //   if ((operator_analyze_res3->value & 0xffff0000) == 0 ||
         //       (operator_analyze_res3->value & (0xffff0000)) == 0xffff0000) {
-        //     //如果乘积的高半部分不是其低半部分的符号扩展，则进位标志位和溢出标志位置
+        //     //，
         //     //1
         //     SET_CF_0(register_info->register_info.RFLAGS);
         //     SET_OF_0(register_info->register_info.RFLAGS);
@@ -2484,7 +2484,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
         //   if ((operator_analyze_res3->value & 0xffffffff00000000) == 0 ||
         //       (operator_analyze_res3->value & 0xffffffff00000000) ==
         //           0xffffffff00000000) {
-        //     //如果乘积的高半部分不是其低半部分的符号扩展，则进位标志位和溢出标志位置
+        //     //，
         //     //1
         //     SET_CF_0(register_info->register_info.RFLAGS);
         //     SET_OF_0(register_info->register_info.RFLAGS);
@@ -2493,7 +2493,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
         //     SET_OF_1(register_info->register_info.RFLAGS);
         //   }
         // } else {
-        //   // 64位的情况下
+        //   // 64
         //   if (tmp / (long long int)operator_analyze_res1->value !=
         //       (long long int)operator_analyze_res2->value) {
         //     SET_CF_1(register_info->register_info.RFLAGS);
@@ -2553,7 +2553,7 @@ void logic_al_operator(operator_analyze_result_t *operator_analyze_res1,
     op_size = 64;
   }
 
-  //先判断污点
+  //
   if (operator_analyze_res1->taine_flag || operator_analyze_res2->taine_flag) {
     operator_analyze_res3->taine_flag = 1;
     taine_flag = 1;
@@ -2566,12 +2566,12 @@ void logic_al_operator(operator_analyze_result_t *operator_analyze_res1,
   switch (compute_type) {
     // not
     case 0: {
-      // not不修改标志位
+      // not
       return;
     }
     // and
     case 1: {
-      //设置cf of相关的东西 and将cf和of置零
+      //cf of andcfof
       // {
       //   SET_CF_0(register_map->rflags);
       //   SET_OF_0(register_map->rflags);
@@ -2735,7 +2735,7 @@ void logic_shift_operator(operator_analyze_result_t *operator_analyze_res1,
   }
   // SHL SHR SAL SAR ROL ROR RCL RCR
   operator_analyze_res2->value %= op_size;
-  //先判断污点
+  //
   if (operator_analyze_res1->taine_flag || operator_analyze_res2->taine_flag) {
     operator_analyze_res3->taine_flag = 1;
     taine_flag = 1;
@@ -3103,7 +3103,7 @@ void logic_shift_operator(operator_analyze_result_t *operator_analyze_res1,
         mask = ~(0xffffffffffffffff << op_size);
       }
       operator_analyze_res3->value &= mask;
-      //将前几位移到后面
+      //
       tmp = (operator_analyze_res1->value &
              ((~(0xffffffffffffffff << (operator_analyze_res2->value - 1)))
               << (op_size - operator_analyze_res2->value + 1))) >>
@@ -3171,7 +3171,7 @@ void logic_shift_operator(operator_analyze_result_t *operator_analyze_res1,
         mask = ~(0xffffffffffffffff << op_size);
       }
       operator_analyze_res3->value &= mask;
-      //将前几位移到后面
+      //
 
       tmp =
           operator_analyze_res1->value &
@@ -3217,7 +3217,7 @@ void test_set_flag(operator_analyze_result_t *operator_analyze_res1,
   if (op_size > 64 || op_size < 0) {
     op_size = 64;
   }
-  //设置cf of相关的东西 test将cf和of置零
+  //cf of testcfof
   {
     SET_CF_0(register_map->rflags);
     SET_OF_0(register_map->rflags);
@@ -3226,7 +3226,7 @@ void test_set_flag(operator_analyze_result_t *operator_analyze_res1,
     SET_CF_0(register_info->register_info.RFLAGS);
     SET_OF_0(register_info->register_info.RFLAGS);
   }
-  //先判断污点
+  //
   if (operator_analyze_res1->taine_flag || operator_analyze_res2->taine_flag) {
     SET_ZF_1(register_map->rflags);
     SET_SF_1(register_map->rflags);

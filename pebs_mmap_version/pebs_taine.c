@@ -64,8 +64,8 @@ void free_taine_analyze_list(void) {
     taine_mem_list.info = NULL;
   }
 }
-// 插入数据同时监测pid存活情况
-// return 1代表找到相关记录，0没有找到
+// pid
+// return 1，0
 char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
                                     uint64_t end_addr) {
   int pid_index = 0;
@@ -74,9 +74,9 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
   int min_mun = taine_mem_list.info[0].num;
   int pid_find = 0;
   int num_find_insert = 0;
-  //循环pid
+  //pid
   for (; pid_index < taine_mem_list.num; ++pid_index) {
-    //检查pid是否存活
+    //pid
     if ((taine_mem_list.info[pid_index].num != 0)) {
       if (taine_mem_list.info[pid_index].pid == 0) {
         if (insert_index_by_pid == -1) {
@@ -94,7 +94,7 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
           continue;
         }
       }
-      // pid失效的情况下
+      // pid
       else {
         if (insert_index_by_pid == -1) {
           insert_index_by_pid = pid_index;
@@ -102,7 +102,7 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
         continue;
       }
     }
-    //获取pid中num的最小值
+    //pidnum
     if (num_find_insert == 0 && taine_mem_list.info[pid_index].total_num == 0) {
       insert_index_by_num = pid_index;
       num_find_insert = 1;
@@ -112,7 +112,7 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
       min_mun = taine_mem_list.info[pid_index].total_num;
       insert_index_by_num = pid_index;
     }
-    //找到相关的pid
+    //pid
     if (taine_mem_list.info[pid_index].pid == pid) {
       taine_mem_list.info[pid_index].total_num++;
       pid_find = 1;
@@ -138,9 +138,9 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
           return 1;
         }
       }
-      //没有找到addr，向其中插入地址信息
+      //addr，
       if (addr_find == 0) {
-        //存在空位
+        //
         if (taine_mem_list.info[pid_index].num <
             TAINE_PID_CONTAIN_ADDR_MAX_NUM) {
           tmp[taine_mem_list.info[pid_index].num].start_addr = start_addr;
@@ -148,7 +148,7 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
           tmp[taine_mem_list.info[pid_index].num].num = 1;
           taine_mem_list.info[pid_index].num++;
         }
-        //不存在空位
+        //
         else {
           tmp[addr_insert_num].start_addr = start_addr;
           tmp[addr_insert_num].end_addr = end_addr;
@@ -158,9 +158,9 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
       break;
     }
   }
-  // 没有找到相关的pid，需要插入相关的数据
+  // pid，
   if (pid_find == 0) {
-    // 存在无效的pid
+    // pid
     if (insert_index_by_pid != -1) {
       taine_mem_list.info[insert_index_by_pid].pid = pid;
       taine_mem_list.info[insert_index_by_pid].num = 1;
@@ -168,7 +168,7 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
       taine_mem_list.info[insert_index_by_pid].addr[0].end_addr = end_addr;
       taine_mem_list.info[insert_index_by_pid].addr[0].num = 1;
     }
-    // 存在空位的情况下
+    // 
     else if (taine_mem_list.num < TAINE_ANALYZE_LIST_PID_MAX_NUM) {
       taine_mem_list.info[taine_mem_list.num].pid = pid;
       taine_mem_list.info[taine_mem_list.num].num = 1;
@@ -177,7 +177,7 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
       taine_mem_list.info[taine_mem_list.num].addr[0].num = 1;
       taine_mem_list.num++;
     }
-    // 找一个pid中地址数量最少的取代掉
+    // pid
     else if (insert_index_by_num != -1) {
       if (taine_mem_list.info[insert_index_by_num].pid == 12805) {
         printk(KERN_INFO "expulsion by num");
@@ -225,9 +225,9 @@ char analyze_jmp_addr(OPTYPE *operator_type,
       return 1;
     }
     case (0x30000): {
-      //内存地址
-      //从内存中寻址并跳转
-      //先忽略
+      //
+      //
+      //
       jmp_addr_analyze_result->unsure_flag = 1;
       return 0;
     }
@@ -235,45 +235,45 @@ char analyze_jmp_addr(OPTYPE *operator_type,
   return 1;
 }
 
-//初始化污点
+//
 char updata_register_taine_map(DISASM *info,
                                register_taines_map_t *register_map) {
-  // start_addr抓到的寄存器信息是执行后的register_info，相当于已经执行了一次，因此需要先更新一次污点位图。
-  // info中存放的是引发cache miss的语句
-  // 首先检测是否是数据传输指令
+  // start_addrregister_info，，。
+  // infocache miss
+  // 
   // if ((info->Instruction.Category & 0x0000FFFF) != 1) {
   //   return 0;
   // }
 
-  //如果是数据传输指令就将目标操作数设为污点，然后更新污点位图
-  // infos.Operand1是目标操作数，
-  //目前找到的可能会出现cache miss的数据传输指令有movx pop xchg
+  //，
+  // infos.Operand1，
+  //cache missmovx pop xchg
 
-  // movx的情况下
+  // movx
   if (info->Instruction.Mnemonic[0] == 'm' &&
       info->Instruction.Mnemonic[1] == 'o' &&
       info->Instruction.Mnemonic[2] == 'v') {
-    //目标操作数
-    //操作数为寄存器的情况下
+    //
+    //
     if (info->Operand1.OpType == 0x20000) {
       if (!(info->Operand1.Registers.type & GENERAL_REG)) {
-        //如果不是通用寄存器
+        //
         return 0;
       }
       set_register_taine_by_num(info->Operand1.Registers.gpr, register_map);
       // set_register_taine(info->Operand1.OpMnemonic, register_map);
     } else if (info->Operand1.OpType == 0x30000) {
-      //操作数为内存
+      //
       return 0;
     }
   }
-  // cmp的情况下
+  // cmp
   else if (info->Instruction.Mnemonic[0] == 'c' &&
            info->Instruction.Mnemonic[1] == 'm' &&
            info->Instruction.Mnemonic[2] == 'p') {
     rflag_set_taine(register_map);
   }
-  //运算指令的情况下
+  //
   else if ((info->Instruction.Category & 0x0000ffff) == 2) {
     if (info->Operand1.OpType == 0x20000) {
       set_register_taine_by_num(info->Operand1.Registers.gpr, register_map);
@@ -284,13 +284,13 @@ char updata_register_taine_map(DISASM *info,
   // pop
   else if (info->Instruction.Mnemonic[0] == 'p' &&
            info->Instruction.Mnemonic[1] == 'o') {
-    // pop指令目标操作数一定是寄存器
+    // pop
     set_register_taine_by_num(info->Operand1.Registers.gpr, register_map);
     // set_register_taine(info->Operand1.OpMnemonic, register_map);
   }
   // xchg
-  //该指令其中一个操作数必定为寄存器
-  //能引发cache miss 另一个操作数一定是内存
+  //
+  //cache miss 
   else {
     if (info->Operand1.OpType == 0x20000) {
       set_register_taine_by_num(info->Operand1.Registers.gpr, register_map);
@@ -300,12 +300,12 @@ char updata_register_taine_map(DISASM *info,
       // set_register_taine(info->Operand2.OpMnemonic, register_map);
     }
   }
-  //内存内的值应该不用设置污点
+  //
 
   return 1;
 }
 
-//内存相关数据仅进行了污点的设置
+//
 char analyze_source_operator(OPTYPE *source_operator,
                              operator_analyze_result_t *operator_analyze_result,
                              register_simulation_t *register_info,
@@ -314,13 +314,13 @@ char analyze_source_operator(OPTYPE *source_operator,
                              heap_simulation_t *heap_simulation_info) {
   if (source_operator->OpType == 0x20000 &&
       source_operator->Registers.type & GENERAL_REG) {
-    //源操作数是通用寄存器的情况下
-    //首先判断是否有污点
+    //
+    //
     if (get_register_taine_by_num(source_operator->Registers.gpr,
                                   register_map) > 0) {
       operator_analyze_result->taine_flag = 1;
     }
-    //然后判断是否是一个未确定的符号值
+    //
     if (get_register_unsure_by_num(source_operator->Registers.gpr,
                                    register_info) > 0) {
       operator_analyze_result->unsure_flag = 1;
@@ -336,13 +336,13 @@ char analyze_source_operator(OPTYPE *source_operator,
       // operator_analyze_result->value_str[index] = i;
       // operator_analyze_result->can_exprex_by_symbol = 1;
     } else {
-      //确定值
+      //
       operator_analyze_result->value =
           get_register_value_by_num(source_operator->Registers.gpr,
                                     register_info, source_operator->OpSize);
     }
   } else if (source_operator->OpType == 0x30000) {
-    //源操作数存放在内存中
+    //
     analyze_memory_operator(
         operator_analyze_result, source_operator->Memory.BaseRegister,
         source_operator->Memory.IndexRegister, source_operator->Memory.Scale,
@@ -351,19 +351,19 @@ char analyze_source_operator(OPTYPE *source_operator,
         heap_simulation_info);
 
   } else if (source_operator->OpType == 0x8040000) {
-    //源操作数是一个立即数
+    //
     operator_analyze_result->value =
         convert_string_to_num(source_operator->OpMnemonic);
     operator_analyze_result->taine_flag = 0;
     operator_analyze_result->unsure_flag = 0;
   } else {
-    //不支持的操作数
+    //
     return 0;
   }
   return 1;
 }
 
-//内存相关数据仅进行了污点的设置
+//
 char set_dest_operator(OPTYPE *dest_operator,
                        operator_analyze_result_t *operator_analyze_result,
                        register_simulation_t *register_info,
@@ -372,27 +372,27 @@ char set_dest_operator(OPTYPE *dest_operator,
                        heap_simulation_t *heap_simulation_info) {
   if (dest_operator->OpType == 0x20000 &&
       dest_operator->Registers.type & GENERAL_REG) {
-    //通用寄存器
-    //先设置或取消污点
+    //
+    //
     if (operator_analyze_result->taine_flag) {
       set_register_taine_by_num(dest_operator->Registers.gpr, register_map);
     } else {
       unset_register_taine_by_num(dest_operator->Registers.gpr, register_map);
     }
-    //判断设置符号还是具体值
+    //
     if (operator_analyze_result->unsure_flag) {
-      //符号值
+      //
       // set_register_value_by_num(dest_operator->Registers.gpr, 0,
       // operator_analyze_result->value_str, 20,register_info);
       return 0;
     } else {
-      //具体值
+      //
       set_register_value_by_num(dest_operator->Registers.gpr,
                                 operator_analyze_result->value, NULL,
                                 dest_operator->OpSize, register_info);
     }
   } else if (dest_operator->OpType == 0x30000) {
-    //内存
+    //
     set_memory_operator(
         operator_analyze_result, dest_operator->Memory.BaseRegister,
         dest_operator->Memory.IndexRegister, dest_operator->Memory.Scale,
@@ -400,14 +400,14 @@ char set_dest_operator(OPTYPE *dest_operator,
         register_info, register_map, stack_simulation_info,
         heap_simulation_info);
   } else {
-    //应该不会有其他情况
+    //
     return 0;
   }
   return 1;
 }
 
-//执行单步指令
-// return 1 lock 指令
+//
+// return 1 lock 
 char symbolic_execution_one_step(DISASM *disassemble_info,
                                  register_simulation_t *register_info,
                                  register_taines_map_t *register_map,
@@ -416,18 +416,18 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
   if (disassemble_info->Prefix.LockPrefix > 0) {
     return 1;
   }
-  //进行逻辑跳转指令以外指令的执行
+  //
   switch (disassemble_info->Instruction.Category & 0x0000ffff) {
     case 0: {
       // rdtscp endbr
-      //不会更改通用寄存器，直接跳过
+      //，
       break;
     }
     case 1: {
       // DATA_TRANSFER
-      //数据传输指令
+      //
       // cbw cdqe cwd cdq cqo mov xchg push pop
-      //不会影响符号位
+      //
       if (disassemble_info->CompleteInstr[0] == 'c' &&
           disassemble_info->CompleteInstr[1] != 'm') {
         // cdqe cwd cdq cqo
@@ -437,23 +437,23 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
       } else if (disassemble_info->CompleteInstr[0] == 'm' ||
                  (disassemble_info->CompleteInstr[0] == 'c' &&
                   disassemble_info->CompleteInstr[1] != 'm')) {
-        // mov指令
+        // mov
         operator_analyze_result_t operator_analyze_result;
         memset(&operator_analyze_result, 0, sizeof(operator_analyze_result_t));
-        //处理源操作数
+        //
         analyze_source_operator(&(disassemble_info->Operand2),
                                 &operator_analyze_result, register_info,
                                 register_map, stack_simulation_info,
                                 heap_simulation_info);
 
-        //需要区分movsx和movzx
-        // movsx 有符号扩展，movzx无符号扩展
+        //movsxmovzx
+        // movsx ，movzx
         if (disassemble_info->CompleteInstr[3] == 's') {
           operator_expend(&operator_analyze_result,
                           disassemble_info->Operand2.OpSize,
                           disassemble_info->Operand1.OpSize, 1);
         }
-        //设置目标操作数
+        //
         set_dest_operator(&(disassemble_info->Operand2),
                           &operator_analyze_result, register_info, register_map,
                           stack_simulation_info, heap_simulation_info);
@@ -468,7 +468,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                                 &operator_analyze_result, register_info,
                                 register_map, stack_simulation_info,
                                 heap_simulation_info);
-        //结果放到栈上
+        //
         set_memory_operator(&operator_analyze_result, 0x10, 0x10, 0, 0,
                             disassemble_info->Operand2.OpSize, register_info,
                             register_map, stack_simulation_info,
@@ -483,7 +483,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
           return 0;
         }
         operator_analyze_result_t operator_analyze_result;
-        //从栈上取值
+        //
         analyze_memory_operator(&operator_analyze_result, 0x10, 0x10, 0, 0,
                                 disassemble_info->Operand1.OpSize,
                                 register_info, register_map,
@@ -498,7 +498,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
       } else if (disassemble_info->CompleteInstr[0] == 'x' &&
                  disassemble_info->CompleteInstr[1] == 'c') {
         // xchg
-        //交换两个寄存器的值
+        //
         operator_analyze_result_t operator_analyze_result1;
         memset(&operator_analyze_result1, 0, sizeof(operator_analyze_result_t));
         analyze_source_operator(&(disassemble_info->Operand1),
@@ -527,34 +527,34 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
     }
     case 2: {
       // ARITHMETIC_INSTRUCTION
-      //算术运算指令
+      //
       // cmp add sub mul div neg
-      // op1 目的 op2，op3源
-      //操作数1
+      // op1  op2，op3
+      //1
       operator_analyze_result_t operator_analyze_result1;
       memset(&operator_analyze_result1, 0, sizeof(operator_analyze_result_t));
       analyze_source_operator(&(disassemble_info->Operand1),
                               &operator_analyze_result1, register_info,
                               register_map, stack_simulation_info,
                               heap_simulation_info);
-      //操作数2
+      //2
       operator_analyze_result_t operator_analyze_result2;
       memset(&operator_analyze_result2, 0, sizeof(operator_analyze_result_t));
       analyze_source_operator(&(disassemble_info->Operand2),
                               &operator_analyze_result2, register_info,
                               register_map, stack_simulation_info,
                               heap_simulation_info);
-      //操作数3
+      //3
       operator_analyze_result_t operator_analyze_result3;
       memset(&operator_analyze_result3, 0, sizeof(operator_analyze_result_t));
       // analyze_source_operator(&(disassemble_info->Operand3),&operator_analyze_result3,
       // register_info, register_map,stack_simulation_info,
       // heap_simulation_info);
-      //操作数4
+      //4
       operator_analyze_result_t operator_analyze_result4;
       memset(&operator_analyze_result4, 0, sizeof(operator_analyze_result_t));
 
-      // cmp指令
+      // cmp
       if (disassemble_info->CompleteInstr[0] == 'c' &&
           disassemble_info->CompleteInstr[1] == 'm') {
         int length = disassemble_info->Operand1.OpSize;
@@ -570,7 +570,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
           ++index;
         }
         if ((!flag) && disassemble_info->Operand2.OpMnemonic[index] == '\n') {
-          //源操作数与目标操作数相同
+          //
           memset(&operator_analyze_result1, 0,
                  sizeof(operator_analyze_result_t));
           memset(&operator_analyze_result2, 0,
@@ -582,7 +582,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
         } else {
           rflag_unset_taine(register_map);
         }
-        //设置或取消未知标记
+        //
         if (operator_analyze_result1.unsure_flag ||
             operator_analyze_result2.unsure_flag) {
           rflag_set_unsure(register_info);
@@ -632,7 +632,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                           register_map, stack_simulation_info,
                           heap_simulation_info);
       }
-      // sub指令
+      // sub
       else if (disassemble_info->CompleteInstr[0] == 's' &&
                disassemble_info->CompleteInstr[1] == 'u') {
         int index = 0;
@@ -647,7 +647,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
           ++index;
         }
         if ((!flag) && disassemble_info->Operand2.OpMnemonic[index] == '\n') {
-          //源操作数与目标操作数相同
+          //
           memset(&operator_analyze_result1, 0,
                  sizeof(operator_analyze_result_t));
           memset(&operator_analyze_result2, 0,
@@ -662,7 +662,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                           register_map, stack_simulation_info,
                           heap_simulation_info);
       }
-      // sbb指令
+      // sbb
       else if (disassemble_info->CompleteInstr[0] == 's' &&
                disassemble_info->CompleteInstr[1] == 'b') {
         int length = disassemble_info->Operand1.OpSize;
@@ -674,7 +674,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                           register_map, stack_simulation_info,
                           heap_simulation_info);
       }
-      // dec指令
+      // dec
       else if (disassemble_info->CompleteInstr[0] == 'd' &&
                disassemble_info->CompleteInstr[1] == 'e') {
         int length = disassemble_info->Operand1.OpSize;
@@ -686,7 +686,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                           register_map, stack_simulation_info,
                           heap_simulation_info);
       }
-      // mul 单操作数
+      // mul 
       else if (disassemble_info->CompleteInstr[0] == 'm' &&
                disassemble_info->CompleteInstr[1] == 'u') {
         operator_analyze_result2.taine_flag =
@@ -697,7 +697,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
             0x1, register_info, disassemble_info->Operand1.OpSize);
         if (disassemble_info->Operand1.OpType == 0x8040000 &&
             convert_string_to_num(disassemble_info->Operand1.OpMnemonic) == 0) {
-          //乘0的情况下
+          //0
           operator_analyze_result1.taine_flag = 0;
           operator_analyze_result1.unsure_flag = 0;
           operator_analyze_result2.taine_flag = 0;
@@ -775,7 +775,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
       // imul
       else if (disassemble_info->CompleteInstr[0] == 'i' &&
                disassemble_info->CompleteInstr[1] == 'm') {
-        // todo 获取操作数的数量的方式需要修改
+        // todo 
         int op_num = 1;
         if (disassemble_info->Operand2.OpType != 0x10000) {
           ++op_num;
@@ -785,7 +785,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
         }
         int length = disassemble_info->Operand1.OpSize;
         if (op_num == 1) {
-          //操作数为1时的imul
+          //1imul
           int length = disassemble_info->Operand1.OpSize;
           operator_analyze_result2.taine_flag =
               get_register_taine_by_num(0x1, register_map);
@@ -796,7 +796,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
           if (disassemble_info->Operand1.OpType == 0x8040000 &&
               convert_string_to_num(disassemble_info->Operand1.OpMnemonic) ==
                   0) {
-            //乘0的情况下
+            //0
             operator_analyze_result1.taine_flag = 0;
             operator_analyze_result1.unsure_flag = 0;
             operator_analyze_result2.taine_flag = 0;
@@ -816,11 +816,11 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                                       length, register_info);
           }
         } else if (op_num == 2) {
-          //操作数为2时的imul
+          //2imul
           if (disassemble_info->Operand2.OpType == 0x8040000 &&
               convert_string_to_num(disassemble_info->Operand2.OpMnemonic) ==
                   0) {
-            //乘0的情况下
+            //0
             operator_analyze_result1.taine_flag = 0;
             operator_analyze_result1.unsure_flag = 0;
             operator_analyze_result2.taine_flag = 0;
@@ -834,14 +834,14 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                             register_map, stack_simulation_info,
                             heap_simulation_info);
         } else if (op_num == 3) {
-          //操作数为三时的imul
+          //imul
           analyze_source_operator(&(disassemble_info->Operand3),
                                   &operator_analyze_result3, register_info,
                                   register_map, stack_simulation_info,
                                   heap_simulation_info);
           if ((disassemble_info->Operand3.OpType == 0x8040000) &&
               (operator_analyze_result3.value == 0)) {
-            //乘0的情况下
+            //0
             operator_analyze_result2.taine_flag = 0;
             operator_analyze_result2.unsure_flag = 0;
           }
@@ -890,7 +890,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
     }
     case 3: {
       // LOGICAL_INSTRUCTION
-      //逻辑运算指令
+      //
       operator_analyze_result_t operator_analyze_result1;
       operator_analyze_result_t operator_analyze_result2;
       operator_analyze_result_t operator_analyze_result3;
@@ -899,7 +899,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                               &operator_analyze_result1, register_info,
                               register_map, stack_simulation_info,
                               heap_simulation_info);
-      //操作数2
+      //2
       memset(&operator_analyze_result2, 0, sizeof(operator_analyze_result_t));
       analyze_source_operator(&(disassemble_info->Operand2),
                               &operator_analyze_result2, register_info,
@@ -959,7 +959,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
           ++index;
         }
         if ((!flag) && disassemble_info->Operand2.OpMnemonic[index] == '\n') {
-          //源操作数与目标操作数相同
+          //
           memset(&operator_analyze_result1, 0,
                  sizeof(operator_analyze_result_t));
           memset(&operator_analyze_result2, 0,
@@ -985,7 +985,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                               &operator_analyze_result1, register_info,
                               register_map, stack_simulation_info,
                               heap_simulation_info);
-      //操作数2
+      //2
       operator_analyze_result_t operator_analyze_result2;
       memset(&operator_analyze_result2, 0, sizeof(operator_analyze_result_t));
       analyze_source_operator(&(disassemble_info->Operand2),
@@ -1111,9 +1111,9 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
       // test
       if (disassemble_info->CompleteInstr[0] == 't' &&
           disassemble_info->CompleteInstr[1] == 'e') {
-        //操作数1
+        //1
         operator_analyze_result_t operator_analyze_result1;
-        //操作数2
+        //2
         operator_analyze_result_t operator_analyze_result2;
         memset(&operator_analyze_result1, 0, sizeof(operator_analyze_result_t));
         analyze_source_operator(&(disassemble_info->Operand1),
@@ -1133,7 +1133,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
       if (disassemble_info->CompleteInstr[0] == 's' &&
           disassemble_info->CompleteInstr[1] == 'e' &&
           disassemble_info->CompleteInstr[2] == 't') {
-        //操作数1
+        //1
         operator_analyze_result_t operator_analyze_result1;
         memset(&operator_analyze_result1, 0, sizeof(operator_analyze_result_t));
         setcc_analyze(disassemble_info->Instruction.Mnemonic,
@@ -1173,7 +1173,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                    disassemble_info->Operand2.Memory.IndexRegister,
                    register_map) > 0 &&
                disassemble_info->Operand2.Memory.Scale != 0)) {
-            //设置污点
+            //
             set_register_taine_by_num(
                 disassemble_info->Operand1.Memory.IndexRegister, register_map);
           }
@@ -1184,12 +1184,12 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                    disassemble_info->Operand2.Memory.IndexRegister,
                    register_info) > 0 &&
                disassemble_info->Operand2.Memory.Scale != 0)) {
-            //值未确定的情况下
+            //
             set_register_unsure_by_num(
                 disassemble_info->Operand1.Memory.IndexRegister, register_info);
             return 0;
           } else {
-            //值确定的情况下
+            //
             uint64_t value =
                 get_register_value_by_num(
                     disassemble_info->Operand2.Memory.BaseRegister,
@@ -1212,7 +1212,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
   return -1;
 }
 
-//清理申请的内存空间
+//
 void free_simulation_info(stack_simulation_t *stack, heap_simulation_t *heap,
                           register_simulation_t *register_info) {
   if (stack->simulation_stack_info != NULL) {
@@ -1253,8 +1253,8 @@ void free_simulation_info(stack_simulation_t *stack, heap_simulation_t *heap,
   }
 }
 
-//拷贝模拟内存信息
-//需要新开一个内存区域
+//
+//
 char copy_simulation_info(stack_simulation_t *source_stack,
                           stack_simulation_t *dest_stack,
                           heap_simulation_t *source_heap,
@@ -1266,7 +1266,7 @@ char copy_simulation_info(stack_simulation_t *source_stack,
   dest_stack->simulation_stack_taines_info = NULL;
   dest_stack->simulation_stack_set_info = NULL;
   dest_stack->simulation_stack_unsure_info = NULL;
-  // 栈状态图
+  // 
   dest_stack->simulation_stack_info =
       kvmalloc(SIMULATION_STACK_SIZE, GFP_KERNEL);
   if (dest_stack->simulation_stack_info == NULL) {
@@ -1277,7 +1277,7 @@ char copy_simulation_info(stack_simulation_t *source_stack,
   memcpy(dest_stack->simulation_stack_info, source_stack->simulation_stack_info,
          SIMULATION_STACK_SIZE);
 
-  //栈数据存在位图
+  //
   dest_stack->simulation_stack_set_info =
       kvmalloc(SIMULATION_STACK_SIZE / 8, GFP_KERNEL);
   if (dest_stack->simulation_stack_set_info == NULL) {
@@ -1288,7 +1288,7 @@ char copy_simulation_info(stack_simulation_t *source_stack,
   memcpy(dest_stack->simulation_stack_set_info,
          source_stack->simulation_stack_set_info, SIMULATION_STACK_SIZE / 8);
 
-  // 栈污点位图
+  // 
   dest_stack->simulation_stack_taines_info =
       kvmalloc(SIMULATION_STACK_SIZE / 8, GFP_KERNEL);
   if (dest_stack->simulation_stack_taines_info == NULL) {
@@ -1299,7 +1299,7 @@ char copy_simulation_info(stack_simulation_t *source_stack,
   memcpy(dest_stack->simulation_stack_taines_info,
          source_stack->simulation_stack_taines_info, SIMULATION_STACK_SIZE / 8);
 
-  //栈数据未确定位图
+  //
   dest_stack->simulation_stack_unsure_info =
       kvmalloc(SIMULATION_STACK_SIZE / 8, GFP_KERNEL);
   if (dest_stack->simulation_stack_unsure_info == NULL) {
@@ -1315,7 +1315,7 @@ char copy_simulation_info(stack_simulation_t *source_stack,
   dest_heap->value = NULL;
   dest_heap->taine = NULL;
   dest_heap->unsure = NULL;
-  //堆地址存放
+  //
   dest_heap->address = kvmalloc(128 * sizeof(uint64_t), GFP_KERNEL);
   if (dest_heap->address == NULL) {
     // printk(KERN_ERR "Failed to allocate memory.....\n");
@@ -1324,7 +1324,7 @@ char copy_simulation_info(stack_simulation_t *source_stack,
   }
   memcpy(dest_heap->address, source_heap->address, 128 * sizeof(uint64_t));
 
-  //堆数据存放
+  //
   dest_heap->value = kvmalloc(128 * sizeof(uint64_t), GFP_KERNEL);
   if (dest_heap->value == NULL) {
     // printk(KERN_ERR "Failed to allocate memory.....\n");
@@ -1332,7 +1332,7 @@ char copy_simulation_info(stack_simulation_t *source_stack,
     return 0;
   }
   memcpy(dest_heap->value, source_heap->value, 128 * sizeof(uint64_t));
-  //堆污点
+  //
   dest_heap->taine = kvmalloc(128 * sizeof(char), GFP_KERNEL);
   if (dest_heap->taine == NULL) {
     // printk(KERN_ERR "Failed to allocate memory.....\n");
@@ -1382,23 +1382,23 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
                         stack_simulation_t *stack_simulation_info,
                         heap_simulation_t *heap_simulation_info) {
   // todo
-  //对反汇编出的指令进行符号执行，同时更新污点位图，遇到跳转指令则进行进一步判断，
-  //首先看跳转指令的类型，无条件跳转则直接跳转，如果跳转地址超出范围，则直接返回
-  //有条件跳转：首先看符号执行的结果是不是一个确定值，如果是确定值就直接跳转，否则看跳转方向，如果是向下跳转，则是分支，依次探索每条分支
-  //如果向上跳转则是循环，这种情况下优先不进行跳转，如果向下的分支得到没有问题的判断则进行循环，
-  //由于窗口期很短，因此实际执行的指令数量是有限的，因此每个模拟执行的探索路径的可行性指令数量也是有限的
-  //返回1存在攻击，0不存在攻击
+  //，，，
+  //，，，
+  //：，，，，，
+  //，，，
+  //，，
+  //1，0
   int index = start_index;
   int limitaition = deepth;
   while (limitaition < MAX_SYMBOLIC_EXECUTION_DEEPTH &&
          index < disassemble_info->size && index >= 0 &&
          cycle < MAX_CYCLE_EXECUTION_DEEPTH) {
-    //符号执行的具体操作
-    //跳转指令单独处理
+    //
+    //
     if ((disassemble_info->info_list[index].Instruction.Category &
          0x0000FFFF) != 6) {
-      //不是跳转指令的情况下
-      //单步执行一条指令
+      //
+      //
       char res = symbolic_execution_one_step(
           &(disassemble_info->info_list[index]), register_info, register_map,
           stack_simulation_info, heap_simulation_info);
@@ -1408,10 +1408,10 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
       ++index;
       ++limitaition;
     } else {
-      //跳转指令分情况讨论
-      //首先判断是否为最后一个指令
+      //
+      //
       if (index == disassemble_info->size - 1) {
-        //最后一个指令一定是跳转指令，此时判断是否为攻击
+        //，
 
         operator_analyze_result_t jmp_addr_analyze_result;
         analyze_source_operator(&(disassemble_info->info_list[index].Operand1),
@@ -1421,22 +1421,22 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
         if (judge_attack(
                 disassemble_info->info_list[index].Instruction.BranchType,
                 register_map, &jmp_addr_analyze_result)) {
-          //存在攻击
+          //
           return 1;
         } else {
-          //不存在攻击
+          //
           return 0;
         }
         return 0;
       } else {
-        //区分跳转指令的类型
+        //
         switch (analyze_branch_instruction(
             disassemble_info->info_list[index].Instruction.BranchType,
             register_info)) {
           case -1: {
-            //不跳转
-            //执行下一步
-            //单步执行一条指令
+            //
+            //
+            //
             ++index;
             ++limitaition;
             symbolic_execution_one_step(
@@ -1445,9 +1445,9 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
             break;
           }
           case 0: {
-            //不确定的情况下
-            //首先创建一个新的模拟环境
-            //然后递归进行符号执行
+            //
+            //
+            //
             register_simulation_t local_register_info;
 
             register_taines_map_t local_register_map;
@@ -1461,12 +1461,12 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
                     stack_simulation_info, &local_stack_simulation_info,
                     heap_simulation_info, &local_heap_simulation_info,
                     register_info, &local_register_info) == 0) {
-              //分配内存失败
+              //
               free_simulation_info(&local_stack_simulation_info,
                                    &local_heap_simulation_info, register_info);
               return 0;
             }
-            //递归调用符号执行
+            //
             // todo
             operator_analyze_result_t jmp_addr_analyze_result;
             memset(&jmp_addr_analyze_result, 0,
@@ -1487,11 +1487,11 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
             int new_index = analyze_address_to_index(
                 jmp_addr_analyze_result.value, disassemble_info);
             if (new_index < 0) {
-              //代码经过混淆
+              //
               return 0;
             }
             if (new_index > index) {
-              //分支的情况下
+              //
               if (symbolic_execution(start_addr, end_addr, new_index,
                                      limitaition + 1, cycle, disassemble_info,
                                      &local_register_info, &local_register_map,
@@ -1510,8 +1510,8 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
                 continue;
               }
             } else {
-              //循环的情况下
-              //先向下执行
+              //
+              //
               if (symbolic_execution(start_addr, end_addr, index + 1,
                                      limitaition, cycle, disassemble_info,
                                      &local_register_info, &local_register_map,
@@ -1522,7 +1522,7 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
                                      register_info);
                 return 1;
               }
-              //在向上执行
+              //
               if (symbolic_execution(
                       start_addr, end_addr, new_index, limitaition + 1,
                       cycle + 1, disassemble_info, &local_register_info,
@@ -1537,9 +1537,9 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
             return 0;
           }
           case 1: {
-            //跳转
-            //执行跳转的地址
-            //判断跳转地址的范围
+            //
+            //
+            //
             operator_analyze_result_t jmp_addr_analyze_result;
             memset(&jmp_addr_analyze_result, 0,
                    sizeof(operator_analyze_result_t));
@@ -1559,7 +1559,7 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
             int new_index = analyze_address_to_index(
                 jmp_addr_analyze_result.value, disassemble_info);
             if (new_index > 0) {
-              // 单步执行new_index位置的代码
+              // new_index
               // index = new_index+1;
               index = new_index;
               ++limitaition;
@@ -1569,12 +1569,12 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
             }
           }
           case 2: {
-            // call 跳转
-            //栈上信息是未知的因此直接return 0
+            // call 
+            //return 0
             return 0;
           }
           case 3: {
-            // ret 跳转
+            // ret 
             return 0;
           }
         }
@@ -1589,11 +1589,11 @@ char symbolic_execution_prepare(int64_t start_addr, int64_t end_addr,
                                 disassemble_code_info_t *disassemble_info,
                                 register_info_t *start_info,
                                 register_info_t *end_info) {
-  // 寄存器污点位图
+  // 
   register_taines_map_t register_map;
   (void)memset(&register_map, 0, sizeof(register_taines_map_t));
 
-  //寄存器执行状态图
+  //
   register_simulation_t register_info;
   (void)memset(&register_info, 0, sizeof(register_simulation_t));
   memcpy(&(register_info.register_info), start_info, sizeof(register_info_t));
@@ -1603,12 +1603,12 @@ char symbolic_execution_prepare(int64_t start_addr, int64_t end_addr,
     return 0;
   }
 
-  //模拟栈
+  //
   stack_simulation_t stack_simulation_info;
   heap_simulation_t heap_simulation_info;
 
   (void)memset(&stack_simulation_info, 0, sizeof(stack_simulation_t));
-  // 栈状态图
+  // 
   stack_simulation_info.simulation_stack_info =
       kvmalloc(SIMULATION_STACK_SIZE, GFP_KERNEL);
   if (stack_simulation_info.simulation_stack_info == NULL) {
@@ -1621,7 +1621,7 @@ char symbolic_execution_prepare(int64_t start_addr, int64_t end_addr,
   stack_simulation_info.rsp_offset =
       SIMULATION_STACK_SIZE / 2 - (start_info->RBP - start_info->RSP);
 
-  // 栈污点位图
+  // 
   stack_simulation_info.simulation_stack_taines_info =
       kvmalloc(SIMULATION_STACK_SIZE / 8, GFP_KERNEL);
   if (stack_simulation_info.simulation_stack_taines_info == NULL) {
@@ -1630,7 +1630,7 @@ char symbolic_execution_prepare(int64_t start_addr, int64_t end_addr,
                          &register_info);
     return 0;
   }
-  //栈上是否有值的位图
+  //
   stack_simulation_info.simulation_stack_set_info =
       kvmalloc(SIMULATION_STACK_SIZE / 8, GFP_KERNEL);
   if (stack_simulation_info.simulation_stack_set_info == NULL) {
@@ -1639,7 +1639,7 @@ char symbolic_execution_prepare(int64_t start_addr, int64_t end_addr,
                          &register_info);
     return 0;
   }
-  //栈上值是否是确定值的位图
+  //
   stack_simulation_info.simulation_stack_unsure_info =
       kvmalloc(SIMULATION_STACK_SIZE / 8, GFP_KERNEL);
   if (stack_simulation_info.simulation_stack_unsure_info == NULL) {
@@ -1649,10 +1649,10 @@ char symbolic_execution_prepare(int64_t start_addr, int64_t end_addr,
     return 0;
   }
 
-  //模拟堆
+  //
 
   (void)memset(&heap_simulation_info, 0, sizeof(heap_simulation_t));
-  //堆地址存放
+  //
   heap_simulation_info.address = kvmalloc(128 * sizeof(uint64_t), GFP_KERNEL);
   if (heap_simulation_info.address == NULL) {
     // printk(KERN_ERR "Failed to allocate memory.....\n");
@@ -1661,7 +1661,7 @@ char symbolic_execution_prepare(int64_t start_addr, int64_t end_addr,
     return 0;
   }
 
-  //堆数据存放
+  //
   heap_simulation_info.value = kvmalloc(128 * sizeof(uint64_t), GFP_KERNEL);
   if (heap_simulation_info.value == NULL) {
     // printk(KERN_ERR "Failed to allocate memory.....\n");
@@ -1669,7 +1669,7 @@ char symbolic_execution_prepare(int64_t start_addr, int64_t end_addr,
                          &register_info);
     return 0;
   }
-  //堆污点
+  //
   heap_simulation_info.taine = kvmalloc(128 * sizeof(char), GFP_KERNEL);
   if (heap_simulation_info.taine == NULL) {
     // printk(KERN_ERR "Failed to allocate memory.....\n");
@@ -1677,7 +1677,7 @@ char symbolic_execution_prepare(int64_t start_addr, int64_t end_addr,
                          &register_info);
     return 0;
   }
-  //堆数据未知标记
+  //
   heap_simulation_info.unsure = kvmalloc(128 * sizeof(char), GFP_KERNEL);
   if (heap_simulation_info.unsure == NULL) {
     // printk(KERN_ERR "Failed to allocate memory.....\n");
@@ -1780,23 +1780,23 @@ void print_diasm_info(disassemble_code_info_t *disassemble_info) {
 
 uint32_t get_start_addr_offset(char *data, uint64_t vir_addr,
                                uint64_t cache_miss_addr) {
-  // res中存放正确的开始的偏移
+  // res
   uint32_t res = 0;
-  // mem_offset存放正确的全部偏移，第几位为1代表偏移这位已经被记录过了
+  // mem_offset，1
   uint32_t mem_offset = 0;
   uint32_t i = 0;
   uint32_t len;
   DISASM infos;
   for (; i < 16; ++i) {
-    // 如果mem_offset中存在已经记录过的偏移就直接跳过
+    // mem_offset
     if ((mem_offset & (0x1 << i)) > 0) {
       continue;
     }
-    // tmp_mem_offset存放当前测试的偏移情况，如果成功就与mem_offset进行合并
+    // tmp_mem_offset，mem_offset
     uint32_t tmp_mem_offset = 0;
-    // 记录当前指令开始地址相对于data起始地址的偏移
+    // data
     uint32_t current_offset = i;
-    // 先记录初始的偏移
+    // 
     tmp_mem_offset += (0x1 << i);
     char jmp_while = 0;
     char *end_offset = data + i + 0x20;
@@ -1820,7 +1820,7 @@ uint32_t get_start_addr_offset(char *data, uint64_t vir_addr,
         case UNKNOWN_OPCODE:
           jmp_while = 1;
           break;
-        // 反汇编成功的情况下
+        // 
         default:
           infos.EIP += len;
           infos.VirtualAddr += len;
@@ -1830,24 +1830,24 @@ uint32_t get_start_addr_offset(char *data, uint64_t vir_addr,
             jmp_while = 1;
             break;
           } else if (infos.VirtualAddr == cache_miss_addr) {
-            // 找到一个正确的开始偏移
-            // 记录当前初始偏移下的全部偏移
+            // 
+            // 
             mem_offset |= tmp_mem_offset;
-            // 记录开始偏移
+            // 
             res += (0x1 << i);
             jmp_while = 1;
           }
 
           if ((mem_offset & (0x1 << current_offset)) > 0) {
-            // 找到一个正确的开始偏移
-            // 记录当前初始偏移下的全部偏移
+            // 
+            // 
             mem_offset |= tmp_mem_offset;
-            // 记录开始偏移
+            // 
             res += (0x1 << i);
             jmp_while = 1;
             break;
           }
-          // 记录当前的偏移
+          // 
           if (current_offset < 16) {
             tmp_mem_offset += 0x1 << current_offset;
           }
@@ -1859,13 +1859,13 @@ uint32_t get_start_addr_offset(char *data, uint64_t vir_addr,
   return res;
 }
 /**
- * @brief 判断branchmiss后面是否直接跟着一个ret
+ * @brief branchmissret
  *
  * @param data
  * @param cache_miss_addr
  * @param branch_miss_addr
- * @return true 是这种情况
- * @return false 不是这种情况
+ * @return true 
+ * @return false 
  */
 bool judge_ret_situation(char *data, uint64_t cache_miss_addr,
                          uint64_t branch_miss_addr) {
@@ -1913,7 +1913,7 @@ bool judge_ret_situation(char *data, uint64_t cache_miss_addr,
   return false;
 }
 /**
- * 污点分析
+ * 
  */
 char pebs_taine_analyze(struct task_struct *task,
                         unsigned long long int cache_miss_addr,
@@ -1923,10 +1923,10 @@ char pebs_taine_analyze(struct task_struct *task,
   // if (cache_miss_addr > branch_miss_addr) {
   //   return;
   // }
-  // 获取指定进程的内存描述符
+  // 
   struct mm_struct *mm = task->mm;
   char res_value = 0;
-  //获取cache miss和branch miss之间的最小值
+  //cache missbranch miss
 
   uint64_t sub_value = branch_miss_addr - cache_miss_addr;
 
@@ -1936,7 +1936,7 @@ char pebs_taine_analyze(struct task_struct *task,
     return res_value;
   }
 
-  // 计算需要映射的页数
+  // 
   unsigned long nr_pages =
       (cache_miss_addr - OVER_HEAD_SIZE - code_size - 1) / PAGE_SIZE -
       (cache_miss_addr - OVER_HEAD_SIZE) / PAGE_SIZE + 1;
@@ -1945,17 +1945,17 @@ char pebs_taine_analyze(struct task_struct *task,
     return res_value;
   }
 
-  // 分配页框指针数组, kvmalloc分配的是可重用的虚拟内存区域
+  // , kvmalloc
   struct page **pages = kvmalloc(nr_pages * PAGE_SIZE, GFP_KERNEL);
   if (pages == NULL) {
     return res_value;
   }
 
-  // 用于返回锁定标志。如果为1，表示返回的页框已经被锁定
+  // 。1，
   int *locked;
 
   int ret;
-  // 映射用户空间的地址到内核空间中
+  // 
   // printk(KERN_INFO "cahce_miss_addr=%llx, nr_pages=%lu\n", cache_miss_addr,
   //        nr_pages);
   // printk(KERN_INFO "min_addr = %llx nr_pages= %lu pages
@@ -1972,7 +1972,7 @@ char pebs_taine_analyze(struct task_struct *task,
   }
   char *data_with_information = vmalloc(code_size + PREFIX_SIZE);
   memset(data_with_information, 0, code_size + PREFIX_SIZE);
-  // 分配指定的内存区域，并清零
+  // ，
 
   if (data_with_information == NULL) {
     printk(KERN_ERR "Failed to allocate memory.....\n");
@@ -1996,9 +1996,9 @@ char pebs_taine_analyze(struct task_struct *task,
   i = 0;
   unsigned long copied = 0;
   unsigned long remain = code_size;
-  // 将分散的页框数据映射到连续的内核空间中
+  // 
   for (; i < nr_pages; i++) {
-    // 根据用户地址计算页内偏移量，因为用户空间所有的数据都是从头开始编址的，因此直接模page_size即可
+    // ，，page_size
     unsigned long offset =
         (cache_miss_addr - OVER_HEAD_SIZE + copied) % PAGE_SIZE;
     // printk(KERN_INFO "i=%d. offset=%d.\n", i, offset);
@@ -2006,7 +2006,7 @@ char pebs_taine_analyze(struct task_struct *task,
     unsigned long len = min((unsigned long)PAGE_SIZE - offset, remain);
     // printk(KERN_INFO "i=%d. len=%d.\n", i, len);
 
-    // 用于将一个页框映射到内核空间中，并返回映射后的虚拟地址
+    // ，
     void *src = kmap(pages[i]) + offset;
     void *dst = data + copied;
     // printk(KERN_INFO "src=%llx;dst=%llx;\n", (unsigned long long int *)src,
@@ -2042,7 +2042,7 @@ char pebs_taine_analyze(struct task_struct *task,
     return 0;
   }
 
-  // 将反汇编后的信息存放在disassemble_info当中
+  // disassemble_info
   if (disassemble_code(data + OVER_HEAD_SIZE,
                        code_size - OVER_FOOT_SIZE - OVER_HEAD_SIZE,
                        cache_miss_addr, disassemble_info)) {
@@ -2056,7 +2056,7 @@ char pebs_taine_analyze(struct task_struct *task,
         //   printk(KERN_INFO "-----------------------\n");
         // }
 
-        // 进行模拟符号执行同时进行污点分析
+        // 
         // if (task->comm[0] == 's') {
         //   printk(KERN_INFO "-----------------------\n");
         //   printk(KERN_INFO
@@ -2096,26 +2096,26 @@ char pebs_taine_analyze(struct task_struct *task,
         //        task->comm, cache_miss_addr, branch_miss_addr);
         // print_diasm_info(disassemble_info);
         // printk(KERN_INFO "-----------------------\n");
-        // 类型
+        // 
         data_with_information[0] = 0;
-        // 差值
+        // 
         data_with_information[1] = branch_miss_addr - cache_miss_addr;
-        // 是否是一个ret类型
+        // ret
         data_with_information[2] = 0;
-        // 保留值
+        // 
         data_with_information[3] = 0;
-        // 分析进程的pid
+        // pid
         *((UInt32 *)(data_with_information + 4)) = pid;
-        // 发生cache miss 的addr
+        // cache miss addr
         *((UInt64 *)(data_with_information + 8)) = cache_miss_addr;
-        // ret情况下ret的返回地址
+        // retret
         *((UInt64 *)(data_with_information + 16)) = 0;
-        // 进程的名字
+        // 
         memcpy(data_with_information + 24, task->comm, 16);
-        // 获取可能的开始地址偏移
+        // 
         // *((UInt32 *)(data_with_information + 40)) = get_start_addr_offset(
         //     data, cache_miss_addr - PREFIX_SIZE, cache_miss_addr);
-        // branch miss的register info
+        // branch missregister info
         // if (task->comm[0] == 's' && task->comm[1] == 'p') {
         //   printk(KERN_INFO "start_addr_offset = %d \n", *((UInt32
         //   *)(data_with_information + 40)));
@@ -2146,7 +2146,7 @@ char pebs_taine_analyze(struct task_struct *task,
       }
     }
   }
-  // 释放页框和内存
+  // 
   i = 0;
   for (; i < nr_pages; i++) {
     put_page(pages[i]);
@@ -2159,7 +2159,7 @@ char pebs_taine_analyze(struct task_struct *task,
   return res_value;
 }
 /**
- * @brief 判断一个地址属于内核态还是用户态
+ * @brief 
  *
  * @param target_pid
  * @param addr
@@ -2176,8 +2176,8 @@ Int32 judge_kernel_or_user(uint64_t addr) {
 uint64_t ret_addr[100];
 /**
  * @brief Get the data from ret object
- * 传递信息的第二个字表示获取的情况，0用户态 由用户态去获取
- * 1内核态，由内核获取， -1获取不到
+ * ，0 
+ * 1，， -1
  * @param target_pid
  * @param send_id
  * @param branch_miss_addr
@@ -2190,11 +2190,11 @@ void get_data_from_ret(UInt32 target_pid, UInt64 send_id,
       break;
     }
     if (ret_addr[i] == target_pid) {
-      //之前找过
+      //
     }
   }
-  //获取ret的返回地址
-  //用户态的情况下
+  //ret
+  //
   if (judge_kernel_or_user(branch_miss_addr)) {
     char tmp[24];
     tmp[0] = 'r';
@@ -2206,7 +2206,7 @@ void get_data_from_ret(UInt32 target_pid, UInt64 send_id,
     *((UInt64 *)(branch_miss_addr + 16)) = branch_miss_addr;
     send_msg_by_netlink(tmp, 24);
   }
-  //内核态的情况下
+  //
   else {
     if (virt_addr_valid(branch_miss_addr)) {
       char tmp[24];
@@ -2237,14 +2237,14 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
   // send_id,
   //        start_addr);
   struct pid *kpid = find_vpid((int32_t)target_pid);
-  //额外信息的大小
+  //
   const int addition_information_size = 24;
   if (kpid != NULL) {
     struct task_struct *task = pid_task(kpid, PIDTYPE_PID);
     if (task != NULL) {
       if (pid_alive(task) == 1) {
-        // 读取数据发送回去
-        // 获取指定进程的内存描述符
+        // 
+        // 
         if (task->comm[0] == 's' && task->comm[1] == 'p') {
           printk(KERN_INFO "spec begin to find spec other data\n");
         }
@@ -2252,19 +2252,19 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
         struct mm_struct *mm = task->mm;
         if (mm != NULL) {
           unsigned long code_size = OVER_FOOT_SIZE;
-          // 计算需要映射的页数
+          // 
           unsigned long nr_pages = (start_addr - code_size - 1) / PAGE_SIZE -
                                    (start_addr) / PAGE_SIZE + 1;
 
-          // 分配页框指针数组, kvmalloc分配的是可重用的虚拟内存区域
+          // , kvmalloc
           struct page **pages = kvmalloc(nr_pages * PAGE_SIZE, GFP_KERNEL);
           if (pages == NULL) {
             printk(KERN_ERR "Failed to alloc pages\n");
             return;
           }
-          // 用于返回锁定标志。如果为1，表示返回的页框已经被锁定
+          // 。1，
           int *locked;
-          // 映射用户空间的地址到内核空间中
+          // 
           // printk(KERN_INFO "nr_pages=%lu\n", nr_pages);
 
           int ret = get_user_pages_remote(mm, start_addr, nr_pages,
@@ -2288,20 +2288,20 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
             return;
           }
           char *data = data_with_information + addition_information_size;
-          //从目标进程取值
+          //
           {
             int i = 0;
             i = 0;
             unsigned long copied = 0;
             unsigned long remain = code_size;
-            // 将分散的页框数据映射到连续的内核空间中
+            // 
             for (; i < nr_pages; i++) {
-              // 根据用户地址计算页内偏移量，因为用户空间所有的数据都是从头开始编址的，因此直接模page_size即可
+              // ，，page_size
               unsigned long offset = (start_addr + copied) % PAGE_SIZE;
 
               unsigned long len =
                   min((unsigned long)PAGE_SIZE - offset, remain);
-              // 用于将一个页框映射到内核空间中，并返回映射后的虚拟地址
+              // ，
               void *src = kmap(pages[i]) + offset;
               void *dst = data + copied;
 
@@ -2343,7 +2343,7 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
   return;
 }
 // /**
-//  * @brief 返回字符串长度
+//  * @brief 
 //  *
 //  * @param num
 //  * @param num_str
@@ -2363,7 +2363,7 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //   }
 //   int front = 0;
 //   int end = len - 1;
-//   //逆序
+//   //
 //   while (front < end) {
 //     char tmp = num_str[front];
 //     num_str[front] = num_str[end];
@@ -2376,14 +2376,14 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 // }
 
 // void send_to_user_to_analyze(char *data, int size, uint64_t start_addr) {
-//   //存放用于发送给用户的信息
+//   //
 //   char *send_to_user = (char *)vmalloc(2048);
 //   if (send_to_user == NULL) {
 //     printk(KERN_ERR "connot alloc mem");
 //   }
 //   UInt32 send_to_user_offset = 0;
 
-//   //存放符号和地址的对应关系
+//   //
 //   convert_symbol_t *convert_symbol_arr =
 //       (convert_symbol_t *)vmalloc(128 * sizeof(convert_symbol_t));
 //   if (convert_symbol_arr == NULL) {
@@ -2391,7 +2391,7 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //     printk(KERN_ERR "connot alloc mem");
 //     return;
 //   }
-//   //对标签进行初始化
+//   //
 //   {
 //     Int32 i = 0;
 //     while (i < 128) {
@@ -2406,7 +2406,7 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //   }
 //   UInt32 convert_symbol_arr_offset = 0;
 
-//   //存放反汇编出的字符串以及指令地址
+//   //
 //   single_ins_str_t *single_ins_str_arr =
 //       (single_ins_str_t *)vmalloc(512 * sizeof(single_ins_str_t));
 //   if (single_ins_str_arr == NULL) {
@@ -2418,7 +2418,7 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //   memset(single_ins_str_arr, 0, 512 * sizeof(single_ins_str_t));
 //   UInt32 single_ins_str_arr_offset = 0;
 
-//   //反汇编部分
+//   //
 //   {
 //     DISASM infos;
 //     int len;
@@ -2442,14 +2442,14 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //         default:
 //           infos.EIP += len;
 //           infos.VirtualAddr += len;
-//           //对反汇编得到的信息进行处理
+//           //
 //       }
 //     };
 //   }
 
-//   //需要将single_ins_str_arr_offset得到的字符串拼接起来
+//   //single_ins_str_arr_offset
 
-//   //长度超出限制
+//   //
 //   if (send_to_user_offset + 1 > 2048) {
 //     printk(KERN_ERR "too long");
 //     vfree(send_to_user);
@@ -2458,7 +2458,7 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //     return 0;
 //   }
 
-//   //结束操作
+//   //
 //   {
 //     send_to_user[send_to_user_offset] = '\n';
 //     send_msg(send_to_user, send_to_user_offset + 1);
@@ -2469,7 +2469,7 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //   }
 // }
 // /**
-//  * @brief 复制字符串 不带'\0' 并返回复制的长度  例如abc返回3
+//  * @brief  '\0'   abc3
 //  *
 //  * @param dest
 //  * @param source
@@ -2487,7 +2487,7 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 // }
 
 // /**
-//  * @brief 用于将反汇编得到的字符串转换一下
+//  * @brief 
 //  *
 //  */
 // char tran_source_complete_str(DISASM *infos,
@@ -2495,9 +2495,9 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //                               UInt32 *single_ins_str_arr_offset,
 //                               convert_symbol_t *convert_symbol_arr,
 //                               UInt32 *convert_symbol_arr_offset) {
-//   //跳转指令的情况下
+//   //
 //   if ((infos->Instruction.Category & 0x0000ffff) == 6) {
-//     //如果是ret
+//     //ret
 //     if (infos->Instruction.BranchType == 13) {
 //       single_ins_str_arr[*single_ins_str_arr_offset].ins_addr =
 //           infos->VirtualAddr;
@@ -2505,16 +2505,16 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //           copy_string(single_ins_str_arr[*single_ins_str_arr_offset].ins_str,
 //                       infos->CompleteInstr);
 //     }
-//     //其他情况下 jcc and call
+//     // jcc and call
 //     else {
-//       //如果跳转地址是一个确定的地址 则记录跳转的目的地址
+//       // 
 //       if (infos->Operand1.OpType == 0x8040000) {
 //         UInt64 jmp_addr = convert_string_to_num(infos->Operand1.OpMnemonic);
 //         single_ins_str_arr[*single_ins_str_arr_offset].jmp_addr = jmp_addr;
 //         convert_symbol_arr[*convert_symbol_arr_offset].symbol_addr =
 //         jmp_addr;
 //       }
-//       //将跳转指令 的目的地址变为一个标签
+//       // 
 //       single_ins_str_arr[*single_ins_str_arr_offset].ins_addr =
 //           infos->VirtualAddr;
 
@@ -2529,5 +2529,5 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
 //       *convert_symbol_arr_offset = *convert_symbol_arr_offset + 1;
 //     }
 //   }
-//   //非跳转指令的情况下
+//   //
 // }

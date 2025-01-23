@@ -15,7 +15,7 @@
 
 #include "conf.h"
 /**
- * @brief 这个类必须单例，不能复制和拷贝
+ * @brief 
  *
  */
 class diasm_code_tool {
@@ -31,7 +31,7 @@ class diasm_code_tool {
   uint64_t get_start_addr() { return _insn[0].address; }
   uint64_t get_stop_addr() { return _insn[_count - 1].address; }
 
-  //临时用
+  //
   void set_err_true() { _err = true; }
 
  private:

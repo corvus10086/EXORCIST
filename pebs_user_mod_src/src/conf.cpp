@@ -178,7 +178,7 @@ std::map<x86_reg, short> reg_size_map = {
 
 bool judge_call_func_mem(uint64_t pid,uint64_t jmp_addr) {
   std::string exec_file_path;
-  // 获取可执行文件的路径
+  // 
   {
     std::stringstream path;
     char exe_path[256];
@@ -192,7 +192,7 @@ bool judge_call_func_mem(uint64_t pid,uint64_t jmp_addr) {
     // std::cout << exec_file_path << "\n";
   }
   uint64_t load_addr;
-  // 获取程序的加载地址
+  // 
   {
     std::stringstream path;
     path << "/proc/" << pid << "/maps";
@@ -201,14 +201,14 @@ bool judge_call_func_mem(uint64_t pid,uint64_t jmp_addr) {
       return false;;
     }
     std::string line;
-    // 逐行读取文件内容并输出到控制台
+    // 
     std::getline(file, line);
     file.close();
     int end = line.find('-');
     std::string addr_str = line.substr(0, end);
     load_addr = std::stoull(addr_str, 0, 16);
   }
-  // 获取程序的plt信息
+  // plt
   std::map<uint64_t, std::string> plt_info;
   {
     std::stringstream result;
@@ -220,7 +220,7 @@ bool judge_call_func_mem(uint64_t pid,uint64_t jmp_addr) {
     if (!pipe) {
       throw std::runtime_error("popen() failed!");
     }
-    // 从 pipe 中读取命令的输出
+    //  pipe 
     while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
       result << buffer.data();
     }

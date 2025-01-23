@@ -36,7 +36,7 @@ bool full_diasm_info::get_full_diasm_code(
         &thread_code_map,
     boost::mutex &thread_code_map_mutex, uint64_t thread_id,
     netlink_tool::ptr netlink_tool_ptr) {
-  // 暂停当前线程，等待获取到ret返回位置的函数再唤醒
+  // ，ret
   if (analyze_recy_data(code_info)) {
     std::cout << "need to get ret addr" << std::endl;
     // get_ret_info(thread_code_map, thread_id, netlink_tool_ptr);
@@ -45,7 +45,7 @@ bool full_diasm_info::get_full_diasm_code(
   diasm_code_tool::ptr main_code_info_ptr =
       std::make_shared<diasm_code_tool>(_is_32);
 
-  // 对数据进行反汇编
+  // 
   main_code_info_ptr->diasm_code(
       (const uint8_t *)(code_info.c_str() + PREFIX_SIZE + OVER_HEAD_SIZE),
       code_info.length() - PREFIX_SIZE - OVER_HEAD_SIZE, _cache_miss_addr);
@@ -53,13 +53,13 @@ bool full_diasm_info::get_full_diasm_code(
     return false;
   }
   _diasm_code_ptr_vector.push_back(main_code_info_ptr);
-  // 保存前缀信息,保存信息到
+  // ,
   _over_head_info =
       std::string(code_info.c_str() + PREFIX_SIZE,
                   OVER_HEAD_SIZE + _branch_miss_addr - _cache_miss_addr);
 
   int send_mess_num = 0;
-  //这里要获取jmp call 以及条件跳转的全部代码
+  //jmp call 
   if (netlink_tool_ptr != nullptr) {
     get_jmp_info(main_code_info_ptr, thread_code_map, thread_code_map_mutex,
                  thread_id, netlink_tool_ptr);
@@ -142,7 +142,7 @@ void full_diasm_info::get_jmp_info(
     boost::mutex &thread_code_map_mutex, unsigned long thread_id,
     netlink_tool::ptr netlink_tool_ptr) {
   int send_mess_num = 0;
-  // 获取代码的结束地址
+  // 
   uint64_t end_addr = -1;
   int branch_miss_index = 0;
   for (; branch_miss_index < main_code_info_ptr->get_size();
@@ -168,7 +168,7 @@ void full_diasm_info::get_jmp_info(
 
   std::vector<std::string> message_list;
 
-  // 获取跳转地址的数据
+  // 
   for (int i = 1; i < main_code_info_ptr->get_size(); ++i) {
     if (i >= 20) {
       if (_exec_file_name[0] == 's' && _exec_file_name[1] == 'p' &&
@@ -187,7 +187,7 @@ void full_diasm_info::get_jmp_info(
     if (main_code_info_ptr->get_diasm_info()[i].address == end_addr) {
       break;
     }
-    // branch_miss之前的东西不关注
+    // branch_miss
     if (main_code_info_ptr->get_diasm_info()[i].address <= _branch_miss_addr) {
       continue;
     }
@@ -199,27 +199,27 @@ void full_diasm_info::get_jmp_info(
         (main_code_info_ptr->get_diasm_info()[i].mnemonic[0] == 'j' &&
          main_code_info_ptr->get_diasm_info()[i].mnemonic[1] == 'm' &&
          main_code_info_ptr->get_diasm_info()[i].mnemonic[2] == 'p')) {
-      // 仅获取call相关的指令
-      // 需要进一步获取指令
-      // 先看地址是否在范围内
-      // 不在范围内就去获取新的二进制数据
-      // 记录发送消息的次数
+      // call
+      // 
+      // 
+      // 
+      // 
       if (main_code_info_ptr->get_diasm_info()[i]
               .detail->x86.operands[0]
               .type == X86_OP_IMM) {
         uint64_t jmp_addr =
             main_code_info_ptr->get_diasm_info()[i].detail->x86.operands[0].imm;
         if (jmp_addr > _cache_miss_addr && jmp_addr < end_addr) {
-          // 跳转地址在范围内
+          // 
           break;
         }
-        // 检测是否是一个使用动态库函数的跳转
+        // 
         // if (main_code_info_ptr->get_diasm_info()[i].mnemonic[0] == 'c' &&
         //      main_code_info_ptr->get_diasm_info()[i].mnemonic[1] == 'a' &&
         //      main_code_info_ptr->get_diasm_info()[i].mnemonic[2] == 'l' &&
         //      main_code_info_ptr->get_diasm_info()[i].mnemonic[3] == 'l') {
         //   ++send_mess_num;
-        //   // 获取可执行文件的路径
+        //   // 
         //   std::string exec_file_path;
         //   {
         //     std::stringstream path;
@@ -235,7 +235,7 @@ void full_diasm_info::get_jmp_info(
         //     exec_file_path = exe_path;
         //     // std::cout << exec_file_path << "\n";
         //   }
-        //   // 获取程序的加载地址
+        //   // 
         //   uint64_t load_addr;
         //   {
         //     std::stringstream path;
@@ -246,7 +246,7 @@ void full_diasm_info::get_jmp_info(
         //       break;
         //     }
         //     std::string line;
-        //     // 逐行读取文件内容并输出到控制台
+        //     // 
         //     std::getline(file, line);
         //     file.close();
         //     int end = line.find('-');
@@ -254,7 +254,7 @@ void full_diasm_info::get_jmp_info(
         //     load_addr = std::stoull(addr_str, 0, 16);
 
         //   }
-        //   // 获取程序的plt信息
+        //   // plt
         //   std::map<uint64_t, std::string> plt_info;
         //   {
         //     std::stringstream result;
@@ -267,7 +267,7 @@ void full_diasm_info::get_jmp_info(
         //     if (!pipe) {
         //       throw std::runtime_error("popen() failed!");
         //     }
-        //     // 从 pipe 中读取命令的输出
+        //     //  pipe 
         //     while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
         //       result << buffer.data();
         //     }
@@ -295,23 +295,23 @@ void full_diasm_info::get_jmp_info(
         //     }
         //   }
         // }
-        // 需要从其他地方获取地址
+        // 
         {
           if (_exec_file_name[0] == 's' && _exec_file_name[1] == 'p' &&
               _exec_file_name[2] == 'e') {
             std::cout << "sepc send mess to kernel\n";
           }
-          //从内核获取
-          //这里向内核发送一条消息
+          //
+          //
           ++send_mess_num;
           char message[32];
-          // 第一个字节表示类型
+          // 
           message[0] = 'g';
-          // 第二个字节表示接受数据的id
+          // id
           *((uint64_t *)(message + 8)) = thread_id;
-          // 第三的字节表示要获取数据的线程id
+          // id
           *((uint32_t *)(message + 16)) = _target_thread_pid;
-          // 第四个字节表示要获取数据的地址
+          // 
           *((uint64_t *)(message + 24)) = jmp_addr;
           message_list.push_back(std::string(message, 32));
         }
@@ -320,24 +320,24 @@ void full_diasm_info::get_jmp_info(
   }
 
   if (send_mess_num > 0) {
-    //表示需要获取数据
-    //在这里创建同步用的类
-    //这个类放在thread_code_map中，有一个唯一的id来标识
+    //
+    //
+    //thread_code_map，id
 
     {
-      // 锁住thread_code_map
+      // thread_code_map
       boost::lock_guard<boost::mutex> lock(thread_code_map_mutex);
-      // 创建一个用于接受数据的结构
+      // 
       thread_code_map[thread_id] =
           std::make_shared<async_analyze_code_tool::thread_recv_data_struct>();
-      // 设置需要接受的消息数量
+      // 
       thread_code_map[thread_id]->_num = send_mess_num;
-      // 等待数量设置好后再发送消息
+      // 
       for (auto message : message_list) {
         netlink_tool_ptr->send_message(message);
       }
     }
-    //睡眠等待接受消息的进程唤醒此进程
+    //
     {
       boost::unique_lock<boost::mutex> lock(thread_code_map[thread_id]->_mutex);
       thread_code_map[thread_id]->_condition.wait_for(
@@ -345,7 +345,7 @@ void full_diasm_info::get_jmp_info(
       lock.unlock();
     }
 
-    //对接受数据的类上一个互斥锁，防止出问题
+    //，
     {
       boost::lock_guard<boost::mutex> lock(thread_code_map_mutex);
       if (thread_code_map[thread_id]->_message.size() > 0) {
@@ -382,7 +382,7 @@ void full_diasm_info::get_jmp_info(
           }
         }
       }
-      //回收同步用的类
+      //
       thread_code_map.erase(thread_id);
     }
   }

@@ -9,7 +9,7 @@ struct mem_dev {
   char *data;
   unsigned long size;
 };
-//用于描述设备data的数据结构
+//data
 typedef struct message_struct {
   uint32_t *read_index;
   uint32_t *write_index;
@@ -20,7 +20,7 @@ typedef struct message_struct {
 static void pebs_module_exit(void);
 static int pebs_module_init(void);
 /**
- * @brief 接受数据后的回调函数
+ * @brief 
  *
  * @param skb
  */

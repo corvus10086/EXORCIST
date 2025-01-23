@@ -6,7 +6,7 @@
 class get_info_by_ptrace {
  public:
   /**
-   * @brief 构造函数
+   * @brief 
    *
    * @param pid
    * @param addr

@@ -80,27 +80,25 @@ bool judge_sign(uint64_t number, char size) {
 }
 
 /**
- * @brief 用于分析操作数的函数，将获取内存获得地址的污点传回符号 需要修改
- *
+ * @brief 
  * @param op
  * @param addr
  * @param symbol
  * @param read
  * @param control_leak_model
- * @param exec_mode 执行模式 0分析模式 ，1有初始污点的模式 ，2无初始污点的模式
- * @return char 标识 0寄存器 1立即数 2内存 3发现攻击 4无效指令
+ * @param exec_mode 
  */
 char instruction_analyze_tool::analyze_operator(
     const cs_x86_op &op, abstract_addr::ptr &addr, state_symbol::ptr &symbol,
     bool read, bool control_leak_model, char exec_mode) {
   char source_type = 0;
-  if (read) {  //源操作数
+  if (read) {  //
     switch (op.type) {
-      //无效的操作数时
+      //
       case X86_OP_INVALID: {
         return 4;
       }
-      //寄存器操作数
+      //
       case X86_OP_REG: {
         source_type = 0;
         addr = _generatr_abstract_addr_tool_ptr->get_abstract_addr(op.reg,
@@ -110,9 +108,9 @@ char instruction_analyze_tool::analyze_operator(
           std::vector<std::string> taine_vector = {};
           symbol = _state_machine_ptr->generate_symbol_for_addr(
               addr, get_symbol_str(_random, _dist), taine_vector);
-        }  // 取出一个已知的值
+        }  // 
         else {
-          // 取出的值的大小与要获取的大小不同时
+          // 
           if (symbol->get_symbol_size() < op.size && !symbol->is_num()) {
             switch (op.size) {
               case 8: {
@@ -189,28 +187,28 @@ char instruction_analyze_tool::analyze_operator(
         }
         break;
       }
-      //立即数操作数
+      //
       case X86_OP_IMM: {
         source_type = 1;
         addr = nullptr;
         symbol = std::make_shared<state_symbol>(op.imm, op.size);
         break;
       }
-      //内存操作数
+      //
       case X86_OP_MEM: {
         source_type = 2;
         addr = _generatr_abstract_addr_tool_ptr->get_abstract_addr(
             op.mem, _state_machine_ptr, op.size);
         symbol = _state_machine_ptr->get_symbol_from_addr(addr);
         taine_enum taine = addr->_taine;
-        // 表示从内存中取出一个未知的值
+        // 
         if (symbol == nullptr) {
-          // 进行污点的提升，在分析模式下不进行污点的提升
+          // 
           if (addr->_can_up_taine_lv && op.size == 1 && exec_mode != 0 &&
               taine != taine_enum::not_a_tine) {
             taine = add_taine_level(addr->_taine);
           }
-          // 仅在无初始污点的模式下生成taine1的污点
+          // 
           if (taine == taine_enum::not_a_tine && exec_mode == 2 &&
               op.size > 2) {
             taine = taine_enum::taine1;
@@ -227,9 +225,9 @@ char instruction_analyze_tool::analyze_operator(
               addr, get_symbol_str(_random, _dist), taine_vector, addr->_size);
           symbol->set_symbol_mem_effect_true();
         }
-        // 取出一个已知的值
+        // 
         else {
-          // 取出的值的大小与要获取的大小不同时
+          // 
           if (symbol->get_symbol_size() < op.size && !symbol->is_num()) {
             switch (op.size) {
               case 8: {
@@ -308,7 +306,7 @@ char instruction_analyze_tool::analyze_operator(
         break;
       }
     }
-  } else {  //目标操作数
+  } else {  //
     switch (op.type) {
       case X86_OP_INVALID: {
         return 4;
@@ -345,7 +343,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  bool is_set_init_taine) {
   switch (target_addr->get_reg()) {
     case X86_REG_RAX: {
-      // symbol为数字时
+      // 
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
         _state_machine_ptr
@@ -372,7 +370,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                    ->get_abstract_addr(X86_REG_AL, 1)] =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
       }
-      // symbol不为数字的时候
+      //
       else {
         // rax
         _state_machine_ptr
@@ -403,7 +401,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_RCX: {
-      // symbol为数字时
+      // 
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
         _state_machine_ptr
@@ -430,7 +428,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                    ->get_abstract_addr(X86_REG_CL, 1)] =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
       }
-      // symbol不为数字的时候
+      // 
       else {
         // rax
         _state_machine_ptr
@@ -464,7 +462,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_RDX: {
-      // symbol为数字时
+      // 
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
         _state_machine_ptr
@@ -490,7 +488,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                    ->get_abstract_addr(X86_REG_DL, 1)] =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
       }
-      // symbol不为数字的时候
+      // 
       else {
         // rax
         _state_machine_ptr
@@ -524,7 +522,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_RBX: {
-      // symbol为数字时
+      //
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
         _state_machine_ptr
@@ -550,7 +548,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                    ->get_abstract_addr(X86_REG_BL, 1)] =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
       }
-      // symbol不为数字的时候
+      // 
       else {
         // rax
         _state_machine_ptr
@@ -1102,7 +1100,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_EAX: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RAX,
@@ -1117,8 +1115,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -1129,11 +1127,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号
+          // 
           std::vector<std::string> new_taine_vector = {};
-          // // 原rax没有被覆盖
+          // // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -1154,20 +1152,20 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_16_symbol = symbol_16_size;
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_RAX, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -1187,9 +1185,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str = symbol->get_taine_str();
         // if (size_8_symbol->_size_64_symbol == nullptr) {
         //   new_size_8_taine_str.insert(
@@ -1205,7 +1203,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -1257,7 +1255,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_ECX: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RCX,
@@ -1272,8 +1270,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -1284,11 +1282,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector = {};
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -1309,20 +1307,20 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_16_symbol = symbol_16_size;
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_RCX, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -1342,9 +1340,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -1361,7 +1359,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -1412,7 +1410,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_EDX: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RDX,
@@ -1427,8 +1425,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -1439,11 +1437,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector = {};
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -1464,20 +1462,20 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_16_symbol = symbol_16_size;
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_RDX, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -1497,9 +1495,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -1516,7 +1514,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -1567,7 +1565,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_EBX: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RBX,
@@ -1582,8 +1580,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -1594,11 +1592,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector = {};
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -1619,20 +1617,20 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_16_symbol = symbol_16_size;
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_RBX, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -1652,9 +1650,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -1671,7 +1669,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -1723,7 +1721,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_ESI: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RSI,
@@ -1738,8 +1736,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -1750,11 +1748,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector = {};
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -1775,20 +1773,20 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_16_symbol = symbol_16_size;
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_RSI, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -1804,9 +1802,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -1823,7 +1821,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -1870,7 +1868,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_EDI: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RDI,
@@ -1885,8 +1883,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -1897,11 +1895,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector = {};
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -1921,20 +1919,20 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_16_symbol = symbol_16_size;
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_RDI, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -1950,9 +1948,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -1969,7 +1967,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -2014,7 +2012,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_EBP: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RBP,
@@ -2029,8 +2027,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -2041,11 +2039,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector = {};
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -2066,20 +2064,20 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_16_symbol = symbol_16_size;
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_RBP, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -2095,9 +2093,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -2114,7 +2112,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -2159,7 +2157,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_ESP: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RSP,
@@ -2174,8 +2172,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -2186,11 +2184,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector = {};
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -2211,7 +2209,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_32_symbol->set_symbol_size(4);
@@ -2219,13 +2217,13 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_RSP, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -2241,9 +2239,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -2260,7 +2258,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -2305,7 +2303,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R8D: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R8,
@@ -2320,8 +2318,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -2332,11 +2330,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -2357,20 +2355,20 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_16_symbol = symbol_16_size;
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_R8, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -2386,9 +2384,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -2405,7 +2403,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -2450,7 +2448,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R9D: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R9,
@@ -2465,8 +2463,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -2477,11 +2475,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -2502,7 +2500,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_32_symbol->set_symbol_size(4);
@@ -2510,13 +2508,13 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_R9, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -2532,9 +2530,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -2551,7 +2549,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -2596,7 +2594,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R10D: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R10,
@@ -2611,8 +2609,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -2623,11 +2621,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -2648,7 +2646,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_32_symbol->set_symbol_size(4);
@@ -2656,13 +2654,13 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_R10, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -2678,9 +2676,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -2697,7 +2695,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -2742,7 +2740,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R11D: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R11,
@@ -2757,8 +2755,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -2769,11 +2767,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -2794,7 +2792,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_32_symbol->set_symbol_size(4);
@@ -2802,13 +2800,13 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_R11, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -2824,9 +2822,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -2843,7 +2841,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -2888,7 +2886,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R12D: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R12,
@@ -2903,8 +2901,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -2915,11 +2913,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -2940,7 +2938,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_32_symbol->set_symbol_size(4);
@@ -2948,13 +2946,13 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_R12, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -2970,9 +2968,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -2989,7 +2987,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -3034,7 +3032,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R13D: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R13,
@@ -3049,8 +3047,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -3061,11 +3059,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -3086,7 +3084,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_32_symbol->set_symbol_size(4);
@@ -3094,13 +3092,13 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_R13, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -3116,9 +3114,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -3135,7 +3133,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -3180,7 +3178,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R14D: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R14,
@@ -3195,8 +3193,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -3207,11 +3205,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -3232,7 +3230,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_32_symbol->set_symbol_size(4);
@@ -3240,13 +3238,13 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_R14, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -3262,9 +3260,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -3281,7 +3279,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -3326,7 +3324,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R15D: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R15,
@@ -3341,8 +3339,8 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
 
-        // 设置rax寄存器
-        // rax是数字的时候
+        // rax
+        // rax
         if (size_8_symbol->is_num()) {
           uint64_t size_8_num = size_8_symbol->to_int();
           _state_machine_ptr
@@ -3353,11 +3351,11 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x00000000ffffffffLL),
                   8);
         }
-        // symbol是数字 rax不是数字
+        // symbol rax
         else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -3378,20 +3376,20 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           //   new_size_8_symbol->_size_64_symbol =
           //   size_8_symbol->_size_64_symbol;
           // }
-          // 设置
+          // 
           {
             new_size_8_symbol->_size_32_symbol = symbol;
             new_size_8_symbol->_size_16_symbol = symbol_16_size;
             new_size_8_symbol->_size_xh_symbol = symbol_xh_size;
             new_size_8_symbol->_size_xl_symbol = symbol_xl_size;
           }
-          // 设置rax
+          // rax
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
                                      ->get_abstract_addr(X86_REG_R15, 8)] =
               new_size_8_symbol;
         }
-        // 设置eax ax ah al寄存器
+        // eax ax ah al
         {
           _state_machine_ptr
               ->_addr_symbol_map[_generatr_abstract_addr_tool_ptr
@@ -3407,9 +3405,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
               symbol_xl_size;
         }
       } else {
-        // rax不确定但symbol为符号的时候
+        // raxsymbol
         std::shared_ptr<state_symbol> tmp_symbol;
-        // 生成新符号的污点信息
+        // 
         std::vector<std::string> new_size_8_taine_str =
             symbol->_taine_effect_vector;
         // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -3426,7 +3424,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         distinct_taine_str(new_size_8_taine_str);
         tmp_symbol = std::make_shared<state_symbol>(
             get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-        // 重建新符号的各可拆分寄存器
+        // 
         {
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   tmp_symbol->_size_64_symbol = size_8_symbol;
@@ -3471,7 +3469,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_AX: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RAX,
@@ -3487,7 +3485,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -3499,7 +3497,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -3541,9 +3539,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -3593,7 +3591,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -3641,7 +3639,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
         // rax
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -3658,7 +3656,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -3701,7 +3699,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_CX: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RCX,
@@ -3717,7 +3715,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -3729,7 +3727,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -3771,9 +3769,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -3823,7 +3821,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -3871,7 +3869,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
         // rax
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -3888,7 +3886,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -3931,7 +3929,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_DX: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RDX,
@@ -3947,7 +3945,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -3959,7 +3957,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -4001,9 +3999,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -4053,7 +4051,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -4101,7 +4099,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -4118,7 +4116,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -4161,7 +4159,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_BX: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RBX,
@@ -4177,7 +4175,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -4189,7 +4187,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -4231,9 +4229,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -4282,7 +4280,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -4330,7 +4328,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -4347,7 +4345,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -4390,7 +4388,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_SI: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RSI,
@@ -4406,7 +4404,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -4418,7 +4416,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -4460,9 +4458,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -4507,7 +4505,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -4555,7 +4553,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -4572,7 +4570,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -4611,7 +4609,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_DI: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RDI,
@@ -4627,7 +4625,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -4639,7 +4637,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -4681,9 +4679,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -4728,7 +4726,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -4776,7 +4774,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -4793,7 +4791,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -4832,7 +4830,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_SP: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RSP,
@@ -4848,7 +4846,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -4860,7 +4858,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -4902,9 +4900,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -4950,7 +4948,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -4998,7 +4996,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -5015,7 +5013,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -5054,7 +5052,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_BP: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RBP,
@@ -5070,7 +5068,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -5082,7 +5080,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -5124,9 +5122,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -5171,7 +5169,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -5219,7 +5217,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -5236,7 +5234,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -5275,7 +5273,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R8W: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R8,
@@ -5291,7 +5289,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -5303,7 +5301,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -5345,9 +5343,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -5393,7 +5391,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -5441,7 +5439,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -5458,7 +5456,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -5498,7 +5496,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R9W: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R9,
@@ -5514,7 +5512,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -5526,7 +5524,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -5568,9 +5566,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -5615,7 +5613,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -5663,7 +5661,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -5680,7 +5678,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -5720,7 +5718,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R10W: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R10,
@@ -5736,7 +5734,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -5748,7 +5746,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -5790,9 +5788,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -5838,7 +5836,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -5886,7 +5884,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -5903,7 +5901,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -5943,7 +5941,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R11W: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R11,
@@ -5959,7 +5957,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -5971,7 +5969,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -6013,9 +6011,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -6061,7 +6059,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -6109,7 +6107,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -6126,7 +6124,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -6166,7 +6164,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R12W: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R12,
@@ -6182,7 +6180,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -6194,7 +6192,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -6236,9 +6234,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -6284,7 +6282,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -6332,7 +6330,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -6349,7 +6347,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -6389,7 +6387,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R13W: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R13,
@@ -6405,7 +6403,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -6417,7 +6415,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -6459,9 +6457,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -6507,7 +6505,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -6555,7 +6553,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -6572,7 +6570,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -6612,7 +6610,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R14W: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R14,
@@ -6628,7 +6626,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -6640,7 +6638,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -6682,9 +6680,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -6730,7 +6728,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -6778,7 +6776,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -6795,7 +6793,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -6835,7 +6833,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R15W: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R15,
@@ -6851,7 +6849,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                            1);
         std::shared_ptr<state_symbol> symbol_xl_size =
             std::make_shared<state_symbol>(num & 0x00000000000000ffLL, 1);
-        //设置相关寄存器
+        //
         state_symbol::ptr new_size_4_symbol;
         if (size_4_symbol->is_num()) {
           uint64_t size_4_num = size_4_symbol->to_int();
@@ -6863,7 +6861,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax是一个符号，symbol是数字
+        // eax，symbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -6905,9 +6903,9 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                  (num & 0x000000000000ffffLL),
                                              8);
         } else {
-          // 使用原本的污点信息新建一个符号,
+          // ,
           std::vector<std::string> new_taine_vector;
-          // 原rax没有被覆盖
+          // rax
           // if (size_8_symbol->_size_64_symbol == nullptr) {
           //   new_taine_vector.insert(new_taine_vector.end(),
           //                           size_8_symbol->get_taine_str().begin(),
@@ -6953,7 +6951,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
       } else {
-        // 先生成eax
+        // eax
         std::shared_ptr<state_symbol> new_size_4_symbol;
         std::shared_ptr<state_symbol> new_size_8_symbol;
         {
@@ -7001,7 +6999,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         }
 
         {
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           // if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -7018,7 +7016,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             // if (size_8_symbol->_size_64_symbol == nullptr) {
             //   new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -7058,7 +7056,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_AH: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RAX,
@@ -7073,7 +7071,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -7189,7 +7187,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -7285,7 +7283,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -7302,7 +7300,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -7331,7 +7329,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_CH: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RCX,
@@ -7346,7 +7344,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -7462,7 +7460,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -7558,7 +7556,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -7575,7 +7573,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -7604,7 +7602,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_DH: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RDX,
@@ -7619,7 +7617,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -7735,7 +7733,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -7831,7 +7829,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -7848,7 +7846,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -7877,7 +7875,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_BH: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RBX,
@@ -7892,7 +7890,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -8008,7 +8006,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -8104,7 +8102,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -8121,7 +8119,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -8150,7 +8148,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_AL: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RAX,
@@ -8165,7 +8163,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -8280,7 +8278,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -8388,7 +8386,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -8405,7 +8403,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -8440,7 +8438,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_CL: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RCX,
@@ -8455,7 +8453,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -8569,7 +8567,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -8676,7 +8674,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -8693,7 +8691,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -8728,7 +8726,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_DL: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RDX,
@@ -8743,7 +8741,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -8859,7 +8857,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -8967,7 +8965,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -8984,7 +8982,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -9019,7 +9017,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_BL: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RBX,
@@ -9034,7 +9032,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -9150,7 +9148,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -9258,7 +9256,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -9275,7 +9273,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -9310,7 +9308,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_SIL: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RSI,
@@ -9325,7 +9323,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -9441,7 +9439,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -9550,7 +9548,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -9567,7 +9565,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -9603,7 +9601,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_DIL: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RDI,
@@ -9618,7 +9616,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -9734,7 +9732,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -9843,7 +9841,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -9860,7 +9858,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -9896,7 +9894,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_SPL: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RSP,
@@ -9911,7 +9909,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -10027,7 +10025,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -10136,7 +10134,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -10153,7 +10151,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -10189,7 +10187,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_BPL: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RBP,
@@ -10204,7 +10202,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -10320,7 +10318,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -10429,7 +10427,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -10446,7 +10444,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -10482,7 +10480,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R8B: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R8,
@@ -10497,7 +10495,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -10613,7 +10611,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -10722,7 +10720,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -10739,7 +10737,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -10775,7 +10773,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R9B: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R9,
@@ -10790,7 +10788,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -10906,7 +10904,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -11015,7 +11013,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -11032,7 +11030,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -11068,7 +11066,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R10B: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R10,
@@ -11083,7 +11081,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -11199,7 +11197,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -11308,7 +11306,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -11325,7 +11323,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -11361,7 +11359,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R11B: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R11,
@@ -11376,7 +11374,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -11491,7 +11489,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -11600,7 +11598,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -11617,7 +11615,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -11653,7 +11651,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R12B: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R12,
@@ -11668,7 +11666,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -11784,7 +11782,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -11893,7 +11891,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -11910,7 +11908,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -11946,7 +11944,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R13B: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R13,
@@ -11961,7 +11959,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -12077,7 +12075,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -12186,7 +12184,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -12203,7 +12201,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -12239,7 +12237,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R14B: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R14,
@@ -12254,7 +12252,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -12370,7 +12368,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -12479,7 +12477,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -12496,7 +12494,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -12532,7 +12530,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
       break;
     }
     case X86_REG_R15B: {
-      //获取源rax的符号
+      //rax
       state_symbol::ptr size_8_symbol =
           _state_machine_ptr->get_symbol_from_addr(
               _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R15,
@@ -12547,7 +12545,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                                                                   2));
       if (symbol->is_num()) {
         uint64_t num = symbol->to_int();
-        // 设置相关寄存器
+        // 
         // ax
         state_symbol::ptr new_size_4_symbol;
         state_symbol::ptr new_size_2_symbol;
@@ -12662,7 +12660,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           } else {
             new_size_8_symbol->_size_64_symbol = size_8_symbol->_size_64_symbol;
           }
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             new_size_8_symbol->_size_32_symbol = new_size_4_symbol;
             new_size_8_symbol->_size_16_symbol = new_size_2_symbol;
@@ -12771,7 +12769,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
         // rax
         {
           state_symbol::ptr new_size_8_symbol;
-          // 生成新符号的污点信息
+          // 
           std::vector<std::string> new_size_8_taine_str =
               symbol->_taine_effect_vector;
           if (size_8_symbol->_size_64_symbol == nullptr) {
@@ -12788,7 +12786,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
           distinct_taine_str(new_size_8_taine_str);
           new_size_8_symbol = std::make_shared<state_symbol>(
               get_symbol_str(_random, _dist), 8, new_size_8_taine_str);
-          // 重建新符号的各可拆分寄存器
+          // 
           {
             if (size_8_symbol->_size_64_symbol == nullptr) {
               new_size_8_symbol->_size_64_symbol = size_8_symbol;
@@ -12836,11 +12834,11 @@ instruction_analyze_tool::analyze_instruction(
     char exec_mode, bool is_cmp_location, bool is_cache_miss_location,
     std::map<abstract_addr::ptr, state_symbol::ptr> &analyze_addr_taine_map,
     bool is_32) {
-  // lock前缀
+  // lock
   if (insn.detail->x86.prefix[0] == X86_PREFIX_LOCK) {
     return std::make_pair(-1, analyze_result::NO_ATTACT);
   }
-  //提前获取flag的地址
+  //flag
   abstract_flags::ptr cf, zf, sf, of, pf, af, df;
   {
     cf = _generatr_abstract_addr_tool_ptr->get_abstract_flag(rflags::cf);
@@ -12852,7 +12850,7 @@ instruction_analyze_tool::analyze_instruction(
     df = _generatr_abstract_addr_tool_ptr->get_abstract_flag(rflags::df);
   }
 
-  //更新rip寄存器
+  //rip
   u_int64_t rip;
   {
     rip = insn.address;
@@ -12871,7 +12869,7 @@ instruction_analyze_tool::analyze_instruction(
   instruction_type::type type = instruction_type::type_str_map.at(key);
   switch (type) {
     case instruction_type::type::movs: {
-      //分析源操作数
+      //
       return std::make_pair(-1, analyze_result::UNSUPPORT_INSTRUCTION);
       break;
     }
@@ -12884,22 +12882,22 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::mov: {
-      //分析源操作数
-      //源操作数的抽象地址
+      //
+      //
       abstract_addr::ptr source_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr source_symbol = nullptr;
       char source_type =
           analyze_operator(insn.detail->x86.operands[1], source_addr,
                            source_symbol, true, control_leak_state, exec_mode);
-      //对取得的结果进行处理
+      //
       if (source_type == 3) {
         return std::make_pair(-1, analyze_result::FIND_ATTACK);
       } else if (source_type == 4) {
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
 
-      //分析目标操作数
+      //
       abstract_addr::ptr target_addr = nullptr;
       state_symbol::ptr target_symbol = nullptr;
       char target_type =
@@ -12910,19 +12908,19 @@ instruction_analyze_tool::analyze_instruction(
       } else if (target_type == 4) {
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
-      // cache miss 的情况下记录cache miss产生的污点符号
+      // cache miss cache miss
       if (exec_mode == 0 && is_cache_miss_location) {
         _state_machine_ptr->_cache_miss_symbol_vector.push_back(source_symbol);
       }
-      //设置目标操作数的符号
+      //
       set_target_symbol(target_addr, source_symbol);
       break;
     }
     case instruction_type::type::movsxd: {
-      //分析源操作数
-      //源操作数的抽象地址
+      //
+      //
       abstract_addr::ptr source_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr source_symbol = nullptr;
       uint64_t source_num;
       char source_type =
@@ -12942,14 +12940,14 @@ instruction_analyze_tool::analyze_instruction(
         }
         source_symbol = std::make_shared<state_symbol>(source_num, 8);
       }
-      // 源操作数是一个符号
+      // 
       else {
         state_symbol::ptr old_source_symbol = source_symbol;
         source_symbol = std::make_shared<state_symbol>(old_source_symbol);
         source_symbol->set_symbol_size(8);
         source_symbol->_size_32_symbol = old_source_symbol;
       }
-      //分析目标操作数
+      //
       abstract_addr::ptr target_addr = nullptr;
       state_symbol::ptr target_symbol = nullptr;
       char target_type =
@@ -12960,19 +12958,19 @@ instruction_analyze_tool::analyze_instruction(
       } else if (target_type == 4) {
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         _state_machine_ptr->_cache_miss_symbol_vector.push_back(source_symbol);
       }
-      //设置目标操作数的符号
+      //
       set_target_symbol(target_addr, source_symbol);
       break;
     }
     case instruction_type::type::movzx: {
-      //分析源操作数
-      //源操作数的抽象地址
+      //
+      //
       abstract_addr::ptr source_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr source_symbol = nullptr;
       char source_type =
           analyze_operator(insn.detail->x86.operands[1], source_addr,
@@ -12983,14 +12981,14 @@ instruction_analyze_tool::analyze_instruction(
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
 
-      //分析目标操作数
+      //
       abstract_addr::ptr target_addr = nullptr;
       state_symbol::ptr target_symbol = nullptr;
       char target_type =
           analyze_operator(insn.detail->x86.operands[0], target_addr,
                            target_symbol, false, control_leak_state, exec_mode);
       if (!source_symbol->is_num()) {
-        // 目标操作数的大小
+        // 
         switch (insn.detail->x86.operands[0].size) {
           case 8: {
             // 32 >> 64
@@ -13016,7 +13014,7 @@ instruction_analyze_tool::analyze_instruction(
             // 8 >> 64
             else if (source_symbol->get_symbol_size() == 1) {
               state_symbol::ptr old_source_symbol = source_symbol;
-              // 新的符号
+              // 
               source_symbol = std::make_shared<state_symbol>(old_source_symbol);
               source_symbol->set_symbol_size(8);
               // xl xh
@@ -13052,7 +13050,7 @@ instruction_analyze_tool::analyze_instruction(
               source_symbol->_size_16_symbol = old_source_symbol;
             } else if (source_symbol->get_symbol_size() == 1) {
               state_symbol::ptr old_source_symbol = source_symbol;
-              // 新的符号
+              // 
               source_symbol = std::make_shared<state_symbol>(old_source_symbol);
               source_symbol->set_symbol_size(4);
               // xl xh
@@ -13086,19 +13084,19 @@ instruction_analyze_tool::analyze_instruction(
       } else if (target_type == 4) {
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         _state_machine_ptr->_cache_miss_symbol_vector.push_back(source_symbol);
       }
-      //设置目标操作数的符号
+      //
       set_target_symbol(target_addr, source_symbol);
       break;
     }
     case instruction_type::type::movzbl: {
-      //分析源操作数
-      //源操作数的抽象地址
+      //
+      //
       abstract_addr::ptr source_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr source_symbol = nullptr;
       char source_type =
           analyze_operator(insn.detail->x86.operands[1], source_addr,
@@ -13109,7 +13107,7 @@ instruction_analyze_tool::analyze_instruction(
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
 
-      //分析目标操作数
+      //
       abstract_addr::ptr target_addr = nullptr;
       state_symbol::ptr target_symbol = nullptr;
       char target_type =
@@ -13121,11 +13119,11 @@ instruction_analyze_tool::analyze_instruction(
       } else if (target_type == 4) {
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
-      //设置目标操作数的符号
+      //
       {
         if (!source_symbol->is_num()) {
           state_symbol::ptr old_source_symbol = source_symbol;
-          // 新的符号
+          // 
           source_symbol = std::make_shared<state_symbol>(old_source_symbol);
 
           // xl xh
@@ -13142,7 +13140,7 @@ instruction_analyze_tool::analyze_instruction(
         }
       }
       source_symbol->set_symbol_size(4);
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         _state_machine_ptr->_cache_miss_symbol_vector.push_back(source_symbol);
       }
@@ -13152,14 +13150,14 @@ instruction_analyze_tool::analyze_instruction(
     case instruction_type::type::aaa: {
       return std::make_pair(-1, analyze_result::UNSUPPORT_INSTRUCTION);
       {
-        // //调整al和ah的值均属于RAX
-        // 因此不需要更改RAX的内容，仅需要修改标志寄存器 abstract_addr::ptr
+        // //alahRAX
+        // RAX， abstract_addr::ptr
         // source_addr; state_symbol::ptr source_symbol; cs_x86_op source =
         // cs_x86_op(); source.type = X86_OP_REG; source.reg = X86_REG_RAX;
         // analyze_operator(insn.detail->x86.operands[0], source_addr,
         // source_symbol,
         //                  true,exec_mode);
-        // //是一个数字的情况下
+        // //
         // if (source_symbol->is_num()) {
         //   uint64_t value = source_symbol->to_int();
         //   unsigned int tmp = value & 0xffLL;
@@ -13189,7 +13187,7 @@ instruction_analyze_tool::analyze_instruction(
         //   _state_machine_ptr->_addr_symbol_map[source_addr] =
         //       std::make_shared<state_symbol>(value, 64);
         // }
-        // //非数字的情况下
+        // //
         // else {
         //   abstract_flags::ptr cf =
         //       _generatr_abstract_addr_tool_ptr->get_abstract_flag(rflags::cf);
@@ -13254,7 +13252,7 @@ instruction_analyze_tool::analyze_instruction(
           source_symbol->op_add(target_symbol).op_add(cf_symbol));
 
       res_symbol->set_symbol_size(insn.detail->x86.operands[0].size);
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         _state_machine_ptr->_cache_miss_symbol_vector.push_back(res_symbol);
         if (source_type == 2) {
@@ -13263,7 +13261,7 @@ instruction_analyze_tool::analyze_instruction(
         }
       }
       set_target_symbol(target_addr, res_symbol);
-      //运算过程中设置标志位暂时可能没有必要
+      //
       {
           // _state_machine_ptr->_flag_symbol_map[cf] =
           //     std::make_shared<state_symbol>("unsure" +
@@ -13289,11 +13287,11 @@ instruction_analyze_tool::analyze_instruction(
           //     std::make_shared<state_symbol>("unsure" +
           //     std::to_string(_random()),
           //                                    1);
-      }  //设置标志位
+      }  //
       {
         // if (res_symbol->is_num()) {
         //   uint64_t res_number = res_symbol->to_int();
-        //   //具体运算设置标志位zf sf pf
+        //   //zf sf pf
         //   {
         //     switch (insn.detail->x86.operands[0].size) {
         //       case 64: {
@@ -13334,7 +13332,7 @@ instruction_analyze_tool::analyze_instruction(
         //       }
         //     }
         //   }
-        //   //设置标志位 of cf 以及设置 8 位运算情况下的标志位
+        //   // of cf  8 
         //   if (target_symbol->is_num() && source_symbol->is_num()) {
         //     uint64_t target_number = target_symbol->to_int();
         //     uint64_t source_number = source_symbol->to_int();
@@ -13359,7 +13357,7 @@ instruction_analyze_tool::analyze_instruction(
         //                     ? 1
         //                     : 0,
         //                 1);
-        //         // source 与 target 同号的情况才有可能溢出，溢出的情况下
+        //         // source  target ，
         //         if (!(judge_sign(source_number, 64) ^
         //               judge_sign(target_number, 64)) &&
         //             (judge_sign(source_number, 64) ^
@@ -13410,7 +13408,7 @@ instruction_analyze_tool::analyze_instruction(
         //         }
         //       }
         //       case 8: {
-        //         //重新生成
+        //         //
         //         {
         //           if (target_type == 0) {
         //             if (judge_xh(insn.detail->x86.operands[0].reg)) {
@@ -13457,9 +13455,9 @@ instruction_analyze_tool::analyze_instruction(
         //       }
         //     }
         //   }
-        //   // 运算的双方不能转为int时
+        //   // int
         //   else {
-        //     //不为8 设置 of cf af 未知
+        //     //8  of cf af 
         //     if (insn.detail->x86.operands[0].size != 8) {
         //       _state_machine_ptr->_flag_symbol_map[cf] =
         //           std::make_shared<state_symbol>(
@@ -13473,7 +13471,7 @@ instruction_analyze_tool::analyze_instruction(
         //           std::make_shared<state_symbol>(
         //               "unsure" + std::to_string(_random()), 1);
         //     }
-        //     //为8 全部设为未知
+        //     //8 
         //     else {
         //       _state_machine_ptr->_flag_symbol_map[cf] =
         //           std::make_shared<state_symbol>(
@@ -13547,9 +13545,9 @@ instruction_analyze_tool::analyze_instruction(
       state_symbol::ptr res_symbol =
           std::make_shared<state_symbol>(source_symbol->op_add(target_symbol));
 
-      //只有一个数组访问才能够提升污点等级
-      //数组访问需要一个基地址和一个偏移，也就是说明两个操作数之间必然有一个内存取值
-      //一个足够大的数字也可以作为基地址
+      //
+      //，
+      //
       if (!source_symbol->judge_taine_same(target_symbol) &&
           source_symbol->get_symbol_mem_effect() &&
           target_symbol->get_symbol_mem_effect()) {
@@ -13566,7 +13564,7 @@ instruction_analyze_tool::analyze_instruction(
                        source_symbol->get_symbol_mem_effect())) {
         res_symbol->set_can_up_taine_lv_true();
       }
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         _state_machine_ptr->_cache_miss_symbol_vector.push_back(res_symbol);
         if (source_type == 2) {
@@ -13577,7 +13575,7 @@ instruction_analyze_tool::analyze_instruction(
 
       set_target_symbol(target_addr, res_symbol);
 
-      //运算过程中设置标准位暂时可能没有必要
+      //
       {
           // _state_machine_ptr->_flag_symbol_map[cf] =
           //     std::make_shared<state_symbol>("unsure" +
@@ -13603,11 +13601,11 @@ instruction_analyze_tool::analyze_instruction(
           //     std::make_shared<state_symbol>("unsure" +
           //     std::to_string(_random()),
           //                                    1);
-      }  //设置标志位
+      }  //
       {
         if (res_symbol->is_num()) {
           uint64_t res_number = res_symbol->to_int();
-          //具体运算设置标志位zf sf pf
+          //zf sf pf
           {
             switch (insn.detail->x86.operands[0].size) {
               case 8: {
@@ -13646,7 +13644,7 @@ instruction_analyze_tool::analyze_instruction(
               }
             }
           }
-          //设置标志位 of cf 以及设置 8 位运算情况下的标志位
+          // of cf  8 
           if (target_symbol->is_num() && source_symbol->is_num()) {
             uint64_t target_number = target_symbol->to_int();
             uint64_t source_number = source_symbol->to_int();
@@ -13658,7 +13656,7 @@ instruction_analyze_tool::analyze_instruction(
                             ? 1
                             : 0,
                         1);
-                // source 与 target 同号的情况才有可能溢出，溢出的情况下
+                // source  target ，
                 if (!(judge_sign(source_number, 8) ^
                       judge_sign(target_number, 8)) &&
                     (judge_sign(source_number, 8) ^
@@ -13708,7 +13706,7 @@ instruction_analyze_tool::analyze_instruction(
                 }
               }
               case 1: {
-                //重新生成
+                //
                 {
                   target_number &= 0xffLL;
                   source_number &= 0xffLL;
@@ -13738,9 +13736,9 @@ instruction_analyze_tool::analyze_instruction(
               }
             }
           }
-          // 运算的双方不能转为int时
+          // int
           else {
-            //不为8 设置 of cf af 未知
+            //8  of cf af 
             if (insn.detail->x86.operands[0].size != 8) {
               _state_machine_ptr->_flag_symbol_map[cf] =
                   std::make_shared<state_symbol>(
@@ -13754,7 +13752,7 @@ instruction_analyze_tool::analyze_instruction(
                   std::make_shared<state_symbol>(
                       "unsure" + std::to_string(_random()), 1);
             }
-            //为8 全部设为未知
+            //8 
             else {
               _state_machine_ptr->_flag_symbol_map[cf] =
                   std::make_shared<state_symbol>(
@@ -13839,7 +13837,7 @@ instruction_analyze_tool::analyze_instruction(
 
       res_symbol->set_symbol_size(insn.detail->x86.operands[0].size);
 
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         _state_machine_ptr->_cache_miss_symbol_vector.push_back(res_symbol);
         if (source_type == 2) {
@@ -13853,23 +13851,23 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::clc: {
-      // cf清0
+      // cf0
       _state_machine_ptr->_flag_symbol_map[cf] =
           std::make_shared<state_symbol>(0, 1);
       break;
     }
     case instruction_type::type::cld: {
-      // df清0
+      // df0
       _state_machine_ptr->_flag_symbol_map[df] =
           std::make_shared<state_symbol>(0, 1);
       break;
     }
     case instruction_type::type::cli: {
-      //禁止硬中断，跳过
+      //，
       break;
     }
     case instruction_type::type::cmc: {
-      // cf标志取反
+      // cf
       abstract_flags::ptr cf =
           _generatr_abstract_addr_tool_ptr->get_abstract_flag(rflags::cf);
       state_symbol::ptr cf_symbol = _state_machine_ptr->_flag_symbol_map[cf];
@@ -13880,12 +13878,12 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::cmpsb: {
-      //串比较暂时忽略
+      //
       return std::make_pair(-1, analyze_result::UNSUPPORT_INSTRUCTION);
       break;
     }
     case instruction_type::type::cmpsw: {
-      //串比较暂时忽略
+      //
       return std::make_pair(-1, analyze_result::UNSUPPORT_INSTRUCTION);
       break;
     }
@@ -13916,7 +13914,7 @@ instruction_analyze_tool::analyze_instruction(
       res_symbol = std::make_shared<state_symbol>(source_symbol->op_sub(
           state_symbol(1, insn.detail->x86.operands[0].size)));
 
-      //运算过程中设置标准位暂时可能没有必要
+      //
       {
         // _state_machine_ptr->_flag_symbol_map[cf] =
         //     std::make_shared<state_symbol>(
@@ -13937,7 +13935,7 @@ instruction_analyze_tool::analyze_instruction(
         //     std::make_shared<state_symbol>(
         //         "unsure" + std::to_string(_random()), 1);
       }
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         _state_machine_ptr->_cache_miss_symbol_vector.push_back(res_symbol);
         if (type == 2) {
@@ -13951,7 +13949,7 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::div: {
-      // rax的
+      // rax
       abstract_addr::ptr rax_addr;
       state_symbol::ptr rax_symbol;
       cs_x86_op rax = cs_x86_op();
@@ -13960,7 +13958,7 @@ instruction_analyze_tool::analyze_instruction(
       analyze_operator(rax, rax_addr, rax_symbol, true, control_leak_state,
                        exec_mode);
 
-      // rdx的
+      // rdx
       abstract_addr::ptr rdx_addr;
       state_symbol::ptr rdx_symbol;
       cs_x86_op rdx = cs_x86_op();
@@ -13969,7 +13967,7 @@ instruction_analyze_tool::analyze_instruction(
       analyze_operator(rdx, rdx_addr, rdx_symbol, true, control_leak_state,
                        exec_mode);
 
-      //源操作数
+      //
       abstract_addr::ptr source_addr;
       state_symbol::ptr source_symbol;
       char source_type =
@@ -13981,7 +13979,7 @@ instruction_analyze_tool::analyze_instruction(
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
 
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         if (source_type == 2) {
           _state_machine_ptr->_cache_miss_symbol_vector.push_back(
@@ -14244,16 +14242,16 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::esc: {
-      //直接跳过
+      //
       break;
     }
     case instruction_type::type::hlt: {
-      //使CPU暂停执行并等待中断
+      //CPU
       return std::make_pair(-1, analyze_result::NO_ATTACT);
       break;
     }
     case instruction_type::type::idiv: {
-      // rax的
+      // rax
       abstract_addr::ptr rax_addr;
       state_symbol::ptr rax_symbol;
       cs_x86_op rax = cs_x86_op();
@@ -14262,7 +14260,7 @@ instruction_analyze_tool::analyze_instruction(
       analyze_operator(rax, rax_addr, rax_symbol, true, control_leak_state,
                        exec_mode);
 
-      // rdx的
+      // rdx
       abstract_addr::ptr rdx_addr;
       state_symbol::ptr rdx_symbol;
       cs_x86_op rdx = cs_x86_op();
@@ -14271,7 +14269,7 @@ instruction_analyze_tool::analyze_instruction(
       analyze_operator(rdx, rdx_addr, rdx_symbol, true, control_leak_state,
                        exec_mode);
 
-      //源操作数
+      //
       abstract_addr::ptr source_addr;
       state_symbol::ptr source_symbol;
       char source_type =
@@ -14282,7 +14280,7 @@ instruction_analyze_tool::analyze_instruction(
       } else if (source_type == 4) {
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         if (source_type == 2) {
           _state_machine_ptr->_cache_miss_symbol_vector.push_back(
@@ -14550,7 +14548,7 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::mul: {
-      // rax的
+      // rax
       abstract_addr::ptr rax_addr;
       state_symbol::ptr rax_symbol;
       cs_x86_op rax = cs_x86_op();
@@ -14559,7 +14557,7 @@ instruction_analyze_tool::analyze_instruction(
       analyze_operator(rax, rax_addr, rax_symbol, true, control_leak_state,
                        exec_mode);
 
-      // rdx的
+      // rdx
       abstract_addr::ptr rdx_addr;
       state_symbol::ptr rdx_symbol;
       cs_x86_op rdx = cs_x86_op();
@@ -14568,7 +14566,7 @@ instruction_analyze_tool::analyze_instruction(
       analyze_operator(rdx, rdx_addr, rdx_symbol, true, control_leak_state,
                        exec_mode);
 
-      //源操作数
+      //
       abstract_addr::ptr source_addr;
       state_symbol::ptr source_symbol;
       char source_type =
@@ -14579,7 +14577,7 @@ instruction_analyze_tool::analyze_instruction(
       } else if (source_type == 4) {
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         if (source_type == 2) {
           _state_machine_ptr->_cache_miss_symbol_vector.push_back(
@@ -14836,7 +14834,7 @@ instruction_analyze_tool::analyze_instruction(
     case instruction_type::type::imul: {
       switch (insn.detail->x86.op_count) {
         case 1: {
-          // rax的
+          // rax
           abstract_addr::ptr rax_addr;
           state_symbol::ptr rax_symbol;
           cs_x86_op rax = cs_x86_op();
@@ -14845,7 +14843,7 @@ instruction_analyze_tool::analyze_instruction(
           analyze_operator(rax, rax_addr, rax_symbol, true, control_leak_state,
                            exec_mode);
 
-          // rdx的
+          // rdx
           abstract_addr::ptr rdx_addr;
           state_symbol::ptr rdx_symbol;
           cs_x86_op rdx = cs_x86_op();
@@ -14854,7 +14852,7 @@ instruction_analyze_tool::analyze_instruction(
           analyze_operator(rdx, rdx_addr, rdx_symbol, true, control_leak_state,
                            exec_mode);
 
-          //源操作数
+          //
           abstract_addr::ptr source_addr;
           state_symbol::ptr source_symbol;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
@@ -14865,7 +14863,7 @@ instruction_analyze_tool::analyze_instruction(
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
-          // branch miss 的情况下记录branchs miss产生的污点符号
+          // branch miss branchs miss
           if (exec_mode == 0 && is_cache_miss_location) {
             if (source_type == 2) {
               _state_machine_ptr->_cache_miss_symbol_vector.push_back(
@@ -14880,7 +14878,7 @@ instruction_analyze_tool::analyze_instruction(
               case 8: {
                 bool sign = judge_sign(rax_num, 8) ^ judge_sign(source_num, 8);
                 auto num = multiply_and_get_parts(rax_num, source_num);
-                //结果为负数时
+                //
                 if (sign) {
                   bool flag = true;
                   for (int i = 63; i >= 0; --i) {
@@ -15170,7 +15168,7 @@ instruction_analyze_tool::analyze_instruction(
           break;
         }
         case 2: {
-          //源操作数
+          //
           abstract_addr::ptr source_addr;
           state_symbol::ptr source_symbol;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
@@ -15181,7 +15179,7 @@ instruction_analyze_tool::analyze_instruction(
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
-          //目标操作数
+          //
           abstract_addr::ptr target_addr;
           state_symbol::ptr target_symbol;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -15192,7 +15190,7 @@ instruction_analyze_tool::analyze_instruction(
           } else if (target_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
-          // branch miss 的情况下记录branchs miss产生的污点符号
+          // branch miss branchs miss
           if (exec_mode == 0 && is_cache_miss_location) {
             if (source_type == 2) {
               _state_machine_ptr->_cache_miss_symbol_vector.push_back(
@@ -15297,7 +15295,7 @@ instruction_analyze_tool::analyze_instruction(
           break;
         }
         case 3: {
-          //源操作数1
+          //1
           abstract_addr::ptr source_addr1;
           state_symbol::ptr source_symbol1;
           char source_type1 = analyze_operator(
@@ -15308,7 +15306,7 @@ instruction_analyze_tool::analyze_instruction(
           } else if (source_type1 == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
-          //源操作数1
+          //1
           abstract_addr::ptr source_addr2;
           state_symbol::ptr source_symbol2;
           char source_type2 = analyze_operator(
@@ -15319,7 +15317,7 @@ instruction_analyze_tool::analyze_instruction(
           } else if (source_type2 == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
-          //目标操作数
+          //
           abstract_addr::ptr target_addr;
           state_symbol::ptr target_symbol;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -15330,7 +15328,7 @@ instruction_analyze_tool::analyze_instruction(
           } else if (target_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
-          // branch miss 的情况下记录branchs miss产生的污点符号
+          // branch miss branchs miss
           if (exec_mode == 0 && is_cache_miss_location) {
             if (source_type1 == 2) {
               _state_machine_ptr->_cache_miss_symbol_vector.push_back(
@@ -15438,7 +15436,7 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::inc: {
-      //源操作数
+      //
       abstract_addr::ptr source_addr;
       state_symbol::ptr source_symbol;
       char source_type =
@@ -15450,7 +15448,7 @@ instruction_analyze_tool::analyze_instruction(
       } else if (source_type == 4) {
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
-      // branch miss 的情况下记录branchs miss产生的污点符号
+      // branch miss branchs miss
       if (exec_mode == 0 && is_cache_miss_location) {
         if (source_type == 2) {
           _state_machine_ptr->_cache_miss_symbol_vector.push_back(
@@ -15468,7 +15466,7 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::INT: {
-      //中断向量
+      //
       return std::make_pair(-1, analyze_result::NO_ATTACT);
       break;
     }
@@ -15569,7 +15567,7 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[zf];
 
           if (cf_symbol->is_num() && zf_symbol->is_num()) {
-            //正常情况下会跳转的
+            //
             if ((cf_symbol->to_int() & 0x1) == 0 &&
                 (zf_symbol->to_int() & 0x1) == 0) {
               if (!error_path) {
@@ -15577,7 +15575,7 @@ instruction_analyze_tool::analyze_instruction(
                                       analyze_result::CONTINUE_ANALYZE);
               }
             }
-            //正常情况下不会跳转的
+            //
             else {
               if (error_path) {
                 return std::make_pair(target_addr,
@@ -15595,12 +15593,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -15651,12 +15649,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -15707,12 +15705,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -15766,12 +15764,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -15821,12 +15819,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -15853,7 +15851,7 @@ instruction_analyze_tool::analyze_instruction(
           state_symbol::ptr zf_symbol =
               _state_machine_ptr->_flag_symbol_map[zf];
           if (zf_symbol->is_num()) {
-            // zf==1 跳转
+            // zf==1 
             if ((zf_symbol->to_int() & 0x1) == 1) {
               if (!error_path) {
                 return std::make_pair(target_addr,
@@ -15877,12 +15875,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -15938,12 +15936,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -15995,12 +15993,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16052,12 +16050,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16115,12 +16113,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16170,12 +16168,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16226,12 +16224,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16282,12 +16280,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16338,12 +16336,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16394,12 +16392,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16450,12 +16448,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16506,12 +16504,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16564,12 +16562,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
           return std::make_pair(target_addr, analyze_result::CONTINUE_ANALYZE);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -16603,7 +16601,7 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::lahf: {
-      //用于将当前标志寄存器（EFLAGS）的低8位加载到AH寄存器中
+      //（EFLAGS）8AH
       return std::make_pair(-1, analyze_result::UNSUPPORT_INSTRUCTION);
       break;
     }
@@ -16622,7 +16620,7 @@ instruction_analyze_tool::analyze_instruction(
       x86_op_mem mem = insn.detail->x86.operands[1].mem;
       char size = insn.detail->x86.operands[1].size;
       bool base_effect = false;
-      //获取base对应的symbol
+      //basesymbol
       if (mem.base == X86_REG_INVALID) {
         base_symbol_ptr = std::make_shared<state_symbol>(0, size);
       } else {
@@ -16641,7 +16639,7 @@ instruction_analyze_tool::analyze_instruction(
       }
       state_symbol::ptr addr;
       if (mem.index != X86_REG_INVALID) {
-        //获取index对应的symbol
+        //indexsymbol
         bool index_effect = false;
 
         index_effect = true;
@@ -16655,7 +16653,7 @@ instruction_analyze_tool::analyze_instruction(
               get_symbol_str(_random, _dist), {}, size);
         }
 
-        //计算出应该访问的地址的symbol
+        //symbol
         state_symbol::ptr disp;
         if (mem.disp < 0) {
           auto tmp = state_symbol(-mem.disp);
@@ -16663,7 +16661,7 @@ instruction_analyze_tool::analyze_instruction(
         } else {
           disp = std::make_shared<state_symbol>(mem.disp, 8);
         }
-        // 计算出了问题
+        // 
 
         auto tmp_addr =
             base_symbol_ptr
@@ -16819,7 +16817,7 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::nop: {
-      //空指令
+      //
       break;
     }
     case instruction_type::type::NOT: {
@@ -17630,8 +17628,8 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::salc: {
-      //如果CF=1，则AL寄存器的值将被设置为1。
-      //如果CF=0，则AL寄存器的值将被设置为0。
+      //CF=1，AL1。
+      //CF=0，AL0。
       state_symbol::ptr cf_symbol = _state_machine_ptr->_flag_symbol_map[cf];
       state_symbol::ptr rax_symbol =
           _state_machine_ptr
@@ -17720,7 +17718,7 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::sti: {
-      //设置中断标记没什么用处
+      //
       break;
     }
     case instruction_type::type::stosb: {
@@ -17770,7 +17768,7 @@ instruction_analyze_tool::analyze_instruction(
 
       if (res_symbol->is_num()) {
         uint64_t res_number = res_symbol->to_int();
-        //具体运算设置标志位zf sf pf
+        //zf sf pf
         {
           switch (insn.detail->x86.operands[0].size) {
             case 8: {
@@ -17819,7 +17817,7 @@ instruction_analyze_tool::analyze_instruction(
             }
           }
         }
-        //设置标志位 of cf
+        // of cf
         if (target_symbol->is_num() && source_symbol->is_num()) {
           uint64_t target_number = target_symbol->to_int();
           uint64_t source_number = source_symbol->to_int();
@@ -17893,9 +17891,9 @@ instruction_analyze_tool::analyze_instruction(
             }
           }
         }
-        // 运算的双方不能转为int时
+        // int
         else {
-          //设置 of cf af 未知
+          // of cf af 
           _state_machine_ptr->_flag_symbol_map[cf] =
               std::make_shared<state_symbol>(
                   "unsure" + std::to_string(_random()), 1);
@@ -17955,13 +17953,13 @@ instruction_analyze_tool::analyze_instruction(
       } else if (target_type == 4 || source_type == 4) {
         return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
       }
-      // cmp或者test的情况下将比较的双方中与branch_miss addr
+      // cmptestbranch_miss addr
       if (exec_mode == 0 && is_cmp_location) {
-        // 将target相关的设置为初始污点
+        // target
 
         if (source_symbol->judge_taine_effect(
                 _state_machine_ptr->_cache_miss_symbol_vector)) {
-          // 这里获取到全部有关相关符号的地址和符号映射，并进行保存
+          // ，
           // _mem_taine_addr_map = _state_machine_ptr->find_addr_symbol_same(
           //     target_symbol->_contain_symbol,
           //     target_symbol->get_symbol_size());
@@ -17974,7 +17972,7 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->find_addr_contain_taine_without_in(
                   target_symbol, source_symbol);
         }
-        // 将source相关的设置为初始污点
+        // source
         else {
           // _mem_taine_addr_map = _state_machine_ptr->find_addr_symbol_same(
           //     source_symbol->_contain_symbol,
@@ -18010,31 +18008,31 @@ instruction_analyze_tool::analyze_instruction(
            (target_symbol->_taine == taine_enum::taine2 &&
             target_symbol->get_symbol_size() == 1 &&
             source_symbol->get_symbol_mem_effect()))) {
-        //这里代表可能通过可能通过控制流泄露
+        //
         return std::make_pair(-1, analyze_result::FIND_ATTACK);
         // return std::make_pair(-1, analyze_result::MAY_LEAK_FROM_CONTROL);
       } else if (source_symbol->_taine == taine_enum::taine2 &&
                  target_symbol->is_num()) {
         if (target_symbol->to_int() <= 255 && target_addr != nullptr &&
             (target_addr->is_register() || target_addr->is_string())) {
-          //这里代表可能通过可能通过控制流泄露
+          //
           return std::make_pair(-1, analyze_result::FIND_ATTACK);
         }
       } else if (target_symbol->_taine == taine_enum::taine2 &&
                  source_symbol->is_num()) {
         if (source_symbol->to_int() <= 255 && source_addr != nullptr &&
             (source_addr->is_register() || source_addr->is_string())) {
-          //这里代表可能通过可能通过控制流泄露
+          //
           return std::make_pair(-1, analyze_result::FIND_ATTACK);
         }
       }
 
       state_symbol res = target_symbol->op_sub(source_symbol);
-      //设置标志位
+      //
 
       if (res.is_num()) {
         uint64_t res_number = res.to_int();
-        //具体运算设置标志位zf sf pf
+        //zf sf pf
         {
           switch (insn.detail->x86.operands[0].size) {
             case 8: {
@@ -18083,7 +18081,7 @@ instruction_analyze_tool::analyze_instruction(
             }
           }
         }
-        //设置标志位 of cf
+        // of cf
         if (target_symbol->is_num() && source_symbol->is_num()) {
           uint64_t target_number = target_symbol->to_int();
           uint64_t source_number = source_symbol->to_int();
@@ -18157,9 +18155,9 @@ instruction_analyze_tool::analyze_instruction(
             }
           }
         }
-        // 运算的双方不能转为int时
+        // int
         else {
-          //设置 of cf af 未知
+          // of cf af 
           _state_machine_ptr->_flag_symbol_map[cf] =
               std::make_shared<state_symbol>(
                   "unsure" + std::to_string(_random()), 1);
@@ -18225,16 +18223,16 @@ instruction_analyze_tool::analyze_instruction(
               source_symbol);
         }
       }
-      // cmp或者test的情况下将比较的双方中与branch_miss addr
+      // cmptestbranch_miss addr
       if (exec_mode == 0 && is_cmp_location) {
-        // 将target相关的设置为初始污点
+        // target
         if (source_symbol->judge_taine_effect(
                 _state_machine_ptr->_cache_miss_symbol_vector)) {
-          // 这里获取到全部有关相关符号的地址和符号映射，并进行保存
+          // ，
           _mem_taine_addr_map =
               _state_machine_ptr->find_addr_contain_taine(target_symbol);
         }
-        // 将source相关的设置为初始污点
+        // source
         else {
           _mem_taine_addr_map =
               _state_machine_ptr->find_addr_contain_taine(source_symbol);
@@ -18249,7 +18247,7 @@ instruction_analyze_tool::analyze_instruction(
       //      (target_symbol->_taine == taine_enum::taine2 &&
       //       // target_symbol->get_symbol_size() == 1 &&
       //       source_symbol->get_symbol_mem_effect()))) {
-      //   //这里代表可能通过可能通过控制流泄露
+      //   //
       //   return std::make_pair(-1, analyze_result::FIND_ATTACK);
       //   // return std::make_pair(-1, analyze_result::MAY_LEAK_FROM_CONTROL);
       // }
@@ -18430,14 +18428,14 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::cbw: {
-      //用于将8位寄存器al中的有符号数扩展为16位
-      //分析源操作数
-      //源操作数的抽象地址
+      //8al16
+      //
+      //
       cs_x86_op al = cs_x86_op();
       al.type = X86_OP_REG;
       al.reg = X86_REG_AL;
       abstract_addr::ptr source_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr source_symbol = nullptr;
       char source_type = analyze_operator(al, source_addr, source_symbol, true,
                                           control_leak_state, exec_mode);
@@ -18454,21 +18452,21 @@ instruction_analyze_tool::analyze_instruction(
         source_symbol->_size_xh_symbol =
             std::make_shared<state_symbol>(get_symbol_str(_random, _dist), 1);
       }
-      //设置目标操作数
+      //
       set_target_symbol(
           _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_AX, 2),
           source_symbol);
       break;
     }
     case instruction_type::type::cwd: {
-      //用于将ax的符号位扩展到dx上
-      //分析源操作数
-      //源操作数的抽象地址
+      //axdx
+      //
+      //
       cs_x86_op ax = cs_x86_op();
       ax.type = X86_OP_REG;
       ax.reg = X86_REG_AX;
       abstract_addr::ptr ax_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr ax_symbol = nullptr;
       char ax_type = analyze_operator(ax, ax_addr, ax_symbol, true,
                                       control_leak_state, exec_mode);
@@ -18492,14 +18490,14 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::cwde: {
-      //用于将寄存器ax中的有符号数扩展为32位
-      //分析源操作数
-      //源操作数的抽象地址
+      //ax32
+      //
+      //
       cs_x86_op ax = cs_x86_op();
       ax.type = X86_OP_REG;
       ax.reg = X86_REG_AX;
       abstract_addr::ptr source_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr source_symbol = nullptr;
       char source_type = analyze_operator(ax, source_addr, source_symbol, true,
                                           control_leak_state, exec_mode);
@@ -18529,14 +18527,14 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::cqo: {
-      //用于将rax的符号位扩展到rdx上
-      //分析源操作数
-      //源操作数的抽象地址
+      //raxrdx
+      //
+      //
       cs_x86_op rax = cs_x86_op();
       rax.type = X86_OP_REG;
       rax.reg = X86_REG_RAX;
       abstract_addr::ptr source_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr source_symbol = nullptr;
       char source_type = analyze_operator(rax, source_addr, source_symbol, true,
                                           control_leak_state, exec_mode);
@@ -18563,14 +18561,14 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::cdqe: {
-      //用于将寄存器eax中的有符号数扩展为64位
-      //分析源操作数
-      //源操作数的抽象地址
+      //eax64
+      //
+      //
       cs_x86_op eax = cs_x86_op();
       eax.type = X86_OP_REG;
       eax.reg = X86_REG_EAX;
       abstract_addr::ptr source_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr source_symbol = nullptr;
       char source_type = analyze_operator(eax, source_addr, source_symbol, true,
                                           control_leak_state, exec_mode);
@@ -18591,21 +18589,21 @@ instruction_analyze_tool::analyze_instruction(
         source_symbol->_size_32_symbol->set_symbol_size(4);
       }
 
-      //设置目标操作数的符号
+      //
       set_target_symbol(
           _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RAX, 8),
           source_symbol);
       break;
     }
     case instruction_type::type::cdq: {
-      //用于将eax的符号位扩展到edx上
-      //分析源操作数
-      //源操作数的抽象地址
+      //eaxedx
+      //
+      //
       cs_x86_op rax = cs_x86_op();
       rax.type = X86_OP_REG;
       rax.reg = X86_REG_RAX;
       abstract_addr::ptr source_addr = nullptr;
-      //源操作数的抽象地址对应的符号
+      //
       state_symbol::ptr source_symbol = nullptr;
       char source_type = analyze_operator(rax, source_addr, source_symbol, true,
                                           control_leak_state, exec_mode);
@@ -18623,7 +18621,7 @@ instruction_analyze_tool::analyze_instruction(
       } else {
         rdx_symbol = generate_symbol(get_symbol_str(_random, _dist), 4, {});
       }
-      //设置目标操作数
+      //
       set_target_symbol(
           _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_EDX, 4),
           rdx_symbol);
@@ -18639,23 +18637,23 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[of];
           if (of_symbol->is_num()) {
             if ((of_symbol->to_int() & 0x1) == 1) {
-              //进行移动操作
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -18667,7 +18665,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -18676,25 +18674,25 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -18706,11 +18704,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -18724,23 +18722,23 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[of];
           if (of_symbol->is_num()) {
             if ((of_symbol->to_int() & 0x1) == 0) {
-              //进行移动操作
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -18752,7 +18750,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -18761,25 +18759,25 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -18791,11 +18789,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -18809,24 +18807,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[sf];
           if (sf_symbol->is_num()) {
             if ((sf_symbol->to_int() & 0x1) == 1) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -18838,7 +18836,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -18847,25 +18845,25 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -18877,11 +18875,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -18895,24 +18893,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[zf];
           if (sf_symbol->is_num()) {
             if ((sf_symbol->to_int() & 0x1) == 0) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -18924,7 +18922,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -18933,25 +18931,25 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -18963,11 +18961,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -18976,29 +18974,29 @@ instruction_analyze_tool::analyze_instruction(
     }
     case instruction_type::type::cmove: {
       switch (exec) {
-        //分析模式
+        //
         case 0: {
           state_symbol::ptr zf_symbol =
               _state_machine_ptr->_flag_symbol_map[zf];
           if (zf_symbol->is_num()) {
             if ((zf_symbol->to_int() & 0x1) == 1) {
-              //进行移动操作
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19010,7 +19008,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -19019,26 +19017,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19050,11 +19048,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19068,24 +19066,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[zf];
           if (zf_symbol->is_num()) {
             if ((zf_symbol->to_int() & 0x1) == 0) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19097,7 +19095,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -19106,26 +19104,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19137,11 +19135,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19155,24 +19153,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[pf];
           if (pf_symbol->is_num()) {
             if ((pf_symbol->to_int() & 0x1) == 1) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19184,7 +19182,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -19193,26 +19191,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19224,11 +19222,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19242,24 +19240,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[pf];
           if (pf_symbol->is_num()) {
             if ((pf_symbol->to_int() & 0x1) == 1) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19271,7 +19269,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -19280,26 +19278,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19311,11 +19309,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19329,24 +19327,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[cf];
           if (cf_symbol->is_num()) {
             if ((cf_symbol->to_int() & 0x1) == 1) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19358,7 +19356,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -19367,26 +19365,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19398,11 +19396,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19416,24 +19414,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[cf];
           if (cf_symbol->is_num()) {
             if ((cf_symbol->to_int() & 0x1) == 0) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19445,7 +19443,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -19454,26 +19452,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19485,11 +19483,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19505,24 +19503,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[zf];
           if ((zf_symbol->is_num() && (zf_symbol->to_int() & 0x1) == 1) &&
               (cf_symbol->is_num() && (cf_symbol->to_int() & 0x1) == 1)) {
-            //进行移动操作
+            //
 
-            //分析源操作数
-            //源操作数的抽象地址
+            //
+            //
             abstract_addr::ptr source_addr = nullptr;
-            //源操作数的抽象地址对应的符号
+            //
             state_symbol::ptr source_symbol = nullptr;
             char source_type = analyze_operator(
                 insn.detail->x86.operands[1], source_addr, source_symbol, true,
                 control_leak_state, exec_mode);
-            //对取得的结果进行处理
+            //
             if (source_type == 3) {
               return std::make_pair(-1, analyze_result::FIND_ATTACK);
             } else if (source_type == 4) {
               return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
             }
 
-            //分析目标操作数
+            //
             abstract_addr::ptr target_addr = nullptr;
             state_symbol::ptr target_symbol = nullptr;
             char target_type = analyze_operator(
@@ -19534,7 +19532,7 @@ instruction_analyze_tool::analyze_instruction(
               return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
             }
 
-            //设置目标操作数的符号
+            //
             set_target_symbol(target_addr, source_symbol);
 
           } else if ((zf_symbol->is_num() &&
@@ -19547,26 +19545,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19578,11 +19576,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19599,24 +19597,24 @@ instruction_analyze_tool::analyze_instruction(
           if (cf_symbol->is_num() && zf_symbol->is_num()) {
             if ((cf_symbol->to_int() & 0x1) == 0 &&
                 (zf_symbol->to_int() & 0x1) == 0) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19628,7 +19626,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -19637,26 +19635,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19668,11 +19666,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19688,24 +19686,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[of];
           if (sf_symbol->is_num() && of_symbol->is_num()) {
             if ((sf_symbol->to_int() & 0x1) != (of_symbol->to_int() & 0x1)) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19717,7 +19715,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -19726,26 +19724,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19757,11 +19755,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19777,24 +19775,24 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[of];
           if (sf_symbol->is_num() && of_symbol->is_num()) {
             if ((sf_symbol->to_int() & 0x1) == (of_symbol->to_int() & 0x1)) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19806,7 +19804,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -19815,26 +19813,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19846,11 +19844,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19869,24 +19867,24 @@ instruction_analyze_tool::analyze_instruction(
           if ((zf_symbol->is_num() && (zf_symbol->to_int() & 0x1) == 1) &&
               (sf_symbol->is_num() && of_symbol->is_num()) &&
               ((sf_symbol->to_int() & 0x1) != (of_symbol->to_int() & 0x1))) {
-            //进行移动操作
+            //
 
-            //分析源操作数
-            //源操作数的抽象地址
+            //
+            //
             abstract_addr::ptr source_addr = nullptr;
-            //源操作数的抽象地址对应的符号
+            //
             state_symbol::ptr source_symbol = nullptr;
             char source_type = analyze_operator(
                 insn.detail->x86.operands[1], source_addr, source_symbol, true,
                 control_leak_state, exec_mode);
-            //对取得的结果进行处理
+            //
             if (source_type == 3) {
               return std::make_pair(-1, analyze_result::FIND_ATTACK);
             } else if (source_type == 4) {
               return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
             }
 
-            //分析目标操作数
+            //
             abstract_addr::ptr target_addr = nullptr;
             state_symbol::ptr target_symbol = nullptr;
             char target_type = analyze_operator(
@@ -19898,7 +19896,7 @@ instruction_analyze_tool::analyze_instruction(
               return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
             }
 
-            //设置目标操作数的符号
+            //
             set_target_symbol(target_addr, source_symbol);
 
           } else if ((zf_symbol->is_num() &&
@@ -19912,26 +19910,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -19943,11 +19941,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -19967,24 +19965,24 @@ instruction_analyze_tool::analyze_instruction(
               of_symbol->is_num()) {
             if ((zf_symbol->to_int() & 0x1) == 0 &&
                 ((sf_symbol->to_int() & 0x1) == (of_symbol->to_int() & 0x1))) {
-              //进行移动操作
+              //
 
-              //分析源操作数
-              //源操作数的抽象地址
+              //
+              //
               abstract_addr::ptr source_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr source_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[1], source_addr, source_symbol,
                   true, control_leak_state, exec_mode);
-              //对取得的结果进行处理
+              //
               if (source_type == 3) {
                 return std::make_pair(-1, analyze_result::FIND_ATTACK);
               } else if (source_type == 4) {
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //分析目标操作数
+              //
               abstract_addr::ptr target_addr = nullptr;
               state_symbol::ptr target_symbol = nullptr;
               char target_type = analyze_operator(
@@ -19996,7 +19994,7 @@ instruction_analyze_tool::analyze_instruction(
                 return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
               }
 
-              //设置目标操作数的符号
+              //
               set_target_symbol(target_addr, source_symbol);
             }
           } else {
@@ -20005,26 +20003,26 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行移动操作
+          //
 
-          //分析源操作数
-          //源操作数的抽象地址
+          //
+          //
           abstract_addr::ptr source_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr source_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[1],
                                               source_addr, source_symbol, true,
                                               control_leak_state, exec_mode);
-          //对取得的结果进行处理
+          //
           if (source_type == 3) {
             return std::make_pair(-1, analyze_result::FIND_ATTACK);
           } else if (source_type == 4) {
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //分析目标操作数
+          //
           abstract_addr::ptr target_addr = nullptr;
           state_symbol::ptr target_symbol = nullptr;
           char target_type = analyze_operator(insn.detail->x86.operands[0],
@@ -20036,11 +20034,11 @@ instruction_analyze_tool::analyze_instruction(
             return std::make_pair(-1, analyze_result::INVALID_INSTRUCTION);
           }
 
-          //设置目标操作数的符号
+          //
           set_target_symbol(target_addr, source_symbol);
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20054,9 +20052,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[of];
           if (of_symbol->is_num()) {
             if ((of_symbol->to_int() & 0x1) == 1) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20072,12 +20070,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
 
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20088,7 +20086,7 @@ instruction_analyze_tool::analyze_instruction(
                                 1, insn.detail->x86.operands[0].size));
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20102,10 +20100,10 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[of];
           if (of_symbol->is_num()) {
             if ((of_symbol->to_int() & 0x1) == 0) {
-              //进行赋值操作
+              //
 
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20121,12 +20119,12 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
 
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20137,7 +20135,7 @@ instruction_analyze_tool::analyze_instruction(
                                 1, insn.detail->x86.operands[0].size));
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20151,9 +20149,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[sf];
           if (sf_symbol->is_num()) {
             if ((sf_symbol->to_int() & 0x1) == 1) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20169,11 +20167,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20185,7 +20183,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20199,9 +20197,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[zf];
           if (sf_symbol->is_num()) {
             if ((sf_symbol->to_int() & 0x1) == 0) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20217,11 +20215,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20233,7 +20231,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20242,15 +20240,15 @@ instruction_analyze_tool::analyze_instruction(
     }
     case instruction_type::type::sete: {
       switch (exec) {
-        //分析模式
+        //
         case 0: {
           state_symbol::ptr zf_symbol =
               _state_machine_ptr->_flag_symbol_map[zf];
           if (zf_symbol->is_num()) {
             if ((zf_symbol->to_int() & 0x1) == 1) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20266,11 +20264,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20282,7 +20280,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20296,9 +20294,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[zf];
           if (zf_symbol->is_num()) {
             if ((zf_symbol->to_int() & 0x1) == 0) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20314,11 +20312,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20330,7 +20328,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20344,9 +20342,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[pf];
           if (pf_symbol->is_num()) {
             if ((pf_symbol->to_int() & 0x1) == 1) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20362,11 +20360,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20378,7 +20376,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20392,9 +20390,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[pf];
           if (pf_symbol->is_num()) {
             if ((pf_symbol->to_int() & 0x1) == 1) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20410,11 +20408,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20426,7 +20424,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20440,9 +20438,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[cf];
           if (cf_symbol->is_num()) {
             if ((cf_symbol->to_int() & 0x1) == 1) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20458,11 +20456,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20474,7 +20472,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20488,9 +20486,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[cf];
           if (cf_symbol->is_num()) {
             if ((cf_symbol->to_int() & 0x1) == 0) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20506,11 +20504,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20522,7 +20520,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20538,9 +20536,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[zf];
           if ((zf_symbol->is_num() && (zf_symbol->to_int() & 0x1) == 1) &&
               (cf_symbol->is_num() && (cf_symbol->to_int() & 0x1) == 1)) {
-            //进行赋值操作
+            //
             abstract_addr::ptr target_addr = nullptr;
-            //源操作数的抽象地址对应的符号
+            //
             state_symbol::ptr target_symbol = nullptr;
             char source_type = analyze_operator(
                 insn.detail->x86.operands[0], target_addr, target_symbol, false,
@@ -20560,11 +20558,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20576,7 +20574,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20593,9 +20591,9 @@ instruction_analyze_tool::analyze_instruction(
           if (cf_symbol->is_num() && zf_symbol->is_num()) {
             if ((cf_symbol->to_int() & 0x1) == 0 &&
                 (zf_symbol->to_int() & 0x1) == 0) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20611,11 +20609,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20627,7 +20625,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20643,9 +20641,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[of];
           if (sf_symbol->is_num() && of_symbol->is_num()) {
             if ((sf_symbol->to_int() & 0x1) != (of_symbol->to_int() & 0x1)) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20661,11 +20659,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20677,7 +20675,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20693,9 +20691,9 @@ instruction_analyze_tool::analyze_instruction(
               _state_machine_ptr->_flag_symbol_map[of];
           if (sf_symbol->is_num() && of_symbol->is_num()) {
             if ((sf_symbol->to_int() & 0x1) == (of_symbol->to_int() & 0x1)) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20711,11 +20709,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20727,7 +20725,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20746,9 +20744,9 @@ instruction_analyze_tool::analyze_instruction(
           if ((zf_symbol->is_num() && (zf_symbol->to_int() & 0x1) == 1) &&
               (sf_symbol->is_num() && of_symbol->is_num()) &&
               ((sf_symbol->to_int() & 0x1) != (of_symbol->to_int() & 0x1))) {
-            //进行赋值操作
+            //
             abstract_addr::ptr target_addr = nullptr;
-            //源操作数的抽象地址对应的符号
+            //
             state_symbol::ptr target_symbol = nullptr;
             char source_type = analyze_operator(
                 insn.detail->x86.operands[0], target_addr, target_symbol, false,
@@ -20769,11 +20767,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20785,7 +20783,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20805,9 +20803,9 @@ instruction_analyze_tool::analyze_instruction(
               of_symbol->is_num()) {
             if ((zf_symbol->to_int() & 0x1) == 0 &&
                 ((sf_symbol->to_int() & 0x1) == (of_symbol->to_int() & 0x1))) {
-              //进行赋值操作
+              //
               abstract_addr::ptr target_addr = nullptr;
-              //源操作数的抽象地址对应的符号
+              //
               state_symbol::ptr target_symbol = nullptr;
               char source_type = analyze_operator(
                   insn.detail->x86.operands[0], target_addr, target_symbol,
@@ -20823,11 +20821,11 @@ instruction_analyze_tool::analyze_instruction(
           }
           break;
         }
-          //执行移动指令
+          //
         case 1: {
-          //进行赋值操作
+          //
           abstract_addr::ptr target_addr = nullptr;
-          //源操作数的抽象地址对应的符号
+          //
           state_symbol::ptr target_symbol = nullptr;
           char source_type = analyze_operator(insn.detail->x86.operands[0],
                                               target_addr, target_symbol, false,
@@ -20839,7 +20837,7 @@ instruction_analyze_tool::analyze_instruction(
 
           break;
         }
-          //不执行移动指令
+          //
         case 2: {
           break;
         }
@@ -20856,19 +20854,19 @@ instruction_analyze_tool::analyze_instruction(
 
 void instruction_analyze_tool::init_state_machine(
     const register_info_t &register_info, bool is_je_jum) {
-  // je的情况下全设为符号
+  // je
   // is_je_jum = false;
   {
     if (is_je_jum) {
       init_state_machine_symbol(register_info);
-      //初始化rflags
+      //rflags
       // _state_machine_ptr->_flag_symbol_map
       //     [_generatr_abstract_addr_tool_ptr->get_abstract_flag(rflags::zf)] =
       //     std::make_shared<state_symbol>((register_info.RFLAGS >> 6) & 0x1, 1);
       return;
     }
   }
-  //初始化register info
+  //register info
   {  // rax
     _state_machine_ptr->generate_symbol_for_addr(
         _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_RAX, 8),
@@ -21090,7 +21088,7 @@ void instruction_analyze_tool::init_state_machine(
         _generatr_abstract_addr_tool_ptr->get_abstract_addr(X86_REG_R15B, 1),
         register_info.R15 & 0x00000000000000ffLL, 1);
   }
-  //初始化rflags
+  //rflags
   {
     _state_machine_ptr->_flag_symbol_map[_generatr_abstract_addr_tool_ptr
                                              ->get_abstract_flag(rflags::cf)] =
@@ -21460,7 +21458,7 @@ void instruction_analyze_tool::init_state_machine_symbol(
 }
 
 /**
- * @brief 对映射进行初始化
+ * @brief 
  */
 const std::map<std::string, instruction_type::type>
     instruction_type::type_str_map = {

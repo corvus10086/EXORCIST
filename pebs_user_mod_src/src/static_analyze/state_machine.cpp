@@ -71,7 +71,7 @@ abstract_addr::ptr generate_abstract_addr_tool::get_abstract_addr(
     x86_op_mem mem, state_machine::ptr state, short size) {
   state_symbol::ptr base_symbol_ptr = nullptr;
   state_symbol::ptr index_symbol_ptr = nullptr;
-  //获取base对应的symbol
+  //basesymbol
   bool base_effect = false;
   if (mem.base == X86_REG_INVALID) {
     base_symbol_ptr = std::make_shared<state_symbol>(0, size);
@@ -91,7 +91,7 @@ abstract_addr::ptr generate_abstract_addr_tool::get_abstract_addr(
   }
   state_symbol::ptr addr_symbol;
   if (mem.index != X86_REG_INVALID) {
-    //获取index对应的symbol
+    //indexsymbol
     bool index_effect = false;
     index_effect = true;
     index_symbol_ptr =
@@ -106,7 +106,7 @@ abstract_addr::ptr generate_abstract_addr_tool::get_abstract_addr(
           {}, size);
     }
 
-    //计算出应该访问的地址的symbol
+    //symbol
     state_symbol::ptr disp;
     if (mem.disp < 0) {
       auto tmp = state_symbol(-mem.disp);
@@ -115,7 +115,7 @@ abstract_addr::ptr generate_abstract_addr_tool::get_abstract_addr(
       disp = std::make_shared<state_symbol>(mem.disp, 8);
     }
     bool can_up_taine = false;
-    //判断是否是一个数组访问
+    //
     {
       int num = 0;
       if (base_effect) {
@@ -125,13 +125,13 @@ abstract_addr::ptr generate_abstract_addr_tool::get_abstract_addr(
         ++num;
       }
       if (num == 2) {
-        // base和index是来源不同的污点
+        // baseindex
         if (!base_symbol_ptr->judge_taine_same(index_symbol_ptr) &&
             base_symbol_ptr->get_symbol_mem_effect() &&
             index_symbol_ptr->get_symbol_mem_effect()) {
           can_up_taine = true;
         }
-        //两个中有一个是污点另一个是比较大的数
+        //
         int num = 0;
         if ((base_symbol_ptr->is_num() &&
              base_symbol_ptr->to_int() > 0xfffff) &&
@@ -167,7 +167,7 @@ abstract_addr::ptr generate_abstract_addr_tool::get_abstract_addr(
       disp = std::make_shared<state_symbol>(mem.disp, 8);
     }
     bool can_up_taine = false;
-    //判断是否是一个数组访问
+    //
     {
       int num = 0;
       if (base_effect && base_symbol_ptr->_taine != taine_enum::not_a_tine&&mem.disp>0xffff) {
@@ -181,10 +181,10 @@ abstract_addr::ptr generate_abstract_addr_tool::get_abstract_addr(
     }
   }
 
-  //为这个符号地址生成一个抽象地址
+  //
   abstract_addr::ptr res = get_abstract_addr(*addr_symbol, size);
 
-  //将污点传递给抽象地址
+  //
   res->_taine = addr_symbol->_taine;
   res->_can_up_taine_lv = addr_symbol->get_can_up_taine_lv();
   
@@ -238,10 +238,10 @@ state_symbol::ptr state_machine::generate_symbol_for_addr(
     std::vector<std::string> taine_vector) {
   auto tmp =
       std::make_shared<state_symbol>(symbol_name, addr->_size, taine_vector);
-  // 设置下面的可拆分寄存器
+  // 
   switch (addr->_size) {
     case 8: {
-      // 设置eax ax ah al
+      // eax ax ah al
       // xh
       tmp->_size_xh_symbol = std::make_shared<state_symbol>(
           tmp->to_string() + "xh", 1, taine_vector);
@@ -263,7 +263,7 @@ state_symbol::ptr state_machine::generate_symbol_for_addr(
       break;
     }
     case 4: {
-      // 设置ax ah al
+      // ax ah al
       // xh
       tmp->_size_xh_symbol = std::make_shared<state_symbol>(
           tmp->to_string() + "xh", 1, taine_vector);
@@ -293,10 +293,10 @@ state_symbol::ptr state_machine::generate_symbol_for_addr(
     abstract_addr::ptr addr, std::string symbol_name,
     std::vector<std::string> taine_vector, short size) {
   auto tmp = std::make_shared<state_symbol>(symbol_name, size, taine_vector);
-  // 设置下面的可拆分寄存器
+  // 
   switch (addr->_size) {
     case 8: {
-      // 设置eax ax ah al
+      // eax ax ah al
       // xh
       tmp->_size_xh_symbol = std::make_shared<state_symbol>(
           tmp->to_string() + "xh", 1, taine_vector);
@@ -316,7 +316,7 @@ state_symbol::ptr state_machine::generate_symbol_for_addr(
       break;
     }
     case 4: {
-      // 设置ax ah al
+      // ax ah al
       tmp->_size_xh_symbol =
           std::make_shared<state_symbol>(symbol_name + "xh", 1, taine_vector);
       tmp->_size_xl_symbol =
@@ -329,7 +329,7 @@ state_symbol::ptr state_machine::generate_symbol_for_addr(
       break;
     }
     case 2: {
-      // 设置ah al
+      // ah al
       tmp->_size_xh_symbol =
           std::make_shared<state_symbol>(symbol_name + "xh", 1, taine_vector);
       tmp->_size_xl_symbol =

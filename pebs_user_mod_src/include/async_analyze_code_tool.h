@@ -24,13 +24,13 @@
 class async_analyze_code_tool {
  public:
   /**
-   * @brief 智能指针的定义
+   * @brief 
    *
    */
   typedef std::shared_ptr<async_analyze_code_tool> ptr;
 
   /**
-   * @brief 构造函数
+   * @brief 
    *
    * @param ptr
    */
@@ -45,46 +45,46 @@ class async_analyze_code_tool {
   }
 
   /**
-   * @brief 析构函数
+   * @brief 
    *
    */
   ~async_analyze_code_tool() {}
 
   /**
-   * @brief 向队列中插入数据
+   * @brief 
    *
    * @param code
    */
   void insert_code(std::string &code);
 
   /**
-   * @brief 开启接受数据的线程
+   * @brief 
    *
    */
   void start_recv_thread();
   /**
-   * @brief 终止接受数据的线程
+   * @brief 
    *
    */
   void stop_recv_thread();
   /**
-   * @brief 开始分析数据的线程
+   * @brief 
    *
    */
   void start_analyze_data();
   /**
-   * @brief 终止分析数据的线程
+   * @brief
    *
    */
   void stop_analyze_data();
   /**
-   * @brief 获取recv的全局异常
+   * @brief 
    *
    * @return std::exception_ptr
    */
   std::exception_ptr get_recv_except_ptr() { return _recv_except_ptr; }
   /**
-   * @brief 获取analyze的全局异常
+   * @brief 
    *
    * @return std::exception_ptr
    */
@@ -94,19 +94,19 @@ class async_analyze_code_tool {
    public:
     typedef std::shared_ptr<async_analyze_code_tool::thread_recv_data_struct>
         ptr;
-    //接受数据的vector
+    //
     std::vector<std::string> _message;
-    //同步用的
+    //
     boost::condition_variable _condition;
     boost::mutex _mutex;
-    // //访问用锁
+    // 
     // boost::mutex _access_mutex;
     int _num = 0;
   };
 
  private:
   /**
-   * @brief 互斥锁
+   * @brief 
    *
    */
    boost::mutex _mutex;
@@ -117,75 +117,75 @@ class async_analyze_code_tool {
 
    attack_share_mem::ptr _attack_share_mem_ptr;
    /**
-    * @brief 存放数据的队列
+    * @brief 
     *
     */
    std::queue<std::string> _code_queue;
    /**
-    * @brief 映射线程id和从内核中查询的数据
+    * @brief 
     *
     */
    std::map<std::uint64_t, thread_recv_data_struct::ptr> _thread_code_map;
 
    /**
-    * @brief 内核通信工具类
+    * @brief 
     *
     */
    netlink_tool::ptr _netlink_tool_ptr = nullptr;
 
    /**
-    * @brief mmap通信工具类
+    * @brief 
     *
     */
    share_mem_tool::ptr _share_mem_tool_ptr = nullptr;
    /**
-    * @brief 通过netlink进行recv的线程
+    * @brief 
     *
     */
    boost::thread _recv_by_netlink_thread;
    /**
-    * @brief 通过mmap进行recv的线程
+    * @brief 
     *
     */
    boost::thread _recy_by_mmap_thread;
    /**
-    * @brief analyze的线程
+    * @brief 
     *
     */
    boost::thread _analyze_thread[MAX_ANALYZE_THREAD_SIZE];
    /**
-    * @brief recv的全局异常
+    * @brief 
     *
     */
    std::exception_ptr _recv_except_ptr = nullptr;
    std::exception_ptr _recv_mmap_except_ptr = nullptr;
    /**
-    * @brief analyze的全局异常
+    * @brief 
     *
     */
    std::exception_ptr _analyze_except_ptr = nullptr;
    bool _thread_analyzr_data_should_stop = false;
    /**
-    * @brief 从队列中取出数据
+    * @brief 
     *
     * @return true
     * @return false
     */
    bool load_code(std::uniform_int_distribution<int> &dist, uint64_t thread_id);
    /**
-    * @brief recv的线程函数
+    * @brief 
     *
     */
    void thread_recv_data_by_netlink();
    void thread_recv_data_by_mmap();
    /**
-    * @brief analyze的线程函数
+    * @brief 
     *
     */
    void thread_analyze_data();
 
    /**
-    * @brief 对取出的数据进行分析
+    * @brief 
     *
     * @param code
     */

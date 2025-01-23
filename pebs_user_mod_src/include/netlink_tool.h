@@ -15,12 +15,12 @@ class netlink_tool {
  public:
   typedef std::shared_ptr<netlink_tool> ptr;
   /**
-   * @brief 构造函数
+   * @brief 
    */
   netlink_tool(u_int32_t pid) : _pid(pid) { init_netlink(); };
 
   /**
-   * @brief 析沟函数
+   * @brief 
    */
   ~netlink_tool();
 
@@ -30,7 +30,7 @@ class netlink_tool {
 
   void destory();
   /**
-   * @brief 判断当前netlink tool是否生效
+   * @brief 
    *
    * @return true
    * @return false

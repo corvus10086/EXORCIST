@@ -15,40 +15,40 @@
 #include "pebs_pub.h"
 #include "pebs_taine_tool.h"
 
-// 一个pid的字节数（64位的long long int），start_addr &
-// end_addr的字节数（64位的long long int）1024-pid的个数（2的指数）
+// pid（64long long int），start_addr &
+// end_addr（64long long int）1024-pid（2）
 // #define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 24
-// 在加上两个地址的寄存器信息 还需要144字节 总共24+144*2=312 字节
+//  144 24+144*2=312 
 // #define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 312
-// 需要在加上一些信息， 一个时间，一个距离在加上16个字节
+// ， ，16
 #define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 328
 
-// 一个环形缓存区ITEM的字节数，一个环的大小为1024个
-// 1024会崩溃换用512
+// ITEM，1024
+// 1024512
 #define RING_BUFFER_ITEM_SINGLE_SIZE_NUM 512
 #define RING_BUFFER_ITEM_TOTAL_SIZE_BYTES \
   (RING_BUFFER_ITEM_SINGLE_SIZE_BYTES * RING_BUFFER_ITEM_SINGLE_SIZE_NUM)
 
 typedef struct buffer_item {
-  // item的内存基址
+  // item
   uint64_t* buffer_item_base;
 
-  // 读指针index，指向最近一次读取的位置
+  // index，
   int64_t read_index;
 
-  // 写指针index，指向可写入的位置
+  // index，
   int64_t write_index;
 
 } buffer_item_t;
 
 typedef struct ring_buffers {
-  // buffer的内存基址指针
+  // buffer
   uint32_t* buffer_base;
 
-  // ring_buffer的个数
+  // ring_buffer
   uint32_t item_size;
 
-  // 结构体数组（最多支持100个核）
+  // （100）
   buffer_item_t items[100];
 } ring_buffers_t;
 
@@ -57,24 +57,24 @@ ring_buffers_t buffers;
 #define PER_CPU_ANALYZE_RING_BUFFER_SIZE 64
 #define PER_CPU_SINGLE_ANALYZE_BUFFER_SIZE 256
 typedef struct single_analyze_buffer {
-  // 32位cache miss addr 32位branch miss addr
+  // 32cache miss addr 32branch miss addr
   uint64_t info;
-  // 出现的次数
+  // 
   uint32_t num;
 } single_analyze_buffer_t;
 typedef struct per_cpu_buffer {
-  // 进程的pid
+  // pid
   uint32_t pid;
 
   uint32_t index;
-  // 进程中cachemiss branchmiss的信息
+  // cachemiss branchmiss
   single_analyze_buffer_t analyze_buffer[PER_CPU_SINGLE_ANALYZE_BUFFER_SIZE];
 } per_cpu_buffer_t;
 typedef struct analyze_ring_buffer {
-  // 缓冲区的基址
+  // 
   per_cpu_buffer_t* buffer_base;
   uint32_t item_size;
-  // 指针指向基址的某一个位置
+  // 
   per_cpu_buffer_t* ring_buffer[100];
   int per_cpu_buffer_index[100];
 } analyze_ring_buffer_t;
@@ -84,11 +84,11 @@ analyze_ring_buffer_t analyze_res_ring_buffer;
 // cat /proc/sys/kernel/pid_max
 // #define MAX_PID_SIZE 4194304
 /**
- * @brief 分配ring buffer空间
+ * @brief ring buffer
  *
  */
 int alloc_ring_buffer(void) {
-  // 可用的cpu核数
+  // cpu
   uint32_t num;
   short index;
   num = num_online_cpus();
@@ -97,7 +97,7 @@ int alloc_ring_buffer(void) {
     // printk(KERN_ERR "ring buffer max size is 100....");
     return 0;
   }
-  //分配去重用的空间
+  //
   if (analyze_res_ring_buffer.buffer_base == NULL) {
     analyze_res_ring_buffer.buffer_base = vmalloc(
         sizeof(per_cpu_buffer_t) * num * PER_CPU_ANALYZE_RING_BUFFER_SIZE);
@@ -116,7 +116,7 @@ int alloc_ring_buffer(void) {
     }
   }
 
-  // 分配连续的内存空间
+  // 
   buffers.buffer_base =
       (uint32_t*)kmalloc(num * RING_BUFFER_ITEM_TOTAL_SIZE_BYTES, GFP_KERNEL);
 
@@ -132,8 +132,8 @@ int alloc_ring_buffer(void) {
   for (; index < num; index++) {
     buffers.items[index].read_index = -1;
     buffers.items[index].write_index = 0;
-    // 因为buffers.buffer_base
-    // 指针是32为int，所以在执行加法时，需要除以字节数（4）
+    // buffers.buffer_base
+    // 32int，，（4）
     buffers.items[index].buffer_item_base =
         (uint64_t*)(buffers.buffer_base +
                     (index * RING_BUFFER_ITEM_TOTAL_SIZE_BYTES / 4));
@@ -142,7 +142,7 @@ int alloc_ring_buffer(void) {
 }
 
 /**
- * 释放buffer ring空间
+ * buffer ring
  */
 void free_ring_buffer(void) {
   short index;
@@ -157,7 +157,7 @@ void free_ring_buffer(void) {
     analyze_res_ring_buffer.buffer_base = NULL;
   }
 
-  // 重置数据
+  // 
   index = 0;
   for (; index < 100; index++) {
     buffer_item_t item = buffers.items[index];
@@ -168,7 +168,7 @@ void free_ring_buffer(void) {
 }
 
 /**
- * 将pid写入到内存区域中
+ * pid
  */
 void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
                        unsigned long long int end_addr,
@@ -176,35 +176,35 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
                        unsigned int time, unsigned int distance, char flag) {
   // printk(KERN_INFO "begin to write\n");
 
-  // 禁止套圈
+  // 
   int cpu_id = get_cpu();
   buffer_item_t item = buffers.items[cpu_id];
-  //进行去重操作
+  //
   {
-    //先搜寻pid
+    //pid
     int need_to_insert = 0;
     int cpu_index = 0;
     int pid_index;
     int find = 0;
     int insert_id;
-    //循环每个cpu
+    //cpu
     for (; cpu_index < analyze_res_ring_buffer.item_size; ++cpu_index) {
       pid_index = 0;
-      //循环每个cpu管辖的区域
+      //cpu
       for (; pid_index < PER_CPU_ANALYZE_RING_BUFFER_SIZE; ++pid_index) {
         per_cpu_buffer_t* pid_buffer =
             analyze_res_ring_buffer.ring_buffer[cpu_index] + pid_index;
-        // linux pid递增
+        // linux pid
         if (pid_buffer->pid == 0) {
           break;
         }
-        //找到pid的情况下
+        //pid
         if (pid_buffer->pid == pid) {
           single_analyze_buffer_t* tmp;
           int index_2;
           uint32_t min_num;
           find = 1;
-          //继续搜索地址
+          //
           tmp = pid_buffer->analyze_buffer;
           index_2 = 0;
           insert_id = -1;
@@ -230,9 +230,9 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
               insert_id = index_2;
             }
           }
-          //需要插入数据
+          //
           if (insert_id != -1) {
-            // 判断当前缓冲区有没有多余的空间
+            // 
             if (((item.write_index + 1) % RING_BUFFER_ITEM_SINGLE_SIZE_NUM) ==
                 item.read_index) {
               // printk(KERN_INFO "%d buffer overwrite", cpu_id);
@@ -250,10 +250,10 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
         break;
       }
     }
-    //没有找到pid的情况下
+    //pid
     if (find == 0) {
       per_cpu_buffer_t* tmp;
-      // 判断当前缓冲区有没有多余的空间
+      // 
       if (((item.write_index + 1) % RING_BUFFER_ITEM_SINGLE_SIZE_NUM) ==
           item.read_index) {
         // printk(KERN_INFO "%d buffer overwrite", cpu_id);
@@ -275,7 +275,7 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
       return;
     }
   }
-  // 写入值
+  // 
   {
     if (flag > 0) {
       printk(KERN_INFO "spec insert\n");
@@ -301,7 +301,7 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
 //   //
 //   int cpu_id = get_cpu();
 //   buffer_item_t item = buffers.items[cpu_id];
-//   // 无元素可读
+//   // 
 //   if (item.read_index == (item.write_index - 1)) {
 //     // printk(KERN_INFO "no data\n");
 //     return -1;
@@ -313,7 +313,7 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
 // }
 
 /**
- * 读取指定ring_buffer_id的一个元素，如果无元素可读，则返回-1
+ * ring_buffer_id，，-1
  */
 unsigned char read_ring_buffer(unsigned int ring_buffer_id, unsigned int* pid,
                                unsigned long long int* start_addr,
@@ -329,7 +329,7 @@ unsigned char read_ring_buffer(unsigned int ring_buffer_id, unsigned int* pid,
   }
 
   item = buffers.items[ring_buffer_id];
-  // 无元素可读
+  // 
   if (((item.read_index + 1) & (RING_BUFFER_ITEM_SINGLE_SIZE_NUM - 1)) ==
       item.write_index) {
     // printk(KERN_INFO "no data\n");
@@ -360,7 +360,7 @@ void print_buffer_data(unsigned int ring_buffer_id) {
   }
 
   item = buffers.items[ring_buffer_id];
-  // 无元素可读
+  // 
   if (item.read_index == (item.write_index - 1)) {
     return;
   }

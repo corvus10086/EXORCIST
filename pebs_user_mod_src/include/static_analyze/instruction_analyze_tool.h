@@ -24,7 +24,7 @@ class instruction_analyze_tool {
   typedef std::shared_ptr<instruction_analyze_tool> ptr;
   /**
    * @brief Construct a new instruction analyze tool object
-   * 初始化状态机 初始化生成地址的工具中的随机数种子和随机数范围
+   * 
    * @param ptr
    */
   instruction_analyze_tool(std::uniform_int_distribution<int> &dist)
@@ -35,18 +35,17 @@ class instruction_analyze_tool {
     _state_machine_ptr = std::make_shared<state_machine>(_random, _dist);
   }
   /**
-   * @brief 通过一个instruction_analyze_tool指针来构造函数
+   * @brief 
    *
    * @param other_ptr
    */
   instruction_analyze_tool(const instruction_analyze_tool *other_ptr)
       : _dist(other_ptr->_dist) {
-    //拷贝类成员
-    //拷贝随机数生成器
+    
     _random = other_ptr->_random;
-    //拷贝状态机
+   
     _state_machine_ptr = other_ptr->_state_machine_ptr->shallow_copy();
-    //拷贝生成地址的工具
+    //
     _generatr_abstract_addr_tool_ptr =
         other_ptr->_generatr_abstract_addr_tool_ptr->shallow_copy();
   }
@@ -86,7 +85,7 @@ class instruction_analyze_tool {
     return tmp;
   }
   /**
-   * @brief 对instruction_analyze_tool进行拷贝
+   * @brief 
    *
    * @return instruction_analyze_tool::ptr
    */
@@ -94,25 +93,25 @@ class instruction_analyze_tool {
     return std::make_shared<instruction_analyze_tool>(this);
   }
   /**
-   * @brief 初始化状态机的寄存器，不包括初始化污点状态
+   * @brief 
    *
    */
   void init_state_machine(const register_info_t &register_info,
                           bool is_je_jum = false);
-  // 这个函数用于将全部的寄存器设置为一个taine1的污点
+  // 
   void init_state_machine_symbol(const register_info_t &register_info);
-  // 清空状态机的状态
+  // 
   void clear_state_machine() {
     _state_machine_ptr->clear_all_symbol();
     _generatr_abstract_addr_tool_ptr->clear_addr();
     _mem_taine_addr_map.clear();
   }
-  // 这里设置初始污点
+  // 
   void set_init_taine(
       std::map<abstract_addr::ptr, state_symbol::ptr> taine_addr_map) {
     std::vector<abstract_addr::ptr> addr_vec;
     for (auto iter : taine_addr_map) {
-      // 寄存器
+      // 
       if (iter.first->get_reg() != X86_REG_INVALID) {
         auto symbol = _state_machine_ptr->get_symbol_from_addr(
             _generatr_abstract_addr_tool_ptr->get_abstract_addr(
@@ -125,7 +124,7 @@ class instruction_analyze_tool {
                               iter.first->get_reg(), iter.first->_size),
                           iter.second, true);
       }
-      // 内存
+      // 
       else {
         addr_vec.push_back(iter.first);
         _state_machine_ptr->_addr_symbol_map[iter.first] = iter.second;
@@ -146,14 +145,14 @@ class instruction_analyze_tool {
     return get_taine_string(taine, _random, _dist);
   }
   /**
-   * @brief 通过分析单步指令来更新状态机
+   * @brief 
    *
-   * @param insn 单条指令的指针
-   * @param exec 在未知控制流的时候是否进行跳转 0分析 1跳转 2不跳转
-   * @param error_path 表示是否要错误执行 0 jcc正常执行 1 jcc错误执行
-   * @param exec_mode 执行模式 0分析模式 ，1有初始污点的模式 ，2无初始污点的模式
-   * @param is_cmp_location 在分析模式下
-   * 当前指令是最靠近branchmiss的cmp或test指令
+   * @param insn 
+   * @param exec 
+   * @param error_path 
+   * @param exec_mode 
+   * @param is_cmp_location 
+   * 
    * @return uint64_t
    */
   std::pair<uint64_t, analyze_result> analyze_instruction(
@@ -162,7 +161,7 @@ class instruction_analyze_tool {
       std::map<abstract_addr::ptr, state_symbol::ptr> &analyze_addr_taine_map,
       bool is_32);
 
-  // 分析模式下记录找到的相关地址和污点的映射
+  // 
   std::map<abstract_addr::ptr, state_symbol::ptr> _mem_taine_addr_map;
   generate_abstract_addr_tool::ptr get_generatr_abstract_addr_tool_ptr() {
     return _generatr_abstract_addr_tool_ptr;
@@ -171,29 +170,29 @@ class instruction_analyze_tool {
 
  private:
   /**
-   * @brief 静态分析状态机的指针
+   * @brief 
    */
   state_machine::ptr _state_machine_ptr;
   /**
-   * @brief 用于从寄存器，符号，或一个明确内存地址生成一个抽象地址的工具类
+   * @brief 
    */
   generate_abstract_addr_tool::ptr _generatr_abstract_addr_tool_ptr;
 
-  // 当前进程的随机数生成器
+  // 
   std::default_random_engine _random;
-  // 当前进程的随机数范围限制
+  // 
   std::uniform_int_distribution<int> &_dist;
 
   /**
-   * @brief 用于分析操作数的函数，将获取内存获得地址的污点传回符号
+   * @brief 
    *
    * @param op
    * @param addr
    * @param symbol
    * @param read
    * @param control_leak_model
-   * @param exec_mode 执行模式 0分析模式 ，1有初始污点的模式 ，2无初始污点的模式
-   * @return char 标识 0寄存器 1立即数 2内存 3发现攻击 4无效指令
+   * @param exec_mode 
+   * @return 
    */
   char analyze_operator(const cs_x86_op &op, abstract_addr::ptr &addr,
                         state_symbol::ptr &symbol, bool read,

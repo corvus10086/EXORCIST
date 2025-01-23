@@ -21,25 +21,25 @@ typedef struct {
 typedef struct {
   unsigned long long int rbp_offset;
   unsigned long long int rsp_offset;
-  char* simulation_stack_taines_info;  //栈污点位图
-  char* simulation_stack_info;         //模拟的栈
+  char* simulation_stack_taines_info;  //
+  char* simulation_stack_info;         //
 
-  char* simulation_stack_set_info;     //栈上是否存在值
-  char* simulation_stack_unsure_info;  //栈上的值是否为未知的
+  char* simulation_stack_set_info;     //
+  char* simulation_stack_unsure_info;  //
 
-  //符号执行相关 先不管
+  // 
   // char* symbolic;
   // unsigned long long int symbolic_useable;
 } stack_simulation_t;
 
 typedef struct {
   short heap_size;
-  unsigned long long int* address;  //堆区数据采用一个地址对应一个值的方式
+  unsigned long long int* address;  //
   char* taine;
   char* unsure;
   unsigned long long int* value;
 
-  //符号执行相关 先不管
+  // 
   // char* symbolic;
   // unsigned long long int symbolic_useable;
 } heap_simulation_t;
@@ -173,7 +173,7 @@ void rflag_unset_taine(register_taines_map_t* register_map);
 void rflag_set_unsure(register_simulation_t* register_info);
 void rflag_unset_unsure(register_simulation_t* register_info);
 
-// EFLAG 标志寄存器
+// EFLAG 
 #define SET_CF_1(x) x |= (1 << 0)
 #define SET_CF_0(x) x &= ~(1 << 0)
 #define GET_CF(x) (x & (1 << 0)) >> 0
@@ -254,7 +254,7 @@ void rflag_unset_unsure(register_simulation_t* register_info);
 // #define SET_AI_0(x) x&=~(1<<19)
 // #define GET_AI(x) (x&(1<<19))>>19
 
-//剩下的通用寄存器不可拆分因此用一位就可以表示
+//
 #define SET_RSP_1(x) x |= (1 << 4)
 #define SET_RSP_0(x) x &= ~(1 << 4)
 #define GET_RSP(x) (x & (1 << 4)) >> 4
@@ -303,8 +303,8 @@ void rflag_unset_unsure(register_simulation_t* register_info);
 #define SET_R15_0(x) x &= ~(1 << 15)
 #define GET_R15(x) (x & (1 << 15)) >> 15
 
-// RAX,RCX,RDX,RBX可以拆分需要三位进行表示
-//设置RAX相关的寄存器
+// RAX,RCX,RDX,RBX
+//RAX
 #define SET_RAX_1(x) x |= (15 << 0)
 #define SET_RAX_0(x) x &= ~(15 << 0)
 #define GET_RAX(x) (x & (15 << 0)) >> 0
@@ -325,7 +325,7 @@ void rflag_unset_unsure(register_simulation_t* register_info);
 #define SET_AL_0(x) x &= ~(1 << 0)
 #define GET_AL(x) (x & (1 << 0)) >> 0
 
-//设置RCX相关的寄存器
+//RCX
 #define SET_RCX_1(x) x |= (15 << 4)
 #define SET_RCX_0(x) x &= ~(15 << 4)
 #define GET_RCX(x) (x & (15 << 4)) >> 4
@@ -346,7 +346,7 @@ void rflag_unset_unsure(register_simulation_t* register_info);
 #define SET_CL_0(x) x &= ~(1 << 4)
 #define GET_CL(x) (x & (1 << 4)) >> 4
 
-//设置RDX相关的寄存器
+//RDX
 #define SET_RDX_1(x) x |= (15 << 8)
 #define SET_RDX_0(x) x &= ~(15 << 8)
 #define GET_RDX(x) (x & (15 << 8)) >> 8
@@ -367,7 +367,7 @@ void rflag_unset_unsure(register_simulation_t* register_info);
 #define SET_DL_0(x) x &= ~(1 << 8)
 #define GET_DL(x) (x & (1 << 8)) >> 8
 
-//设置RBX相关的寄存器
+//RBX
 #define SET_RBX_1(x) x |= (15 << 12)
 #define SET_RBX_0(x) x &= ~(15 << 12)
 #define GET_RBX(x) (x & (15 << 12)) >> 12

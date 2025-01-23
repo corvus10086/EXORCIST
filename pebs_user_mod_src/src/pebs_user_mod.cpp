@@ -107,7 +107,7 @@ void victim_function_v9(size_t x, int *x_is_safe) {
   if (*x_is_safe) temp &= array2[array1[x]];
 }
 // ok
-// 通过控制流泄露
+// 
 void victim_function_v10(size_t x, uint8_t k) {
   if (x < array1_size) {
     if (array1[x] == k) temp &= array2[0];
@@ -121,15 +121,15 @@ void victim_function_v11(size_t x) {
 void victim_function_v12(size_t x, size_t y) {
   if ((x + y) < array1_size) temp &= array2[array1[x + y]];
 }
-// 这个branch miss cache miss在 is_x_safe中需要获取栈上的返回地址才能识别
-// 在编译器优化时会将条件分支转为setx指令，
-// 而setx指令经过测试似乎不能引发branch miss 在测试时也没能在攻击时泄漏敏感信息
-// 感觉有点奇怪，多次运行测试攻击的代码最多只能
-// 猜测出第一个字母，并且还有错误
-// 也就是说明sete的情况下在v13中没有引发branch miss？
+// branch miss cache miss is_x_safe
+// setx，
+// setxbranch miss 
+// ，
+// ，
+// setev13branch miss？
 //
-// ret的情况下怎么判断
-// branch miss后面多少个字节后面紧跟着一个ret，并且多次触发就找这个
+// ret
+// branch missret，
 //
 //
 
@@ -147,7 +147,7 @@ void victim_function_v14(size_t x) {
   if (x < array1_size) temp &= array2[array1[x ^ 255]];
 }
 
-//检测到
+//
 void victim_function_v15(size_t *x) {
   if (*x < array1_size) temp &= array2[array1[*x]];
 }
@@ -971,7 +971,7 @@ void test_func5() {
   std::string::const_iterator iterEnd = str.end();
 
   while (std::regex_search(iterStart, iterEnd, match_result, taine_pattern)) {
-    // 记录从符号中找到的符号
+    // 
     std::cout << match_result[0] << "\n";
     iterStart = match_result[0].second;
   }
@@ -1034,14 +1034,14 @@ void test_func8() {
   std::filesystem::path folderPath =
       "/home/corvus/code/pebs_all/pebs_user_mod_src/build/tmp_diasmfile/"
       "save_diasm_info/";
-  // 检查文件夹是否存在
+  // 
   if (!std::filesystem::exists(folderPath) ||
       !std::filesystem::is_directory(folderPath)) {
     std::cerr << "Folder does not exist." << std::endl;
     return;
   }
 
-  // 遍历文件夹中的所有文件
+  // 
   for (const auto &entry : std::filesystem::directory_iterator(folderPath)) {
     std::cout << entry.path().filename() << std::endl;
     std::string path =
@@ -1104,24 +1104,24 @@ void test_func10() {
   test_func215();
 }
 void test_func11() {
-  // 获取开始时间点
+  // 
   auto start = std::chrono::high_resolution_clock::now();
 
-  // 模拟一些工作
+  // 
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-  // 获取结束时间点
+  // 
   auto end = std::chrono::high_resolution_clock::now();
 
-  // 计算持续时间
+  // 
   std::chrono::duration<double, std::milli> duration = end - start;
 
-  // 比较持续时间是否大于400毫秒
+  // 400
   if (duration.count() > 400.0) {
-    std::cout << "代码执行时间超过400毫秒: " << duration.count() << " 毫秒"
+    std::cout << "400: " << duration.count() << " "
               << std::endl;
   } else {
-    std::cout << "代码执行时间不超过400毫秒: " << duration.count() << " 毫秒"
+    std::cout << "400: " << duration.count() << " "
               << std::endl;
   }
 }
@@ -1380,7 +1380,7 @@ void test_func12() {
 void test_func13() {
   std::string exec_file_path;
   uint64_t pid = 210221;
-  // 获取可执行文件的路径
+  // 
   {
     std::stringstream path;
     char exe_path[256];
@@ -1395,7 +1395,7 @@ void test_func13() {
     exec_file_path = exe_path;
     std::cout << exec_file_path << "\n";
   }
-  // 获取可执行文件的装载信息
+  // 
   uint64_t load_addr;
   {
     std::stringstream path;
@@ -1406,14 +1406,14 @@ void test_func13() {
       return;
     }
     std::string line;
-    // 逐行读取文件内容并输出到控制台
+    // 
     std::getline(file, line);
     file.close();
     int end = line.find('-');
     std::string addr_str = line.substr(0, end);
     load_addr = std::stoull(addr_str, 0, 16);
   }
-  // 获取可执行文件的plt信息
+  // plt
   {
     std::map<uint64_t, std::string> res;
     std::stringstream result;
@@ -1425,7 +1425,7 @@ void test_func13() {
     if (!pipe) {
       throw std::runtime_error("popen() failed!");
     }
-    // 从 pipe 中读取命令的输出
+    //  pipe 
     while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
       result << buffer.data();
     }
@@ -1480,7 +1480,7 @@ void test_func14() {
   }
 }
 /**
- * @brief 程序入口
+ * @brief 
  * @return int
  */
 int main(int argc, char *argv[]) {
@@ -1511,7 +1511,7 @@ int main(int argc, char *argv[]) {
 
     std::getline(std::cin, text, '\n');
     if (text == "start") {
-      //初始化net_link_tool_pt analyze_code_tool_ptr recv_thread
+      //net_link_tool_pt analyze_code_tool_ptr recv_thread
       {
         if (net_link_tool_pt == NULL) {
           net_link_tool_pt = std::make_shared<netlink_tool>(getpid());
@@ -1532,7 +1532,7 @@ int main(int argc, char *argv[]) {
               net_link_tool_pt, share_mem_tool_ptr);
         }
       }
-      //向内核发送消息表示准备开始
+      //
       try {
         net_link_tool_pt->send_message("r");
         analyze_code_tool_ptr->start_recv_thread();

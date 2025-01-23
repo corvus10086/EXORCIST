@@ -30,10 +30,10 @@
 #include "full_diasm_info.h"
 #include "static_analyze_tools.h"
 /**
- * @brief 对接受到的数据进行分析
+ * @brief 
  *
- * @param 反汇编代码
- * @param netlink_tool的智能指针，在这里仅能使用send函数
+ * @param 
+ * @param netlink_tool，send
  */
 // using namespace boost::placeholders;
 std::map<analyze_result, std::string> analyze_result_to_string_map = {
@@ -47,16 +47,16 @@ void async_analyze_code_tool::analyze(std::string &code,
                                       std::uniform_int_distribution<int> &dist,
                                       uint64_t thread_id) {
   try {
-    // 这里获取完整的反汇编信息
+    // 
     full_diasm_info::ptr info = std::make_shared<full_diasm_info>();
-    // 这里会卡一下等待获取完整的数据
+    // 
     if (!info->get_full_diasm_code(code, _thread_code_map,
                                    _thread_code_map_mutex, thread_id,
                                    _netlink_tool_ptr)) {
       return;
     }
     // std::cout << "get_full_diasm_code_finish" << std::endl;stop
-    // 进行静态分析并对结果进行分类
+    // 
     // std::string diasm_file_name =
     // "./tmp_diasmfile/save_diasm_info/diasm_info" +
     //                               std::to_string(thread_id) + ".dat";
@@ -121,7 +121,7 @@ void async_analyze_code_tool::analyze(std::string &code,
           file << info->get_diasm_string_stream().str();
           file.close();
 
-          // 直接序列化
+          // 
           std::string diasm_file_name =
               "./tmp_diasmfile/save_diasm_info/diasm_info" +
               std::to_string(thread_id) + ".dat";
@@ -136,7 +136,7 @@ void async_analyze_code_tool::analyze(std::string &code,
     _analyze_except_ptr = std::current_exception();
   }
 }
-// 从队列中取出数据并分析
+// 
 bool async_analyze_code_tool::load_code(
     std::uniform_int_distribution<int> &dist, uint64_t thread_id) {
   std::string code;
@@ -154,7 +154,7 @@ bool async_analyze_code_tool::load_code(
   return false;
 }
 /**
- * @brief 向队列中插入数据
+ * @brief 
  *
  * @param code
  */
@@ -190,20 +190,20 @@ void async_analyze_code_tool::thread_recv_data_by_netlink() {
   try {
     while (true) {
       boost::this_thread::interruption_point();
-      // netlink释放后就停止接受数据的进程
+      // netlink
       if (!_netlink_tool_ptr->effective()) {
         std::cout << "netlink_has_already_exit" << std::endl;
         break;
       }
-      //这里会被阻塞,接受到数据才会继续执行
+      //,
       std::string tmp = _netlink_tool_ptr->recieve_message();
-      //接受到停止消息后释放掉netlink_tool
+      //netlink_tool
       if (tmp.c_str()[0] == 'e' && tmp.c_str()[1] == 'x') {
         std::cout << "recv_thread_exit." << std::endl;
         _netlink_tool_ptr->destory();
         break;
       }
-      //返回的是查询数据
+      //
       else if (tmp.c_str()[0] == 's' && tmp.c_str()[1] == 'e') {
         uint64_t thread_id = *((uint64_t *)(tmp.c_str() + 8));
         if (tmp.c_str()[2] == 'f') {
@@ -216,7 +216,7 @@ void async_analyze_code_tool::thread_recv_data_by_netlink() {
                       << thread_id << "\n";
           }
           _thread_code_map[thread_id]->_message.push_back(tmp);
-          //如果获取数量足够就唤醒线程
+          //
 
           if (_thread_code_map[thread_id]->_num != 0 &&
               _thread_code_map[thread_id]->_message.size() ==
@@ -297,8 +297,8 @@ void async_analyze_code_tool::thread_analyze_data() {
   try {
     int sleep_time = 0;
     std::uniform_int_distribution<int> dist;
-    // 这里获取当前线程使用的随机数范围
-    // 还需要生成线程的独立id
+    // 
+    // id
     {
       boost::lock_guard<boost::mutex> lock(_random_range_mutex);
       dist = _thread_random_range.back();
@@ -310,7 +310,7 @@ void async_analyze_code_tool::thread_analyze_data() {
     // uint64_t num = 0;
     // auto start_time = std::chrono::high_resolution_clock::now();
     while (!_thread_analyzr_data_should_stop) {
-      // 计时用代码
+      // 
       {
         // ++num;
         // auto this_time = std::chrono::high_resolution_clock::now();
@@ -325,7 +325,7 @@ void async_analyze_code_tool::thread_analyze_data() {
         //   start_time = std::chrono::high_resolution_clock::now();
         // }
       }
-      // 每次循环生成一个唯一的id
+      // id
       thread_id = dist(random);
       boost::this_thread::interruption_point();
       if (load_code(dist, thread_id)) {
@@ -352,7 +352,7 @@ void async_analyze_code_tool::stop_recv_thread() {
     _recy_by_mmap_thread.join();
   }
   _share_mem_tool_ptr->destory();
-  //应该在停止接受数据的进程后释放netlink
+  //netlink
   _netlink_tool_ptr->destory();
   std::cout << "stop_recv_thread_finish" << std::endl;
 }

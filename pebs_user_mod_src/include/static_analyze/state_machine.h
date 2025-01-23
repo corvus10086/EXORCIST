@@ -20,50 +20,50 @@ class state_machine {
   typedef std::shared_ptr<state_machine> ptr;
 
   /**
-   * @brief 一个构造函数
+   * @brief 
    *
    */
   state_machine(std::default_random_engine& random,
                 std::uniform_int_distribution<int>& dist)
       : _random(random), _dist(dist) {}
-  // 从一个抽象地址获取符号，没有相应符号时返回空符号
+  //
   state_symbol::ptr get_symbol_from_addr(abstract_addr::ptr);
-  // 根据字符类型为一个抽象地址生成符号
+  // 
   state_symbol::ptr generate_symbol_for_addr(abstract_addr::ptr, std::string,
                                              short size);
-  // 根据字符类型为一个抽象地址生成符号
+  // 
   state_symbol::ptr generate_symbol_for_addr(abstract_addr::ptr, std::string);
-  // 根据一个字符串和一个污点字符串容器为地址生成一个符号
+  // 
   state_symbol::ptr generate_symbol_for_addr(abstract_addr::ptr, std::string,
                                              std::vector<std::string>);
-  // 根据一个字符串和一个污点字符串容器为地址生成一个符号
+  // 
   state_symbol::ptr generate_symbol_for_addr(abstract_addr::ptr, std::string,
                                              std::vector<std::string>, short);
-  // 根据数字类型为一个抽象地址生成符号
+  // 
   state_symbol::ptr generate_symbol_for_addr(abstract_addr::ptr, uint64_t,
                                              short size);
-  // 根据数字类型为一个抽象地址生成符号
+  // 
   state_symbol::ptr generate_symbol_for_addr(abstract_addr::ptr, uint64_t);
 
-  // 给一个抽象地址设置一个字符串符号
+  // 
   void set_symbol_for_addr(abstract_addr::ptr, std::string, short size);
-  // 给一个抽象地址设置一个数字符号
+  // 
   void set_symbol_for_addr(abstract_addr::ptr, uint64_t, short size);
   /**
-   * @brief 给一个抽象地址设置一个抽象符号
+   * @brief
    *
    */
   void set_symbol_for_addr(abstract_addr::ptr, state_symbol::ptr);
-  // 清除当前状态机中的全部污点
+  // 
   void clear_all_symbol();
-  // 对一个状态机进行浅拷贝
+  // 
   state_machine::ptr shallow_copy() {
     state_machine::ptr res = std::make_shared<state_machine>(_random, _dist);
     res->_addr_symbol_map = _addr_symbol_map;
     res->_flag_symbol_map = _flag_symbol_map;
     return res;
   }
-  // 在状态机中寻找可能与symbol中污点有关的地址和符号映射
+  // 
   std::map<abstract_addr::ptr, state_symbol::ptr> find_addr_contain_taine(
       state_symbol::ptr symbol) {
     std::map<abstract_addr::ptr, state_symbol::ptr> res = {};
@@ -76,7 +76,7 @@ class state_machine {
     }
     return res;
   }
-  // 在状态机中寻找可能与symbol中污点有关的地址和符号映射 不包含另一个符号的影响
+  // 
   std::map<abstract_addr::ptr, state_symbol::ptr>
   find_addr_contain_taine_without_in(state_symbol::ptr symbol,
                                      state_symbol::ptr with_out_symbol) {
@@ -92,7 +92,7 @@ class state_machine {
     }
     return res;
   }
-  // 在状态机中寻找可能与symbol中污点有关的地址和符号映射
+  // 
   std::map<abstract_addr::ptr, state_symbol::ptr> find_addr_contain_taine(
       std::vector<std::string> taine_str_vec) {
     std::map<abstract_addr::ptr, state_symbol::ptr> res = {};
@@ -112,7 +112,7 @@ class state_machine {
           (iter.second->get_symbol_size() == sym_size) &&
           iter.second->judge_symbol_str_effect(symbol_str_vec)) {
         res[iter.first] = iter.second;
-        // 如果找到的结果是一个字符地址就继续找这个字符地址的相关数据
+        // 
         if (iter.first->get_addr_string() != "" && deep > 0) {
           auto tmp = find_addr_contain_symbol(
               iter.first->get_symbol_str_vector(), iter.first->_size, --deep);
@@ -135,14 +135,14 @@ class state_machine {
     return res;
   }
 
-  // 随机数生成器
+  // 
   std::default_random_engine& _random;
-  // 当前进程的随机数范围限制
+  // 
   std::uniform_int_distribution<int>& _dist;
 
-  // 地址符号映射
+  // 
   std::map<abstract_addr::ptr, state_symbol::ptr> _addr_symbol_map;
-  // 标志位符号映射
+  // 
   std::map<abstract_flags::ptr, state_symbol::ptr> _flag_symbol_map;
   std::vector<state_symbol::ptr> _cache_miss_symbol_vector = {};
 };
@@ -150,22 +150,22 @@ class generate_abstract_addr_tool {
  public:
   typedef std::shared_ptr<generate_abstract_addr_tool> ptr;
   /**
-   * @brief 构造函数
+   * @brief 
    *
-   * @param random 随机数生成器
+   * @param random 
    */
   generate_abstract_addr_tool(std::default_random_engine& random,
                               std::uniform_int_distribution<int>& dist)
       : _random(random), _dist(dist) {}
   /**
-   * @brief 从一个字符串获取抽象地址
+   * @brief 
    *
    * @param size
    * @return abstract_addr::ptr
    */
   abstract_addr::ptr get_abstract_addr(std::string, short size);
   /**
-   * @brief 从一个整数地址获取抽象地址
+   * @brief 
    *
    * @param addr
    * @param size
@@ -173,23 +173,20 @@ class generate_abstract_addr_tool {
    */
   abstract_addr::ptr get_abstract_addr(u_int64_t, short size);
   /**
-   * @brief 从一个寄存器类型获取抽象地址
-   *
+   * @brief 
    * @param size
    * @return abstract_addr::ptr
    */
   abstract_addr::ptr get_abstract_addr(x86_reg, short size);
   /**
-   * @brief 从一个内存地址获取抽象地址,
-   * 从内存获取地址的时候设置此地址的污点等级，
-   * 等到对此地址操作时具体在确定此地址对应符号的污点等级
+   * @brief 
    *
    * @param size
    * @return abstract_addr::ptr
    */
   abstract_addr::ptr get_abstract_addr(x86_op_mem, state_machine::ptr, short);
   /**
-   * @brief 从一个符号获取抽象地址
+   * @brief 
    *
    * @param symbol
    * @param size
@@ -198,14 +195,14 @@ class generate_abstract_addr_tool {
   abstract_addr::ptr get_abstract_addr(state_symbol::ptr symbol, short size);
   abstract_addr::ptr get_abstract_addr(state_symbol symbol, short size);
   /**
-   * @brief 将可拆分的寄存器进行合并处理
+   * @brief 
    *
    * @return x86_reg
    */
   x86_reg merge_reg(x86_reg);
   /**
    * @brief
-   * 对生成抽象地址的工具进行浅拷贝，由于地址和符号不会改变，改变的只是对应关系，所以无需深拷贝
+   * 
    *
    * @return generate_abstract_addr_tool::ptr
    */
@@ -219,8 +216,7 @@ class generate_abstract_addr_tool {
     return res;
   }
   /**
-   * @brief 获取一个抽象符号 根据rflags
-   *
+   * @brief 
    * @param flag
    * @return abstract_flags::ptr
    */
@@ -245,25 +241,25 @@ class generate_abstract_addr_tool {
 
  private:
   std::default_random_engine& _random;
-  // 当前进程的随机数范围限制
+  // 
   std::uniform_int_distribution<int>& _dist;
   /**
-   * @brief 数字地址和抽象地址的映射
+   * @brief 
    *
    */
   std::map<u_int64_t, abstract_addr::ptr> _addr_map;
   /**
-   * @brief 字符地址和抽象地址的映射
+   * @brief 
    *
    */
   std::map<std::string, abstract_addr::ptr> _string_map;
   /**
-   * @brief 寄存器地址和抽象地址的映射
+   * @brief 
    *
    */
   std::map<x86_reg, abstract_addr::ptr> _reg_map;
   /**
-   * @brief 标志位和抽象地址的映射
+   * @brief 
    *
    */
   std::map<rflags, abstract_flags::ptr> _flag_map = {

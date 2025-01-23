@@ -51,7 +51,7 @@ state_symbol state_symbol::operator+(const state_symbol &right) {
   }
   res._str = res._single_symbol->__str__();
   res._symbol_size = max_size;
-  // 获取res的taine符号
+  // restaine
   res.init_symbol_str();
   for (auto symbol_str : res._contain_symbol) {
     if (right._taine_effect_symbol_map.count(symbol_str)) {
@@ -67,7 +67,7 @@ state_symbol state_symbol::operator+(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -100,7 +100,7 @@ state_symbol state_symbol::operator+(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -122,7 +122,7 @@ state_symbol state_symbol::operator+(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -179,7 +179,7 @@ state_symbol state_symbol::op_add(state_symbol::ptr right) {
   }
   res._str = res._single_symbol->__str__();
   res._symbol_size = max_size;
-  // 获取res的taine符号
+  // restaine
   res.init_symbol_str();
   for (auto symbol_str : res._contain_symbol) {
     if (right->_taine_effect_symbol_map.count(symbol_str)) {
@@ -195,7 +195,7 @@ state_symbol state_symbol::op_add(state_symbol::ptr right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -228,7 +228,7 @@ state_symbol state_symbol::op_add(state_symbol::ptr right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -250,7 +250,7 @@ state_symbol state_symbol::op_add(state_symbol::ptr right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -306,7 +306,7 @@ state_symbol state_symbol::op_add(const state_symbol &right) {
   }
   res._str = res._single_symbol->__str__();
   res._symbol_size = max_size;
-  // 获取res的taine符号
+  // restaine
   res.init_symbol_str();
   for (auto symbol_str : res._contain_symbol) {
     if (right._taine_effect_symbol_map.count(symbol_str)) {
@@ -322,7 +322,7 @@ state_symbol state_symbol::op_add(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -355,7 +355,7 @@ state_symbol state_symbol::op_add(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -377,7 +377,7 @@ state_symbol state_symbol::op_add(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -441,7 +441,7 @@ state_symbol state_symbol::operator-(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -474,7 +474,7 @@ state_symbol state_symbol::operator-(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -496,7 +496,7 @@ state_symbol state_symbol::operator-(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -567,7 +567,7 @@ state_symbol state_symbol::op_sub(state_symbol::ptr right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -600,7 +600,7 @@ state_symbol state_symbol::op_sub(state_symbol::ptr right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -622,7 +622,7 @@ state_symbol state_symbol::op_sub(state_symbol::ptr right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -690,7 +690,7 @@ state_symbol state_symbol::op_sub(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -723,7 +723,7 @@ state_symbol state_symbol::op_sub(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -745,7 +745,7 @@ state_symbol state_symbol::op_sub(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -809,7 +809,7 @@ state_symbol state_symbol::operator*(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -842,7 +842,7 @@ state_symbol state_symbol::operator*(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -864,7 +864,7 @@ state_symbol state_symbol::operator*(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -925,7 +925,7 @@ state_symbol state_symbol::op_mul(state_symbol::ptr right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -958,7 +958,7 @@ state_symbol state_symbol::op_mul(state_symbol::ptr right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -980,7 +980,7 @@ state_symbol state_symbol::op_mul(state_symbol::ptr right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1040,7 +1040,7 @@ state_symbol state_symbol::op_mul(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1073,7 +1073,7 @@ state_symbol state_symbol::op_mul(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1095,7 +1095,7 @@ state_symbol state_symbol::op_mul(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1146,7 +1146,7 @@ state_symbol state_symbol::operator/(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1179,7 +1179,7 @@ state_symbol state_symbol::operator/(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1201,7 +1201,7 @@ state_symbol state_symbol::operator/(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1252,7 +1252,7 @@ state_symbol state_symbol::op_div(state_symbol::ptr right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1285,7 +1285,7 @@ state_symbol state_symbol::op_div(state_symbol::ptr right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1307,7 +1307,7 @@ state_symbol state_symbol::op_div(state_symbol::ptr right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1358,7 +1358,7 @@ state_symbol state_symbol::op_div(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1391,7 +1391,7 @@ state_symbol state_symbol::op_div(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1413,7 +1413,7 @@ state_symbol state_symbol::op_div(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1436,7 +1436,7 @@ state_symbol state_symbol::op_div(const state_symbol &right) {
   return res;
 }
 state_symbol state_symbol::op_and(const state_symbol &right) {
-  //都是数字的情况下可以直接计算
+  //
 
   short symbol_size = this->_symbol_size > right._symbol_size
                           ? this->_symbol_size
@@ -1448,20 +1448,20 @@ state_symbol state_symbol::op_and(const state_symbol &right) {
     return state_symbol(left_num & right_num, symbol_size);
   }
   if (right.is_num()) {
-    //和全0与会变成全0,这种情况下会将原值覆盖
+    //00,
     uint64_t num = right.to_int();
     if (num == 0) {
       return state_symbol(0, symbol_size);
     }
   }
   if (this->is_num()) {
-    //和全0与会变成全0,这种情况下会将原值覆盖
+    //00,
     uint64_t num = this->to_int();
     if (num == 0) {
       return state_symbol(0, symbol_size);
     }
   }
-  //其中一个都是符号并且无法被覆盖的情况下
+  //
 
   // state_symbol res =
   //     state_symbol(this->to_string() + "_with_and", _symbol_size,
@@ -1488,7 +1488,7 @@ state_symbol state_symbol::op_and(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1521,7 +1521,7 @@ state_symbol state_symbol::op_and(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1543,7 +1543,7 @@ state_symbol state_symbol::op_and(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1566,7 +1566,7 @@ state_symbol state_symbol::op_and(const state_symbol &right) {
   return res;
 }
 state_symbol state_symbol::op_and(state_symbol::ptr right) {
-  //都是数字的情况下可以直接计算
+  //
 
   short symbol_size = this->_symbol_size > right->_symbol_size
                           ? this->_symbol_size
@@ -1578,20 +1578,20 @@ state_symbol state_symbol::op_and(state_symbol::ptr right) {
     return state_symbol(left_num & right_num, symbol_size);
   }
   if (right->is_num()) {
-    //和全0与会变成全0,这种情况下会将原值覆盖
+    //00,
     uint64_t num = right->to_int();
     if (num == 0) {
       return state_symbol(0, symbol_size);
     }
   }
   if (this->is_num()) {
-    //和全0与会变成全0,这种情况下会将原值覆盖
+    //00,
     uint64_t num = this->to_int();
     if (num == 0) {
       return state_symbol(0, symbol_size);
     }
   }
-  //其中一个都是符号并且无法被覆盖的情况下
+  //
 
   // state_symbol res =
   //     state_symbol(this->to_string() + "_with_and", _symbol_size,
@@ -1618,7 +1618,7 @@ state_symbol state_symbol::op_and(state_symbol::ptr right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1651,7 +1651,7 @@ state_symbol state_symbol::op_and(state_symbol::ptr right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1673,7 +1673,7 @@ state_symbol state_symbol::op_and(state_symbol::ptr right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1700,7 +1700,7 @@ state_symbol state_symbol::op_and(state_symbol::ptr right) {
   return res;
 }
 state_symbol state_symbol::op_or(const state_symbol &right) {
-  //都是数字的情况下可以直接计算
+  //
   short symbol_size = this->_symbol_size > right._symbol_size
                           ? this->_symbol_size
                           : right._symbol_size;
@@ -1716,14 +1716,14 @@ state_symbol state_symbol::op_or(const state_symbol &right) {
     mask = ~(0xffffffffffffffff << (symbol_size * 8));
   }
   if (right.is_num() && right.to_int() == mask) {
-    //和全1或会变成全1,这种情况下会将原值覆盖
+    //11,
     return state_symbol(mask, symbol_size);
   }
   if (this->is_num() && this->to_int() == mask) {
-    //和全1或会变成全1,这种情况下会将原值覆盖
+    //11,
     return state_symbol(mask, symbol_size);
   }
-  //其中一个都是符号并且无法被覆盖的情况下
+  //
   // state_symbol res =
   //     state_symbol(this->to_string() + "_with_and", _symbol_size,
   //                  std::make_shared<symbol_tree>(new_root_node(
@@ -1747,7 +1747,7 @@ state_symbol state_symbol::op_or(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1780,7 +1780,7 @@ state_symbol state_symbol::op_or(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1802,7 +1802,7 @@ state_symbol state_symbol::op_or(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1825,7 +1825,7 @@ state_symbol state_symbol::op_or(const state_symbol &right) {
   return res;
 }
 state_symbol state_symbol::op_or(state_symbol::ptr &right) {
-  //都是数字的情况下可以直接计算
+  //
   short symbol_size = this->_symbol_size > right->_symbol_size
                           ? this->_symbol_size
                           : right->_symbol_size;
@@ -1841,14 +1841,14 @@ state_symbol state_symbol::op_or(state_symbol::ptr &right) {
     mask = ~(0xffffffffffffffff << (symbol_size * 8));
   }
   if (right->is_num() && right->to_int() == mask) {
-    //和全1或会变成全1,这种情况下会将原值覆盖
+    //11,
     return state_symbol(mask, symbol_size);
   }
   if (this->is_num() && this->to_int() == mask) {
-    //和全1或会变成全1,这种情况下会将原值覆盖
+    //11,
     return state_symbol(mask, symbol_size);
   }
-  //其中一个都是符号并且无法被覆盖的情况下
+  //
   // state_symbol res =
   //     state_symbol(this->to_string() + "_with_and", _symbol_size,
   //                  std::make_shared<symbol_tree>(new_root_node(
@@ -1872,7 +1872,7 @@ state_symbol state_symbol::op_or(state_symbol::ptr &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1905,7 +1905,7 @@ state_symbol state_symbol::op_or(state_symbol::ptr &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1927,7 +1927,7 @@ state_symbol state_symbol::op_or(state_symbol::ptr &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -1972,7 +1972,7 @@ state_symbol state_symbol::op_not() {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2005,7 +2005,7 @@ state_symbol state_symbol::op_not() {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2027,7 +2027,7 @@ state_symbol state_symbol::op_not() {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2050,7 +2050,7 @@ state_symbol state_symbol::op_not() {
   return res;
 }
 state_symbol state_symbol::op_xor(const state_symbol &right) {
-  //都是数字的情况下可以直接计算
+  //
   short symbol_size = this->_symbol_size > right._symbol_size
                           ? this->_symbol_size
                           : right._symbol_size;
@@ -2081,7 +2081,7 @@ state_symbol state_symbol::op_xor(const state_symbol &right) {
       if (!res.is_num()) {
         switch (res._symbol_size) {
           case 8: {
-            // 设置eax ax ah al
+            // eax ax ah al
             // xh
             res._size_xh_symbol = std::make_shared<state_symbol>(
                 res._str + "xh", 1, res._taine_effect_vector);
@@ -2115,7 +2115,7 @@ state_symbol state_symbol::op_xor(const state_symbol &right) {
             break;
           }
           case 4: {
-            // 设置ax ah al
+            // ax ah al
             // xh
             res._size_xh_symbol = std::make_shared<state_symbol>(
                 res._str + "xh", 1, res._taine_effect_vector);
@@ -2138,7 +2138,7 @@ state_symbol state_symbol::op_xor(const state_symbol &right) {
             break;
           }
           case 2: {
-            // 设置ah al
+            // ah al
             // xh
             res._size_xh_symbol = std::make_shared<state_symbol>(
                 res._str + "xh", 1, res._taine_effect_vector);
@@ -2163,7 +2163,7 @@ state_symbol state_symbol::op_xor(const state_symbol &right) {
   }
 }
 state_symbol state_symbol::op_xor(state_symbol::ptr &right) {
-  //都是数字的情况下可以直接计算
+  //
   short symbol_size = this->_symbol_size > right->_symbol_size
                           ? this->_symbol_size
                           : right->_symbol_size;
@@ -2194,7 +2194,7 @@ state_symbol state_symbol::op_xor(state_symbol::ptr &right) {
       if (!res.is_num()) {
         switch (res._symbol_size) {
           case 8: {
-            // 设置eax ax ah al
+            // eax ax ah al
             // xh
             res._size_xh_symbol = std::make_shared<state_symbol>(
                 res._str + "xh", 1, res._taine_effect_vector);
@@ -2228,7 +2228,7 @@ state_symbol state_symbol::op_xor(state_symbol::ptr &right) {
             break;
           }
           case 4: {
-            // 设置ax ah al
+            // ax ah al
             // xh
             res._size_xh_symbol = std::make_shared<state_symbol>(
                 res._str + "xh", 1, res._taine_effect_vector);
@@ -2251,7 +2251,7 @@ state_symbol state_symbol::op_xor(state_symbol::ptr &right) {
             break;
           }
           case 2: {
-            // 设置ah al
+            // ah al
             // xh
             res._size_xh_symbol = std::make_shared<state_symbol>(
                 res._str + "xh", 1, res._taine_effect_vector);
@@ -2300,7 +2300,7 @@ state_symbol state_symbol::op_left_shift(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2333,7 +2333,7 @@ state_symbol state_symbol::op_left_shift(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2355,7 +2355,7 @@ state_symbol state_symbol::op_left_shift(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2399,7 +2399,7 @@ state_symbol state_symbol::op_left_shift(state_symbol::ptr &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2432,7 +2432,7 @@ state_symbol state_symbol::op_left_shift(state_symbol::ptr &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2454,7 +2454,7 @@ state_symbol state_symbol::op_left_shift(state_symbol::ptr &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2498,7 +2498,7 @@ state_symbol state_symbol::op_right_shift(const state_symbol &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2528,7 +2528,7 @@ state_symbol state_symbol::op_right_shift(const state_symbol &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2543,7 +2543,7 @@ state_symbol state_symbol::op_right_shift(const state_symbol &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2587,7 +2587,7 @@ state_symbol state_symbol::op_right_shift(state_symbol::ptr &right) {
     if (!res.is_num()) {
       switch (res._symbol_size) {
         case 8: {
-          // 设置eax ax ah al
+          // eax ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2617,7 +2617,7 @@ state_symbol state_symbol::op_right_shift(state_symbol::ptr &right) {
           break;
         }
         case 4: {
-          // 设置ax ah al
+          // ax ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);
@@ -2632,7 +2632,7 @@ state_symbol state_symbol::op_right_shift(state_symbol::ptr &right) {
           break;
         }
         case 2: {
-          // 设置ah al
+          // ah al
           // xh
           res._size_xh_symbol = std::make_shared<state_symbol>(
               res._str + "xh", 1, res._taine_effect_vector);

@@ -20,19 +20,19 @@
 #include "pebs_taine.h"
 
 struct pebs_message_send_chre_dev {
-  // 设备名
+  // 
   char *dev_name;
-  // 主设备号
+  // 
   int major;
-  // 次设备号
+  // 
   int minor;
-  // 文件操作指针
+  // 
   struct file_operations fops;
-  // 设备结构体描述符指针
+  // 
   struct mem_dev mem_devp;
-  // 设备类
+  // 
   struct class *device_class;
-  // 设备
+  // 
   struct device *device;
 
   struct cdev cdev;
@@ -40,11 +40,11 @@ struct pebs_message_send_chre_dev {
 struct pebs_message_send_chre_dev this_dev;
 
 struct pebs_netlink_info {
-  // 全局sock指针
+  // sock
   struct sock *nl_sk;
-  // 记录用户态线程的pid
+  // pid
   uint32_t usermod_pid;
-  // 标志开始的标识
+  // 
   int is_start;
   struct netlink_kernel_cfg cfg;
 };
@@ -52,7 +52,7 @@ struct pebs_netlink_info this_netlink;
 
 message_struct_t this_dev_messgae_struct;
 /**
- * @brief 文件打开函数
+ * @brief 
  *
  * @param inode
  * @param filp
@@ -64,7 +64,7 @@ int mem_open(struct inode *inode, struct file *filp) {
   return 0;
 }
 /**
- * @brief 文件释放函数
+ * @brief 
  *
  * @param inode
  * @param filp
@@ -75,14 +75,14 @@ int mem_release(struct inode *inode, struct file *filp) {
   return 0;
 }
 /**
- * @brief 文件mmap函数
+ * @brief mmap
  *
  * @param filp
  * @param vma
  * @return int
  */
 static int memdev_mmap(struct file *filp, struct vm_area_struct *vma) {
-  // 获取设备结构体指针
+  // 
   struct mem_dev *dev = filp->private_data;
 
   unsigned long pfn;
@@ -105,12 +105,12 @@ static int memdev_mmap(struct file *filp, struct vm_area_struct *vma) {
 
   return 0;
 }
-//入口函数
+//
 static int __init pebs_module_init(void) {
   int result;
 
   printk(KERN_INFO "init\n");
-  // 配置相关参数
+  // 
   {
     this_dev.dev_name = DEVICE_NAME;
     this_dev.major = MEMDEV_MAJOR;
@@ -119,7 +119,7 @@ static int __init pebs_module_init(void) {
     this_dev.fops.release = mem_release;
     this_dev.fops.mmap = memdev_mmap;
   }
-  // 为设备描述结构分配内存
+  // 
   this_dev.mem_devp.size = MEMDEV_SIZE;
   if (this_dev.mem_devp.data == NULL) {
     this_dev.mem_devp.data = vmalloc(MEMDEV_SIZE);
@@ -134,19 +134,19 @@ static int __init pebs_module_init(void) {
     *this_dev_messgae_struct.write_index = 1;
     *this_dev_messgae_struct.read_index = 0;
   }
-  //创建一个字符驱动设备
+  //
   this_dev.major = register_chrdev(0, this_dev.dev_name, &this_dev.fops);
   if (this_dev.major < 0) {
     printk(KERN_INFO "alloc deveive fail\n");
     goto free_mem;
   }
-  // 创建设备类
+  // 
   this_dev.device_class = class_create(THIS_MODULE, DEVICE_CLASS);
   if (IS_ERR(this_dev.device_class)) {
     printk(KERN_INFO "fail to create dev class\n");
     goto unregister_dev;
   }
-  // 创建设备文件
+  // 
   this_dev.device = device_create(this_dev.device_class, NULL,
                                   MKDEV(this_dev.major, 0), NULL, DEVICE_NAME);
   if (IS_ERR(this_dev.device)) {
@@ -154,7 +154,7 @@ static int __init pebs_module_init(void) {
     goto destory_class;
   }
 
-  //创建netlink 用于启动和停止
+  //netlink 
   {
     this_netlink.is_start = 0;
     this_netlink.nl_sk = NULL;
@@ -181,10 +181,10 @@ device_destroy:
 destory_class:
   class_destroy(this_dev.device_class);
 unregister_dev:
-  // 卸载设备
+  // 
   unregister_chrdev(this_dev.major, this_dev.dev_name);
 free_mem:
-  // 释放内存
+  // 
   if (this_dev.mem_devp.data != NULL) {
     vfree(this_dev.mem_devp.data);
   }
@@ -192,7 +192,7 @@ free_mem:
 }
 
 static void __exit pebs_module_exit(void) {
-  // 注销字符驱动以及netlink
+  // netlink
   printk(KERN_INFO "exit\n");
 
   device_destroy(this_dev.device_class, MKDEV(this_dev.major, 0));
@@ -201,11 +201,11 @@ static void __exit pebs_module_exit(void) {
 
   unregister_chrdev(this_dev.major, this_dev.dev_name);
 
-  // 释放内存
+  // 
   if (this_dev.mem_devp.data != NULL) {
     vfree(this_dev.mem_devp.data);
   }
-  // 释放netlink
+  // netlink
   if (this_netlink.nl_sk != NULL) {
     sock_release(this_netlink.nl_sk->sk_socket);
     this_netlink.nl_sk = NULL;
@@ -221,12 +221,12 @@ void recv_callback(struct sk_buff *skb) {
   if (skb->len >= nlmsg_total_size(0)) {
     nlh = nlmsg_hdr(skb);
     this_netlink.usermod_pid = nlh->nlmsg_pid;
-    //宏 获取数据
+    // 
     data = NLMSG_DATA(nlh);
     if (data) {
       // printk("kernel receive data %c\n", *((char *)data));
       if (*((char *)data) == 'r') {
-        // todo 接受消息r，表示对pebs进行初始化
+        // todo r，pebs
         // char mess_ini = "begin";
         // send_msg_by_netlink(mess_init, 16);
         printk("kernel begin to init pebs");
@@ -239,7 +239,7 @@ void recv_callback(struct sk_buff *skb) {
         this_netlink.is_start = 1;
 
       } else if (*((char *)data) == 's') {
-        // todo 接受消息s，表示对pebs取消初始化
+        // todo s，pebs
         if (this_netlink.is_start != 0) {
           char mess_exit[8] = "exit";
           printk("kernel begin to send exit");
@@ -251,7 +251,7 @@ void recv_callback(struct sk_buff *skb) {
         u64 thread_id;
         u32 target_thread_pid;
         u64 start_addr;
-        // todo 接受消息g，从内存中取出相应的数据
+        // todo g，
         // printk("kernel begin to get data from mem");
         thread_id = *((uint64_t *)(data + 8));
         target_thread_pid = *((uint32_t *)(data + 16));
@@ -261,7 +261,7 @@ void recv_callback(struct sk_buff *skb) {
         // printk(KERN_INFO "start_addr = %llx\n", start_addr);
         read_data(target_thread_pid, thread_id, start_addr);
       } else if (*((char *)data) == 't') {
-        // todo 测试内容
+        // todo 
         char data_with_information[382];
         data_with_information[0] = 0;
         data_with_information[1] = 30;
@@ -287,23 +287,23 @@ int send_msg_by_netlink(const char *pbuf, uint16_t len) {
   struct nlmsghdr *nlh;
   int ret;
 
-  //创建sk_buffer
+  //sk_buffer
   nl_skb = nlmsg_new(len, GFP_ATOMIC);
   if (!nl_skb) {
     printk("nlmsg_new error\n");
     return -1;
   }
-  //设置netlink头
+  //netlink
   nlh = nlmsg_put(nl_skb, 0, 0, 0, len, 0);
   if (nlh == NULL) {
     printk("netlink header error\n");
     nlmsg_free(nl_skb);
     return -1;
   }
-  //拷贝数据
+  //
   memcpy(nlmsg_data(nlh), pbuf, len);
 
-  //单播发送数据
+  //
   ret = netlink_unicast(this_netlink.nl_sk, nl_skb, this_netlink.usermod_pid,
                         MSG_DONTWAIT);
 
@@ -313,7 +313,7 @@ int send_msg_by_mmap(const char *pbuf) {
   //
   int message_num_max = MAX_MESSAGE_NUM_SIZE;
   int message_size = SINGLE_MESSAGE_BY_MMAP_SIZE;
-  // 缓冲区已满
+  // 
   if ((*this_dev_messgae_struct.write_index + 1) % message_num_max ==
       *this_dev_messgae_struct.read_index) {
     printk(KERN_INFO "this_dev_mesage_is_full");
@@ -331,7 +331,7 @@ int send_msg_by_mmap(const char *pbuf) {
 }
 int judge_message_struct_full(void) {
   int message_num_max = MAX_MESSAGE_NUM_SIZE;
-  // 缓冲区已满
+  // 
   if ((*this_dev_messgae_struct.write_index + 1) % message_num_max ==
       *this_dev_messgae_struct.read_index) {
     printk(KERN_INFO "this_dev_mesage_is_full");
