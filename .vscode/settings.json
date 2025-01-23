@@ -35,10 +35,6 @@
     },
     "makefile.makefilePath": "/home/corvus/code/pebs/src/Makefile",
     "C_Cpp.intelliSenseEngine": "disabled",
-    // "C_Cpp.default.compilerArgs": [
-    //     "-std=c++20"
-    // ],
-    // "C_Cpp.default.cppStandard": "c++11",
     "[cpp]": {
         "editor.formatOnType": true,
         "editor.formatOnPaste": true,
@@ -49,10 +45,13 @@
     "clang-format.language.c.fallbackStyle": "Google",
     "clang-format.language.cpp.fallbackStyle": "Google",
     "clangd.fallbackFlags": [
-        "-I/home/corvus/code/pebs_all/pebs_user_mod_src/include",
-        "-I/home/corvus/code/pebs_all/pebs_user_mod_src/include/static_analyze",
-        "-I/home/corvus/code/pebs_all/pebs_user_mod_src/include/beaengine",
-        "-std=c++20"
+        "-I/home/corvus/code/pebs_all/pebs_mmap_version/beaengine/src",
+        "-I/home/corvus/code/pebs_all/pebs_mmap_version/include",
+        "-I/home/corvus/code/pebs_all/pebs_mmap_version/beaengine/include/beaengine",
+        "-I/lib/modules/5.15.148/build/include/",
+        "-I/lib/modules/5.15.148/build/arch/x86/include/",
+        "-I/lib/modules/5.15.148/build/arch/x86/",
+        "-I/lib/modules/5.15.148/build/"
     ],
     "clangd.detectExtensionConflicts": true,
     "clangd.arguments": [
@@ -74,9 +73,8 @@
         // 补充头文件的形式
         "--header-insertion=iwyu",
         // pch优化的位置
-        "--pch-storage=disk",
-        //设置c++标准
-        // "--std=c++20"
-    ]
+        "--pch-storage=disk"
+    ],
+    "cmake.ignoreCMakeListsMissing": true
 
 }

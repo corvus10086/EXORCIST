@@ -1,0 +1,8 @@
+.**.cmd
+Module.symvers
+.**.o.d
+**.o
+pebs.ko
+pebs.mod
+pebs.mod.c
+modules.order
