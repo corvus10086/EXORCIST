@@ -115,10 +115,10 @@ int main(int argc, const char **argv) {
   // unsigned long cs;
   // __asm__ __volatile__ (
   //       "mov %%cs, %0"
-  //       : "=r" (cs) // 输出约束，`cs_value` 用来存储 `cs` 的值
+  //       : "=r" (cs) // `cs_value`  `cs` 
   //   );
 
-  // if (cs == 0x23) {  // 0x23 是 32 位用户态代码段选择子
+  // if (cs == 0x23) {  // 0x23  32 
   //   printf("This is a 32-bit process\n");
   // } else {
   //   printf("This is a 64-bit process\n");

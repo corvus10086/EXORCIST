@@ -21,7 +21,7 @@ extern void (*pebs_handler)(void);
 // 208GPRS
 static uint32_t pebs_record_size = 208;
 
-// CPU，ds struct
+// CPUds struct
 static DEFINE_PER_CPU(debug_store_t *, cpu_ds_p);
 
 static DEFINE_PER_CPU(uint64_t, cpu_old_ds);
@@ -192,7 +192,7 @@ static uint64_t cal_cache_miss_ctrl_val(int is_pcore) {
 //     // end_addr=%llx\n",get_cpu(),cur_addr,end_addr);
 
 //     uint64_t *cur_p = cur_addr;
-//     // basic_info  mem_info32，64
+//     // basic_info  mem_info3264
 //     uint64_t total_rec_count = (end_addr - cur_addr) / pebs_record_size;
 //     // printk(KERN_INFO "cpu-%d:pebs buffer record
 //     // count:%lld\n",get_cpu(),total_rec_count);
@@ -202,7 +202,7 @@ static uint64_t cal_cache_miss_ctrl_val(int is_pcore) {
 //     while (i < count) {
 //       uint64_t val = *(cur_p + i);
 //       if ((val & 0xff) == 0xd5 || (val & 0xff) == 0xe1) {
-//         // record（8）
+//         // record8
 //         // printk(KERN_INFO "cpu-%d:address:%llx,PEBS record
 //         // value:%llx(target)\n",get_cpu(),(cur_p+i),*(cur_p+i));
 //       } else {
@@ -293,18 +293,18 @@ static void pebs_mod_init_each_cpu(void *arg) {
     }
   }
 
-  //BufferIA32_DS_AREA。
+  //BufferIA32_DS_AREA
   rdmsrl(MSR_DS_AREA, old_ds);
   //
   __this_cpu_write(cpu_old_ds, old_ds);
   wrmsrl(MSR_DS_AREA, (uint64_t)__this_cpu_read(cpu_ds_p));
 
   //PEBS record
-  // basicmemory，basic_info，memory_info
-  // GPRS，
+  // basicmemorybasic_infomemory_info
+  // GPRS
   wrmsrl(MSR_PEBS_DATA_CFG, (uint64_t)3);
 
-  // PMU（MSR_PERFEVTSEL0&1Enable0）
+  // PMUMSR_PERFEVTSEL0&1Enable0
   wrmsrl(MSR_PERF_GLOBAL_CTRL, 0);
 
   cpuid(2, &eax, &ebx, &ecx, &edx);
@@ -341,7 +341,7 @@ static void pebs_mod_init_each_cpu(void *arg) {
   // printk(KERN_INFO "CPUID Model : %u\n", model);
   // unsigned long long msr_value;
   // rdmsrl(MSR_IA32_MISC_ENABLE, msr_value);
-  // // Alder Lake，P-core211，E-core221
+  // // Alder LakeP-core211E-core221
   // if (msr_value & (1ULL << 21)) {
   //   printk(KERN_INFO "CPU %d: P-core detected \n", cpu_id);
   // } else if (msr_value & (1ULL << 22)) {
@@ -350,14 +350,14 @@ static void pebs_mod_init_each_cpu(void *arg) {
   //   printk(KERN_INFO "CPU %d: Unknown core type \n", cpu_id);
   // }
 
-  // PMC0、PMC1
+  // PMC0PMC1
   wrmsrl(MSR_GP_COUNT_PMC0, -(int64_t)PERIOD);
   wrmsrl(MSR_GP_COUNT_PMC1, -(int64_t)PERIOD);
 
-  // PEBS（PMC0&PMC1PEBS）
+  // PEBSPMC0&PMC1PEBS
   wrmsrl(MSR_PEBS_ENABLE, 0x03);
 
-  // PMU（MSR_PERFEVTSEL0&1Enable1）
+  // PMUMSR_PERFEVTSEL0&1Enable1
   wrmsrl(MSR_PERF_GLOBAL_CTRL, 0x03);
 
   // print_msr_info();
@@ -478,7 +478,7 @@ void pebs_mod_exit(void) {
 //   // printk(KERN_INFO "--------------------------------");
 // }
 
-// ，
+// 
 void pebs_record_handler(void) {
   struct task_struct *current_pid;
   debug_store_t *ds_p;
@@ -536,7 +536,7 @@ void pebs_record_handler(void) {
         continue;
       }
 
-      // //300cycle，。
+      // //300cycle
       time = tsp_2 - tsp_1;
       if (time > 300) {
         break;
@@ -566,7 +566,7 @@ void pebs_record_handler(void) {
   ds_p->pebs_counter_reset[1] = -(int64_t)PERIOD;
 
   // 
-  // PMU（MSR_PERFEVTSEL0&1Enable1）
+  // PMUMSR_PERFEVTSEL0&1Enable1
   // wrmsrl(MSR_PEBS_ENABLE, 0x03);
   // wrmsrl(MSR_PERF_GLOBAL_CTRL, 0x03);
 }
@@ -577,7 +577,7 @@ int thread_analyze_func(void *arg) {
     uint32_t count = 0;
     short sleep_count = 0;
 
-    // ，kill
+    // kill
     uint32_t num = num_online_cpus();
     uint32_t index = 0;
     for (; index < num; index++) {
@@ -592,7 +592,7 @@ int thread_analyze_func(void *arg) {
       while (analyze_pthread_need_to_stop == 0 &&
              read_ring_buffer(index, &pid, &start_addr, &end_addr, &start_info,
                               &end_info, &time, &distance) == 0) {
-        // ，
+        // 
         struct pid *kpid;
         // rcu_read_lock();
         kpid = find_vpid((int32_t)pid);
@@ -633,7 +633,7 @@ int thread_analyze_func(void *arg) {
         sleep_count++;
       }
 
-      // ，CPU
+      // CPU
       msleep(THREAD_SLEEP_MILL_SECONDS * sleep_count);
     }
   }

@@ -3497,7 +3497,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -3727,7 +3727,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -3957,7 +3957,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -4187,7 +4187,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -4416,7 +4416,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -4637,7 +4637,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -4858,7 +4858,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -5080,7 +5080,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -5301,7 +5301,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -5524,7 +5524,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -5746,7 +5746,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -5969,7 +5969,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -6192,7 +6192,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -6415,7 +6415,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -6638,7 +6638,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -6861,7 +6861,7 @@ void instruction_analyze_tool::set_target_symbol(abstract_addr::ptr target_addr,
                       (num & 0x000000000000ffffLL),
                   4);
         }
-        // eax，symbol
+        // eaxsymbol
         else {
           std::vector<std::string> new_taine_vector;
           // if (size_4_symbol->_size_32_symbol == nullptr) {
@@ -13151,7 +13151,7 @@ instruction_analyze_tool::analyze_instruction(
       return std::make_pair(-1, analyze_result::UNSUPPORT_INSTRUCTION);
       {
         // //alahRAX
-        // RAX， abstract_addr::ptr
+        // RAX abstract_addr::ptr
         // source_addr; state_symbol::ptr source_symbol; cs_x86_op source =
         // cs_x86_op(); source.type = X86_OP_REG; source.reg = X86_REG_RAX;
         // analyze_operator(insn.detail->x86.operands[0], source_addr,
@@ -13357,7 +13357,7 @@ instruction_analyze_tool::analyze_instruction(
         //                     ? 1
         //                     : 0,
         //                 1);
-        //         // source  target ，
+        //         // source  target 
         //         if (!(judge_sign(source_number, 64) ^
         //               judge_sign(target_number, 64)) &&
         //             (judge_sign(source_number, 64) ^
@@ -13546,7 +13546,7 @@ instruction_analyze_tool::analyze_instruction(
           std::make_shared<state_symbol>(source_symbol->op_add(target_symbol));
 
       //
-      //，
+      //
       //
       if (!source_symbol->judge_taine_same(target_symbol) &&
           source_symbol->get_symbol_mem_effect() &&
@@ -13656,7 +13656,7 @@ instruction_analyze_tool::analyze_instruction(
                             ? 1
                             : 0,
                         1);
-                // source  target ，
+                // source  target 
                 if (!(judge_sign(source_number, 8) ^
                       judge_sign(target_number, 8)) &&
                     (judge_sign(source_number, 8) ^
@@ -13863,7 +13863,7 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::cli: {
-      //，
+      //
       break;
     }
     case instruction_type::type::cmc: {
@@ -16601,7 +16601,7 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::lahf: {
-      //（EFLAGS）8AH
+      //EFLAGS8AH
       return std::make_pair(-1, analyze_result::UNSUPPORT_INSTRUCTION);
       break;
     }
@@ -17628,8 +17628,8 @@ instruction_analyze_tool::analyze_instruction(
       break;
     }
     case instruction_type::type::salc: {
-      //CF=1，AL1。
-      //CF=0，AL0。
+      //CF=1AL1
+      //CF=0AL0
       state_symbol::ptr cf_symbol = _state_machine_ptr->_flag_symbol_map[cf];
       state_symbol::ptr rax_symbol =
           _state_machine_ptr
@@ -17959,7 +17959,7 @@ instruction_analyze_tool::analyze_instruction(
 
         if (source_symbol->judge_taine_effect(
                 _state_machine_ptr->_cache_miss_symbol_vector)) {
-          // ，
+          // 
           // _mem_taine_addr_map = _state_machine_ptr->find_addr_symbol_same(
           //     target_symbol->_contain_symbol,
           //     target_symbol->get_symbol_size());
@@ -18228,7 +18228,7 @@ instruction_analyze_tool::analyze_instruction(
         // target
         if (source_symbol->judge_taine_effect(
                 _state_machine_ptr->_cache_miss_symbol_vector)) {
-          // ，
+          // 
           _mem_taine_addr_map =
               _state_machine_ptr->find_addr_contain_taine(target_symbol);
         }

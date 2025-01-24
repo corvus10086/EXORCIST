@@ -17,13 +17,13 @@
 #include "test.h"
 /**
  * @brief
- * diasm_info，，，，
+ * diasm_info
  *
  * @param step 
  * @param exec  0 1 2
  * @param error_path 
  * @param deep 
- * @param exec_mode  0 ，1 ，2
+ * @param exec_mode  0 1 2
 
  * @return std::pair<std::pair<diasm_code_tool::ptr, int>, analyze_result>
  */

@@ -72,7 +72,7 @@ void get_stack_value(unsigned long int offset, short length,
 
 void set_register_taine(char *register_name,
                         register_taines_map_t *register_map) {
-  //？
+  //
   if (register_name[0] == 'r') {
     // rax,rcx,rdx,rbx
     if (register_name[1] == 'a') {
@@ -145,7 +145,7 @@ void set_register_taine(char *register_name,
 
 void unset_register_taine(char *register_name,
                           register_taines_map_t *register_map) {
-  //？
+  //
   if (register_name[0] == 'r') {
     // rax,rcx,rdx,rbx
     if (register_name[1] == 'a') {
@@ -218,7 +218,7 @@ void unset_register_taine(char *register_name,
 
 short get_register_taine(char *register_name,
                          register_taines_map_t *register_map) {
-  //？
+  //
   if (register_name[0] == 'r') {
     // rax,rcx,rdx,rbx
     if (register_name[1] == 'a') {
@@ -492,7 +492,7 @@ int analyze_branch_instruction(int branch_type,
       return -1;
     }
     case -8: {
-      // JNG ZF=1||SF！=OF
+      // JNG ZF=1||SF=OF
       if ((GET_ZF(register_info->rflags_unsure) == 0 &&
            GET_ZF(register_info->register_info.RFLAGS)) ||
           (GET_SF(register_info->rflags_unsure) == 0 &&
@@ -521,7 +521,7 @@ int analyze_branch_instruction(int branch_type,
 }
 
 void set_register_taine_by_num(int num, register_taines_map_t *register_map) {
-  //？
+  //
   switch (num) {
     case 0x1: {
       SET_RAX_1(register_map->registers_can_break);
@@ -591,7 +591,7 @@ void set_register_taine_by_num(int num, register_taines_map_t *register_map) {
 }
 
 void unset_register_taine_by_num(int num, register_taines_map_t *register_map) {
-  //？
+  //
   switch (num) {
     case 0x1: {
       SET_RAX_0(register_map->registers_can_break);
@@ -661,7 +661,7 @@ void unset_register_taine_by_num(int num, register_taines_map_t *register_map) {
 }
 
 short get_register_taine_by_num(int num, register_taines_map_t *register_map) {
-  //？
+  //
   switch (num) {
     case 0x0: {
       return 0;
@@ -1333,7 +1333,7 @@ char judge_attack(int branch_type, register_taines_map_t *register_map,
       }
     }
     case -8: {
-      // JNG ZF=1||SF！=OF
+      // JNG ZF=1||SF=OF
       if (GET_ZF(register_map->rflags) || GET_SF(register_map->rflags) ||
           GET_OF(register_map->rflags)) {
         return 1;
@@ -1806,7 +1806,7 @@ void add_set_flag(operator_analyze_result_t *operator_analyze_dest,
     length = 64;
   }
   //
-  //0，
+  //0
   operator_expend(operator_analyze_dest, length, 64, 0);
   operator_expend(operator_analyze_source, length, 64, 0);
   if ((unsigned long long int)operator_analyze_dest->value == 0 &&
@@ -2322,7 +2322,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
     }
     // imul
     case 9: {
-      //OF=CF=0，OF=CF=1
+      //OF=CF=0OF=CF=1
       // if (taine_flag) {
       //   SET_CF_1(register_map->rflags);
       //   SET_OF_1(register_map->rflags);
@@ -2364,7 +2364,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
 
           // if ((operator_analyze_res3->value & (0xff00)) == 0 ||
           //     (operator_analyze_res3->value & (0xff00)) == (0xff00)) {
-          //   //，
+          //   //
           //   //1
           //   SET_CF_0(register_info->register_info.RFLAGS);
           //   SET_OF_0(register_info->register_info.RFLAGS);
@@ -2383,7 +2383,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
           // if ((operator_analyze_res3->value & (0xffff0000)) == 0 ||
           //     (operator_analyze_res3->value & (0xffff0000)) == (0xffff0000))
           //     {
-          //   //，
+          //   //
           //   //1
           //   SET_CF_0(register_info->register_info.RFLAGS);
           //   SET_OF_0(register_info->register_info.RFLAGS);
@@ -2401,7 +2401,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
           operator_analyze_res4->value = res & 0xffffffff;
           // if (operator_analyze_res3->value == 0 ||
           //     operator_analyze_res3->value == 0xffffffff) {
-          //   //，
+          //   //
           //   //1
           //   SET_CF_0(register_info->register_info.RFLAGS);
           //   SET_OF_0(register_info->register_info.RFLAGS);
@@ -2412,7 +2412,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
           return;
         } else {
           //
-          //，
+          //
           if ((long long int)operator_analyze_res1->value < 0) {
             operator_analyze_res1->value =
                 -(long long int)operator_analyze_res1->value;
@@ -2472,7 +2472,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
         // if (op_size == 16) {
         //   if ((operator_analyze_res3->value & 0xffff0000) == 0 ||
         //       (operator_analyze_res3->value & (0xffff0000)) == 0xffff0000) {
-        //     //，
+        //     //
         //     //1
         //     SET_CF_0(register_info->register_info.RFLAGS);
         //     SET_OF_0(register_info->register_info.RFLAGS);
@@ -2484,7 +2484,7 @@ void compute_operator(operator_analyze_result_t *operator_analyze_res1,
         //   if ((operator_analyze_res3->value & 0xffffffff00000000) == 0 ||
         //       (operator_analyze_res3->value & 0xffffffff00000000) ==
         //           0xffffffff00000000) {
-        //     //，
+        //     //
         //     //1
         //     SET_CF_0(register_info->register_info.RFLAGS);
         //     SET_OF_0(register_info->register_info.RFLAGS);

@@ -29,7 +29,7 @@ uint8_t temp = 0; /* Used so compiler won't optimize out victim_function() */
 int check(size_t x){
 	if (x < array1_size) return 1; return 0;
 }
-// 在看看
+// 
 __attribute__((noinline)) void victim_function(size_t x)
 {
 	if ((x & array1_size) == x)

@@ -105,7 +105,7 @@ void victim_function_v8(size_t x) {
 //
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
-// 污点不行
+// 
 void victim_function_v9(size_t x, int *x_is_safe) {
      if (*x_is_safe)
           temp &= publicarray2[publicarray[x]];
@@ -130,7 +130,7 @@ void victim_function_v10(size_t x, uint8_t k) {
 //
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
-// 远跳 在.s文件中memcpy被优化了
+//  .smemcpy
 void victim_function_v11(size_t x) {
      if (x < publicarray_size)
           temp = memcmp(&temp, publicarray2 + (publicarray[x]), 1);
@@ -175,7 +175,7 @@ void victim_function_v14(size_t x) {
 //
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
-// 初始污点的确定，俩个都有可能
+// 
 void victim_function_v15(size_t *x) {
      if (*x < publicarray_size)
           temp &= publicarray2[publicarray[*x]];

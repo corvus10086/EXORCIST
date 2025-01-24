@@ -60,7 +60,7 @@
 #define BRANCH_MISS_MEM_ADDR_LOW_2_BIT_VAL 0x01e1
 #define BRANCH_MISS_EVENT_ENUM 2
 
-// &（ or ）
+// & or 
 #define MSR_PERF_GLOBAL_STATUS 0x38E
 #define MSR_PERF_GLOBAL_CTRL 0x38F
 #define MSR_PERF_GLOBAL_OVF_CTRL 0x390
@@ -74,10 +74,10 @@
 // PEBS Record
 #define MSR_PERF_CAPABILITIES 0x345
 
-// PEBS Record Buffer:4M，
+// PEBS Record Buffer:4M
 #define PEBS_BUFFER_SIZE_BYTE 4 * 1024 * 1024
 
-// reset，。，PEBS 。
+// resetPEBS 
 #define PERIOD 100
 
 // 

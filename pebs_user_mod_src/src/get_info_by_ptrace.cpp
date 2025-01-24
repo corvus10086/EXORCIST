@@ -65,7 +65,7 @@ std::pair<uint32_t, std::string> get_info_by_ptrace::get_info() {
     //       proc_t proc_info;
     //       while (readproc(proc, &proc_info) != nullptr) {
     //         if (proc_info.tid == _pid) {
-    //           // ，
+    //           // 
     //           if (proc_info.state == 'S') {
     //             break_point_hit = true;
     //           }
@@ -89,7 +89,7 @@ std::pair<uint32_t, std::string> get_info_by_ptrace::get_info() {
     //   //
     //   ptrace(PTRACE_CONT, _pid, nullptr, nullptr);
     // } else {
-    //   //，
+    //   //
     //   ptrace(PTRACE_POKETEXT, _pid, (void *)_addr, (void *)original_instr);
     // }
 

@@ -1,5 +1,5 @@
 
-spec_cl_o0.out：     文件格式 elf64-x86-64
+spec_cl_o0.out      elf64-x86-64
 
 
 Disassembly of section .init:
@@ -576,7 +576,7 @@ Disassembly of section .fini:
     1800:	48 83 c4 08          	add    $0x8,%rsp
     1804:	c3                   	ret    
 
-spec_cl_o0.out：     文件格式 elf64-x86-64
+spec_cl_o0.out      elf64-x86-64
 
 
 Disassembly of section .init:

@@ -31,7 +31,7 @@ int check(size_t x) {
   if (x < array1_size) return 1;
   return 0;
 }
-// 这个需要修改提取信息用的部分
+// 
 __attribute__((noinline)) void victim_function(size_t x) {
   int i;
   if (x < array1_size) {

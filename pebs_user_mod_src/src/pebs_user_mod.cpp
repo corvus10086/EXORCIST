@@ -122,14 +122,14 @@ void victim_function_v12(size_t x, size_t y) {
   if ((x + y) < array1_size) temp &= array2[array1[x + y]];
 }
 // branch miss cache miss is_x_safe
-// setx，
+// setx
 // setxbranch miss 
-// ，
-// ，
-// setev13branch miss？
+// 
+// 
+// setev13branch miss
 //
 // ret
-// branch missret，
+// branch missret
 //
 //
 

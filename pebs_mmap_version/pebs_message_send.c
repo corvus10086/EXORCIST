@@ -226,7 +226,7 @@ void recv_callback(struct sk_buff *skb) {
     if (data) {
       // printk("kernel receive data %c\n", *((char *)data));
       if (*((char *)data) == 'r') {
-        // todo r，pebs
+        // todo rpebs
         // char mess_ini = "begin";
         // send_msg_by_netlink(mess_init, 16);
         printk("kernel begin to init pebs");
@@ -239,7 +239,7 @@ void recv_callback(struct sk_buff *skb) {
         this_netlink.is_start = 1;
 
       } else if (*((char *)data) == 's') {
-        // todo s，pebs
+        // todo spebs
         if (this_netlink.is_start != 0) {
           char mess_exit[8] = "exit";
           printk("kernel begin to send exit");
@@ -251,7 +251,7 @@ void recv_callback(struct sk_buff *skb) {
         u64 thread_id;
         u32 target_thread_pid;
         u64 start_addr;
-        // todo g，
+        // todo g
         // printk("kernel begin to get data from mem");
         thread_id = *((uint64_t *)(data + 8));
         target_thread_pid = *((uint32_t *)(data + 16));

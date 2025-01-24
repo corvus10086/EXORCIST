@@ -65,7 +65,7 @@ void free_taine_analyze_list(void) {
   }
 }
 // pid
-// return 1，0
+// return 10
 char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
                                     uint64_t end_addr) {
   int pid_index = 0;
@@ -138,7 +138,7 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
           return 1;
         }
       }
-      //addr，
+      //addr
       if (addr_find == 0) {
         //
         if (taine_mem_list.info[pid_index].num <
@@ -158,7 +158,7 @@ char insert_and_search_analyze_list(uint32_t pid, uint64_t start_addr,
       break;
     }
   }
-  // pid，
+  // pid
   if (pid_find == 0) {
     // pid
     if (insert_index_by_pid != -1) {
@@ -238,15 +238,15 @@ char analyze_jmp_addr(OPTYPE *operator_type,
 //
 char updata_register_taine_map(DISASM *info,
                                register_taines_map_t *register_map) {
-  // start_addrregister_info，，。
+  // start_addrregister_info
   // infocache miss
   // 
   // if ((info->Instruction.Category & 0x0000FFFF) != 1) {
   //   return 0;
   // }
 
-  //，
-  // infos.Operand1，
+  //
+  // infos.Operand1
   //cache missmovx pop xchg
 
   // movx
@@ -420,7 +420,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
   switch (disassemble_info->Instruction.Category & 0x0000ffff) {
     case 0: {
       // rdtscp endbr
-      //，
+      //
       break;
     }
     case 1: {
@@ -447,7 +447,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
                                 heap_simulation_info);
 
         //movsxmovzx
-        // movsx ，movzx
+        // movsx movzx
         if (disassemble_info->CompleteInstr[3] == 's') {
           operator_expend(&operator_analyze_result,
                           disassemble_info->Operand2.OpSize,
@@ -529,7 +529,7 @@ char symbolic_execution_one_step(DISASM *disassemble_info,
       // ARITHMETIC_INSTRUCTION
       //
       // cmp add sub mul div neg
-      // op1  op2，op3
+      // op1  op2op3
       //1
       operator_analyze_result_t operator_analyze_result1;
       memset(&operator_analyze_result1, 0, sizeof(operator_analyze_result_t));
@@ -1382,12 +1382,12 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
                         stack_simulation_t *stack_simulation_info,
                         heap_simulation_t *heap_simulation_info) {
   // todo
-  //，，，
-  //，，，
-  //：，，，，，
-  //，，，
-  //，，
-  //1，0
+  //
+  //
+  //
+  //
+  //
+  //10
   int index = start_index;
   int limitaition = deepth;
   while (limitaition < MAX_SYMBOLIC_EXECUTION_DEEPTH &&
@@ -1411,7 +1411,7 @@ char symbolic_execution(int64_t start_addr, int64_t end_addr, short start_index,
       //
       //
       if (index == disassemble_info->size - 1) {
-        //，
+        //
 
         operator_analyze_result_t jmp_addr_analyze_result;
         analyze_source_operator(&(disassemble_info->info_list[index].Operand1),
@@ -1782,7 +1782,7 @@ uint32_t get_start_addr_offset(char *data, uint64_t vir_addr,
                                uint64_t cache_miss_addr) {
   // res
   uint32_t res = 0;
-  // mem_offset，1
+  // mem_offset1
   uint32_t mem_offset = 0;
   uint32_t i = 0;
   uint32_t len;
@@ -1792,7 +1792,7 @@ uint32_t get_start_addr_offset(char *data, uint64_t vir_addr,
     if ((mem_offset & (0x1 << i)) > 0) {
       continue;
     }
-    // tmp_mem_offset，mem_offset
+    // tmp_mem_offsetmem_offset
     uint32_t tmp_mem_offset = 0;
     // data
     uint32_t current_offset = i;
@@ -1951,7 +1951,7 @@ char pebs_taine_analyze(struct task_struct *task,
     return res_value;
   }
 
-  // 。1，
+  // 1
   int *locked;
 
   int ret;
@@ -1972,7 +1972,7 @@ char pebs_taine_analyze(struct task_struct *task,
   }
   char *data_with_information = vmalloc(code_size + PREFIX_SIZE);
   memset(data_with_information, 0, code_size + PREFIX_SIZE);
-  // ，
+  // 
 
   if (data_with_information == NULL) {
     printk(KERN_ERR "Failed to allocate memory.....\n");
@@ -1998,7 +1998,7 @@ char pebs_taine_analyze(struct task_struct *task,
   unsigned long remain = code_size;
   // 
   for (; i < nr_pages; i++) {
-    // ，，page_size
+    // page_size
     unsigned long offset =
         (cache_miss_addr - OVER_HEAD_SIZE + copied) % PAGE_SIZE;
     // printk(KERN_INFO "i=%d. offset=%d.\n", i, offset);
@@ -2006,7 +2006,7 @@ char pebs_taine_analyze(struct task_struct *task,
     unsigned long len = min((unsigned long)PAGE_SIZE - offset, remain);
     // printk(KERN_INFO "i=%d. len=%d.\n", i, len);
 
-    // ，
+    // 
     void *src = kmap(pages[i]) + offset;
     void *dst = data + copied;
     // printk(KERN_INFO "src=%llx;dst=%llx;\n", (unsigned long long int *)src,
@@ -2176,8 +2176,8 @@ Int32 judge_kernel_or_user(uint64_t addr) {
 uint64_t ret_addr[100];
 /**
  * @brief Get the data from ret object
- * ，0 
- * 1，， -1
+ * 0 
+ * 1 -1
  * @param target_pid
  * @param send_id
  * @param branch_miss_addr
@@ -2262,7 +2262,7 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
             printk(KERN_ERR "Failed to alloc pages\n");
             return;
           }
-          // 。1，
+          // 1
           int *locked;
           // 
           // printk(KERN_INFO "nr_pages=%lu\n", nr_pages);
@@ -2296,12 +2296,12 @@ void read_data(uint32_t target_pid, uint64_t send_id, uint64_t start_addr) {
             unsigned long remain = code_size;
             // 
             for (; i < nr_pages; i++) {
-              // ，，page_size
+              // page_size
               unsigned long offset = (start_addr + copied) % PAGE_SIZE;
 
               unsigned long len =
                   min((unsigned long)PAGE_SIZE - offset, remain);
-              // ，
+              // 
               void *src = kmap(pages[i]) + offset;
               void *dst = data + copied;
 

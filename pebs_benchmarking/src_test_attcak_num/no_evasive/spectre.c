@@ -112,7 +112,7 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2]) {
         results[mix_i]++; /* cache hit - add +1 to score for this value */
     }
 
-    // for (i = 0; i < 4096; i++) {  // 7倍降速
+    // for (i = 0; i < 4096; i++) {  // 7
     //   for (int j = 0; j < 7; ++j) {
     //     int num = check(i + j);
     //   }

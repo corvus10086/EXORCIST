@@ -93,7 +93,7 @@ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2]) {
       victim_function(x);
     }
 
-    usleep(273);// 两倍78us，三倍117us，四倍156us，五倍195， 六倍234，七倍273
+    usleep(273);// 78us117us156us195 234273
 
     /* Time reads. Order is lightly mixed up to prevent stride prediction */
     for (i = 0; i < 256; i++) {

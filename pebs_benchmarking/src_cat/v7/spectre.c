@@ -33,7 +33,7 @@ int check(size_t x){
 	if (x < array1_size) return 1; return 0;
 }
 
-// 需要看看
+// 
 __attribute__((noinline)) void victim_function(size_t x)
 {
 	

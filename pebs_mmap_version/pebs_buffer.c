@@ -15,15 +15,15 @@
 #include "pebs_pub.h"
 #include "pebs_taine_tool.h"
 
-// pid（64long long int），start_addr &
-// end_addr（64long long int）1024-pid（2）
+// pid64long long intstart_addr &
+// end_addr64long long int1024-pid2
 // #define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 24
 //  144 24+144*2=312 
 // #define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 312
-// ， ，16
+//  16
 #define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 328
 
-// ITEM，1024
+// ITEM1024
 // 1024512
 #define RING_BUFFER_ITEM_SINGLE_SIZE_NUM 512
 #define RING_BUFFER_ITEM_TOTAL_SIZE_BYTES \
@@ -33,10 +33,10 @@ typedef struct buffer_item {
   // item
   uint64_t* buffer_item_base;
 
-  // index，
+  // index
   int64_t read_index;
 
-  // index，
+  // index
   int64_t write_index;
 
 } buffer_item_t;
@@ -48,7 +48,7 @@ typedef struct ring_buffers {
   // ring_buffer
   uint32_t item_size;
 
-  // （100）
+  // 100
   buffer_item_t items[100];
 } ring_buffers_t;
 
@@ -133,7 +133,7 @@ int alloc_ring_buffer(void) {
     buffers.items[index].read_index = -1;
     buffers.items[index].write_index = 0;
     // buffers.buffer_base
-    // 32int，，（4）
+    // 32int4
     buffers.items[index].buffer_item_base =
         (uint64_t*)(buffers.buffer_base +
                     (index * RING_BUFFER_ITEM_TOTAL_SIZE_BYTES / 4));
@@ -313,7 +313,7 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
 // }
 
 /**
- * ring_buffer_id，，-1
+ * ring_buffer_id-1
  */
 unsigned char read_ring_buffer(unsigned int ring_buffer_id, unsigned int* pid,
                                unsigned long long int* start_addr,

@@ -36,7 +36,7 @@ bool full_diasm_info::get_full_diasm_code(
         &thread_code_map,
     boost::mutex &thread_code_map_mutex, uint64_t thread_id,
     netlink_tool::ptr netlink_tool_ptr) {
-  // ，ret
+  // ret
   if (analyze_recy_data(code_info)) {
     std::cout << "need to get ret addr" << std::endl;
     // get_ret_info(thread_code_map, thread_id, netlink_tool_ptr);
@@ -322,7 +322,7 @@ void full_diasm_info::get_jmp_info(
   if (send_mess_num > 0) {
     //
     //
-    //thread_code_map，id
+    //thread_code_mapid
 
     {
       // thread_code_map
@@ -345,7 +345,7 @@ void full_diasm_info::get_jmp_info(
       lock.unlock();
     }
 
-    //，
+    //
     {
       boost::lock_guard<boost::mutex> lock(thread_code_map_mutex);
       if (thread_code_map[thread_id]->_message.size() > 0) {

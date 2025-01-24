@@ -1,5 +1,5 @@
 
-spec_cl_o0.out：     文件格式 elf64-x86-64
+spec_cl_o0.out      elf64-x86-64
 
 
 Disassembly of section .init:

@@ -9,7 +9,7 @@ uint32_t get_start_addr_offset(const char *data, uint64_t vir_addr,
                                uint64_t cache_miss_addr) {
   // res
   uint32_t res = 0;
-  // mem_offset，1
+  // mem_offset1
   uint32_t mem_offset = 0;
   uint32_t i = 0;
   uint32_t len;
@@ -19,7 +19,7 @@ uint32_t get_start_addr_offset(const char *data, uint64_t vir_addr,
     if ((mem_offset & (0x1 << i)) > 0) {
       continue;
     }
-    // tmp_mem_offset，mem_offset
+    // tmp_mem_offsetmem_offset
     uint32_t tmp_mem_offset = 0;
     // 
     uint32_t current_offset = i;

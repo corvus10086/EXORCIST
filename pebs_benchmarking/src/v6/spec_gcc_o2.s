@@ -32,7 +32,7 @@ victim_function:
 	.p2align 3
 .L5:
 	lea	rdx, array1[rip]
-	// 这个优化导致攻击消解目前检测不到，rax已经被and给修饰不会越界
+	// raxand
 	movzx	eax, BYTE PTR [rdx+rax]
 	lea	rdx, array2[rip]
 	sal	eax, 9
