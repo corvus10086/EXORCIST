@@ -1,6 +1,6 @@
 /**
  * @file   export.h
- * @author igor.gutnik@gmail.com
+ * @author 
  * @date   Mon Sep 22 09:28:54 2008
  *
  * @brief  This file sets things up for C dynamic library function definitions and
