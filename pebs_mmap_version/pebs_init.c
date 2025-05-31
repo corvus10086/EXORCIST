@@ -486,10 +486,13 @@ void pebs_record_handler(void) {
   uint64_t pebs_index;
   uint64_t *cur_p_2;
   uint64_t *cur_p_1;
-
-  // 
+  uint64_t pebs_num;
+  uint64_t cpu;
+  // uint64_t time_start = sched_clock();
+  int cpu_id = smp_processor_id();
   // wrmsrl(MSR_PERF_GLOBAL_CTRL, 0);
-  // CPU
+  
+  // 
   current_pid = current;
 
   ds_p = __this_cpu_read(cpu_ds_p);
@@ -497,12 +500,16 @@ void pebs_record_handler(void) {
   start_addr = ds_p->pebs_base;
 
   pebs_index = ds_p->pebs_index;
+  // pebs_index = ds_p->pebs_max;
+
+  pebs_num = (pebs_index - start_addr) / pebs_record_size;
+  // cpu = smp_processor_id();
 
   cur_p_2 =
-      (uint64_t *)(pebs_index - pebs_record_size);  // branch_miss
+      (uint64_t *)(pebs_index - pebs_record_size); // 
 
-  cur_p_1 = (uint64_t *)(pebs_index -
-                         2 * pebs_record_size);  // cache_miss
+  cur_p_1 =
+      (uint64_t *)(pebs_index - 2 * pebs_record_size); // 
 
   while ((uint64_t)cur_p_2 > start_addr && (uint64_t)cur_p_1 >= start_addr) {
     uint64_t mem_addr_2 = *(cur_p_2 + 1);
@@ -523,52 +530,60 @@ void pebs_record_handler(void) {
       uint64_t tsp_1 = *(cur_p_1 + 3);
       uint32_t mem_addr_sub;
       uint32_t time;
+      char is_find = 0;
       if (count_type_1 != CACHE_MISS_EVENT_ENUM) {
         break;
       }
-      if (mem_addr_2 < mem_addr_1) {
-        cur_p_1 = cur_p_1 - pebs_record_size / 8;
-        continue;
-      }
-      mem_addr_sub = (mem_addr_2 - mem_addr_1);
-      if (mem_addr_sub > 16) {
-        cur_p_1 = cur_p_1 - pebs_record_size / 8;
-        continue;
-      }
 
-      // //300cycle
+      // if (mem_addr_2 < mem_addr_1) {
+      //   cur_p_1 = cur_p_1 - pebs_record_size / 8;
+      //   continue;
+      // }
+
+      // mem_addr_sub = (mem_addr_2 - mem_addr_1);
+      // if (mem_addr_sub > 16) {
+      //   cur_p_1 = cur_p_1 - pebs_record_size / 8;
+      //   continue;
+      // }
+
+      // 
       time = tsp_2 - tsp_1;
       if (time > 300) {
         break;
       }
-      // 
-      {
-        // uint32_t cpu_id = get_cpu();
-        // pid
-        char test = 0;
-        // if (current_pid->comm[0] == 's' && current_pid->comm[1] == 'p'&&current_pid->comm[2]=='e') {
-        //   test = 1;
-        // }
 
-        write_ring_buffer(current_pid->pid, *(cur_p_1 + 1), *(cur_p_2 + 1),
-                          (register_info_t *)(cur_p_1 + 8),
-                          (register_info_t *)(cur_p_2 + 8), time, mem_addr_sub,
-                          test);
+      if (current_pid->comm[0] == 'p' && current_pid->comm[1] == 'o' &&
+          current_pid->comm[2] == 'c') {
+        if (((mem_addr_1 & 0xFFF) == 0x23d) &&
+            ((mem_addr_2 & 0xFFF) == 0x249)) {
+
+          printk(KERN_INFO "spec find mem_addr1=%llx, mem_addr2=%llx\n",
+                 mem_addr_1, mem_addr_2);
+          is_find = 1;
+        }
       }
-      cur_p_1 = cur_p_1 - pebs_record_size / 8;
-      // break;
+
+      // 
+      if (is_find) {
+        write_ring_buffer(cpu_id,current_pid->pid, *(cur_p_1 + 1), *(cur_p_2 + 1),
+                           (register_info_t *)(cur_p_1 + 8),
+                          (register_info_t *)(cur_p_2 + 8), is_find);
+      }
+
+      break;
     }
-    cur_p_2 = cur_p_2 - pebs_record_size / 8;
+    cur_p_2 = cur_p_1;
   }
-  // index
+  // 
   ds_p->pebs_index = ds_p->pebs_base;
   ds_p->pebs_counter_reset[0] = -(int64_t)PERIOD;
   ds_p->pebs_counter_reset[1] = -(int64_t)PERIOD;
 
   // 
-  // PMUMSR_PERFEVTSEL0&1Enable1
-  // wrmsrl(MSR_PEBS_ENABLE, 0x03);
   // wrmsrl(MSR_PERF_GLOBAL_CTRL, 0x03);
+  // uint64_t time_end = sched_clock();
+
+  // trace_count_pebs_num(time_end-time_start, pebs_num);
 }
 // 
 int thread_analyze_func(void *arg) {

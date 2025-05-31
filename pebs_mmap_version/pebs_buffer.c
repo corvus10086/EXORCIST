@@ -15,40 +15,37 @@
 #include "pebs_pub.h"
 #include "pebs_taine_tool.h"
 
-// pid64long long intstart_addr &
-// end_addr64long long int1024-pid2
-// #define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 24
-//  144 24+144*2=312 
-// #define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 312
-//  16
-#define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 328
 
-// ITEM1024
-// 1024512
+#define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 312
+// 
+// #define RING_BUFFER_ITEM_SINGLE_SIZE_BYTES 328
+
+// 
+// 
 #define RING_BUFFER_ITEM_SINGLE_SIZE_NUM 512
 #define RING_BUFFER_ITEM_TOTAL_SIZE_BYTES \
   (RING_BUFFER_ITEM_SINGLE_SIZE_BYTES * RING_BUFFER_ITEM_SINGLE_SIZE_NUM)
 
 typedef struct buffer_item {
-  // item
+  // 
   uint64_t* buffer_item_base;
 
-  // index
+  // 
   int64_t read_index;
 
-  // index
+  // 
   int64_t write_index;
 
 } buffer_item_t;
 
 typedef struct ring_buffers {
-  // buffer
+  // 
   uint32_t* buffer_base;
 
-  // ring_buffer
+  // 
   uint32_t item_size;
 
-  // 100
+  // 
   buffer_item_t items[100];
 } ring_buffers_t;
 
@@ -57,17 +54,18 @@ ring_buffers_t buffers;
 #define PER_CPU_ANALYZE_RING_BUFFER_SIZE 64
 #define PER_CPU_SINGLE_ANALYZE_BUFFER_SIZE 256
 typedef struct single_analyze_buffer {
-  // 32cache miss addr 32branch miss addr
+  // 
   uint64_t info;
   // 
   uint32_t num;
+  uint32_t eflag;
 } single_analyze_buffer_t;
 typedef struct per_cpu_buffer {
-  // pid
+  // 
   uint32_t pid;
-
+  
   uint32_t index;
-  // cachemiss branchmiss
+  // 
   single_analyze_buffer_t analyze_buffer[PER_CPU_SINGLE_ANALYZE_BUFFER_SIZE];
 } per_cpu_buffer_t;
 typedef struct analyze_ring_buffer {
@@ -84,11 +82,11 @@ analyze_ring_buffer_t analyze_res_ring_buffer;
 // cat /proc/sys/kernel/pid_max
 // #define MAX_PID_SIZE 4194304
 /**
- * @brief ring buffer
+ * @brief 
  *
  */
 int alloc_ring_buffer(void) {
-  // cpu
+  // 
   uint32_t num;
   short index;
   num = num_online_cpus();
@@ -132,8 +130,8 @@ int alloc_ring_buffer(void) {
   for (; index < num; index++) {
     buffers.items[index].read_index = -1;
     buffers.items[index].write_index = 0;
-    // buffers.buffer_base
-    // 32int4
+    // 
+    // 
     buffers.items[index].buffer_item_base =
         (uint64_t*)(buffers.buffer_base +
                     (index * RING_BUFFER_ITEM_TOTAL_SIZE_BYTES / 4));
@@ -142,7 +140,7 @@ int alloc_ring_buffer(void) {
 }
 
 /**
- * buffer ring
+ * 
  */
 void free_ring_buffer(void) {
   short index;
@@ -167,38 +165,35 @@ void free_ring_buffer(void) {
   }
 }
 
-/**
- * pid
- */
-void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
+
+void write_ring_buffer(int cpu_id, unsigned int pid, unsigned long long int start_addr,
                        unsigned long long int end_addr,
                        register_info_t* start_info, register_info_t* end_info,
-                       unsigned int time, unsigned int distance, char flag) {
+                       char is_find) {
   // printk(KERN_INFO "begin to write\n");
 
   // 
-  int cpu_id = get_cpu();
   buffer_item_t item = buffers.items[cpu_id];
   //
   {
-    //pid
+    //
     int need_to_insert = 0;
     int cpu_index = 0;
     int pid_index;
     int find = 0;
     int insert_id;
-    //cpu
+    //
     for (; cpu_index < analyze_res_ring_buffer.item_size; ++cpu_index) {
       pid_index = 0;
-      //cpu
+      //
       for (; pid_index < PER_CPU_ANALYZE_RING_BUFFER_SIZE; ++pid_index) {
         per_cpu_buffer_t* pid_buffer =
             analyze_res_ring_buffer.ring_buffer[cpu_index] + pid_index;
-        // linux pid
+        // 
         if (pid_buffer->pid == 0) {
           break;
         }
-        //pid
+        //
         if (pid_buffer->pid == pid) {
           single_analyze_buffer_t* tmp;
           int index_2;
@@ -211,16 +206,20 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
           min_num = tmp[0].num;
           for (; index_2 < PER_CPU_SINGLE_ANALYZE_BUFFER_SIZE; ++index_2) {
             uint32_t num;
+            uint32_t eflag;
             uint64_t info;
+
             num = tmp[index_2].num;
             info = tmp[index_2].info;
+
             if (num == 0) {
               insert_id = index_2;
               break;
             }
             if ((((info & 0xffffffff00000000LL) >> 32) ==
                  (start_addr & 0xffffffffll)) &&
-                ((info & 0xffffffffLL) == (end_addr & 0xffffffffLL))) {
+                ((info & 0xffffffffLL) == (end_addr & 0xffffffffLL)) &&
+                ((eflag) == (end_info->RFLAGS & 0xffffffffLL))) {
               tmp->num += 1;
               insert_id = -1;
               break;
@@ -235,13 +234,18 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
             // 
             if (((item.write_index + 1) % RING_BUFFER_ITEM_SINGLE_SIZE_NUM) ==
                 item.read_index) {
-              // printk(KERN_INFO "%d buffer overwrite", cpu_id);
+              if(is_find){
+// printk(KERN_INFO "%d buffer overwrite", cpu_id);
+              }
+              
               return;
             }
             need_to_insert = 1;
             tmp[insert_id].num = 1;
+            tmp[insert_id].eflag = end_info->RFLAGS & 0xffffffffLL;
             tmp[insert_id].info =
                 ((start_addr & 0xffffffffLL) << 32) + (end_addr & 0xffffffffLL);
+            
           }
           break;
         }
@@ -250,7 +254,7 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
         break;
       }
     }
-    //pid
+    //
     if (find == 0) {
       per_cpu_buffer_t* tmp;
       // 
@@ -267,19 +271,19 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
           (analyze_res_ring_buffer.per_cpu_buffer_index[cpu_id] + 1) %
           PER_CPU_ANALYZE_RING_BUFFER_SIZE;
       tmp->analyze_buffer[0].num = 1;
+      tmp->analyze_buffer[0].eflag = end_info->RFLAGS & 0xffffffffLL;
       tmp->analyze_buffer[0].info =
           ((start_addr & 0xffffffffLL) << 32) + (end_addr & 0xffffffffLL);
+
       tmp->index = 1;
     }
     if (need_to_insert == 0) {
       return;
     }
   }
-  // 
+  
   {
-    if (flag > 0) {
-      printk(KERN_INFO "spec insert\n");
-    }
+
     uint64_t* cur_p;
     cur_p = item.buffer_item_base +
             (item.write_index * RING_BUFFER_ITEM_SINGLE_SIZE_BYTES / 8);
@@ -289,38 +293,20 @@ void write_ring_buffer(unsigned int pid, unsigned long long int start_addr,
 
     memcpy(cur_p + 3, start_info, sizeof(uint64_t) * 18);
     memcpy(cur_p + 21, end_info, sizeof(uint64_t) * 18);
-    *(cur_p + 39) = ((uint64_t)time);
-    *(cur_p + 40) = ((uint64_t)distance);
 
     buffers.items[cpu_id].write_index =
         (item.write_index + 1) & (RING_BUFFER_ITEM_SINGLE_SIZE_NUM - 1);
   }
 }
-// int find_ring_buffer(unsigned int pid, unsigned long long int start_addr,
-//                      unsigned long long int end_addr) {
-//   //
-//   int cpu_id = get_cpu();
-//   buffer_item_t item = buffers.items[cpu_id];
-//   // 
-//   if (item.read_index == (item.write_index - 1)) {
-//     // printk(KERN_INFO "no data\n");
-//     return -1;
-//   }
-//   int index = item.read_index;
-//   while (index != (item.write_index - 1)) {
-
-//   }
-// }
 
 /**
- * ring_buffer_id-1
+ * 
  */
 unsigned char read_ring_buffer(unsigned int ring_buffer_id, unsigned int* pid,
                                unsigned long long int* start_addr,
                                unsigned long long int* end_addr,
                                register_info_t* start_info,
-                               register_info_t* end_info, unsigned int* time,
-                               unsigned int* distance) {
+                               register_info_t* end_info) {
   buffer_item_t item;
   uint64_t* cur_p;
   if (ring_buffer_id > (buffers.item_size - 1)) {
@@ -346,8 +332,6 @@ unsigned char read_ring_buffer(unsigned int ring_buffer_id, unsigned int* pid,
 
   memcpy(start_info, cur_p + 3, sizeof(uint64_t) * 18);
   memcpy(end_info, cur_p + 21, sizeof(uint64_t) * 18);
-  *(time) = (uint32_t)(*(cur_p + 39));
-  *(distance) = (uint32_t)(*(cur_p + 40));
 
   buffers.items[ring_buffer_id].read_index = item.read_index;
 
@@ -360,7 +344,7 @@ void print_buffer_data(unsigned int ring_buffer_id) {
   }
 
   item = buffers.items[ring_buffer_id];
-  // 
+  //
   if (item.read_index == (item.write_index - 1)) {
     return;
   }
