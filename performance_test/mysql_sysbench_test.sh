@@ -42,7 +42,7 @@ elif [[ $2 == '--init'||$2 == '-i' ]]; then
         prepare
     exit
 elif [[ $2 == '--test'||$2 == '-t' ]]; then
-    #如果文件夹不存在，创建文件夹
+    #
     if [ ! -d "./result/mysql_sysbench_test" ]; then
     mkdir -p ./result/mysql_sysbench_test
     fi
@@ -50,7 +50,7 @@ elif [[ $2 == '--test'||$2 == '-t' ]]; then
     echo "TPS,QPS,P95(ms)" > "$OUTFILE"
     loop_num=200
     for ((i=1;i<=loop_num;i++)); do
-        # 运行测试（Baseline）
+        # Baseline
         result=$(sysbench oltp_read_write \
             --db-driver=mysql \
             --mysql-user=$USER \

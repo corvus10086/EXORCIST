@@ -20,6 +20,6 @@ cd build
 cmake ..
 make
 ```
-# 3. How to run？
+# 3. How to run?
 After running the executable program, type start to start the test, and type stop to stop the test.  
 The detected attacks will be saved in the find_attack directory under the build folder.  

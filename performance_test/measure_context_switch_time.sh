@@ -15,7 +15,7 @@ else
     exit
 fi
 
-#如果文件夹不存在，创建文件夹
+#
 if [ ! -d "./result/context_switch_time" ]; then
     mkdir -p ./result/context_switch_time
 fi
@@ -37,7 +37,7 @@ for ((i=1;i<=loop_num;i++)); do
 
   for s in "${stacks[@]}"; do
     raw=$(taskset -c 0 ~/app/lmbench-3.0-a9/bin/x86_64-linux-gnu/lat_ctx 2 64 2>&1 | awk 'NR==3 {print $2}')
-    # 清洗数字，去掉可能的逗号或非法字符
+    # 
     result=$(echo $raw | tr -d ',' | tr -cd '0-9.')
     # sum=$(echo "$sum + $result" | bc)
     if ((s!=1024)); then

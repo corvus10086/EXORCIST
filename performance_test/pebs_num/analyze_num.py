@@ -33,7 +33,7 @@ def stream_parse_to_hdf5(trace_file, hdf5_file, chunk_size=1_000_000):
                     num_buf.append(num_val)
 
                     if len(cpu_buf) >= chunk_size:
-                        # 扩展并写入
+                        # 
                         next_size = total + len(cpu_buf)
                         cpu_ds.resize((next_size,))
                         time_ds.resize((next_size,))
@@ -120,10 +120,10 @@ def compute_dual_stats(dataset1, name1, dataset2, name2, file_name):
     describe(full1, name1)
     describe(full2, name2)
 
-    # 绘图
+    # 
     plt.figure(figsize=(6.5, 3.5))
     plt.rcParams.update({
-    'font.size': 14,           # 设置所有字体大小
+    'font.size': 14,           # 
     })
     if(file_name == "nginx"):
         bins = 140
@@ -136,7 +136,7 @@ def compute_dual_stats(dataset1, name1, dataset2, name2, file_name):
     plt.plot(centers, counts1, label=name1, color='blue', linewidth=1.5)
     plt.plot(centers, counts2, label=name2, color='red', linewidth=1.5)
 
-    # 可选：绘制 Q3 的垂直线
+    #  Q3 
     q3_1 = np.percentile(full1, 75)
     q3_2 = np.percentile(full2, 75)
     count1_q3 = counts1[np.searchsorted(bins1, q3_1, side='right') - 1]
@@ -168,7 +168,7 @@ def compute_dual_stats_tdigest(dataset1, name1, dataset2, name2, dataset3, name3
         digest_path = os.path.join(cache_dir, f"{name}_digest.pkl")
         sample_path = os.path.join(cache_dir, f"{name}_sample.npy")
 
-        # 优先加载缓存
+        # 
         if os.path.exists(digest_path) and os.path.exists(sample_path):
             print(f"[✓] Loaded TDigest + sample cache for {name}")
             with open(digest_path, "rb") as f:
@@ -187,7 +187,7 @@ def compute_dual_stats_tdigest(dataset1, name1, dataset2, name2, dataset3, name3
             for val in chunk:
                 digest.update(val)
 
-            # 采样逻辑
+            # 
             if sampled_so_far < MAX_SAMPLE:
                 take = min(MAX_SAMPLE - sampled_so_far, len(chunk))
                 sample[sampled_so_far:sampled_so_far + take] = chunk[:take]
@@ -195,7 +195,7 @@ def compute_dual_stats_tdigest(dataset1, name1, dataset2, name2, dataset3, name3
 
         sample = sample[:sampled_so_far]
 
-        # 保存缓存
+        # 
         with open(digest_path, "wb") as f:
             pickle.dump(digest, f)
         np.save(sample_path, sample)
@@ -207,7 +207,7 @@ def compute_dual_stats_tdigest(dataset1, name1, dataset2, name2, dataset3, name3
     digest2, sample2 = build_digest_and_sample(dataset2, name2+"_"+file_name)
     digest3, sample3 = build_digest_and_sample(dataset3, name3+"_"+file_name)
 
-    # 公共 max 范围
+    #  max 
     max_val = min(digest1.percentile(99), digest2.percentile(99), digest3.percentile(99)) * 1.01
     sample1 = sample1[sample1 <= max_val]
     sample2 = sample2[sample2 <= max_val]
@@ -232,7 +232,7 @@ def compute_dual_stats_tdigest(dataset1, name1, dataset2, name2, dataset3, name3
     describe(digest2, name2)
     describe(digest3, name3)
 
-    # 绘图
+    # 
     plt.figure(figsize=(6.5, 3.5))
     plt.rcParams.update({'font.size': 14})
 
